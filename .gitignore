@@ -398,5 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 # DLLs
-!/Commons/*
-!/References/*
+!/Commons
+!/References
