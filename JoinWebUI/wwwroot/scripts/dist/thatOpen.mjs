@@ -367,18 +367,6 @@ async function onPointerDown() {
     world.camera.controls.enabled = !(lengthMeasurement.enabled || areaMeasurement.enabled || angleMeasurement.enabled);
     if (world.renderer)
         world.renderer.enabled = clipper.enabled || world.camera.controls.enabled;
-    //const bounds = viewerContainer.getBoundingClientRect();
-    //const x = ((e.clientX - bounds.left) / (bounds.right - bounds.left)) * 2 - 1;
-    //const y = -((e.clientY - bounds.top) / (bounds.bottom - bounds.top)) * 2 + 1;
-    //pointerPos = new THREE.Vector2(x, y);
-    //if (world.camera.controls.enabled) {
-    //    setRotCenter = true;
-    //}
-    //await Timeout(150);
-    //if (mouseDown) {
-    //    highlighter.enabled = false;
-    //    showRotCenter = true;
-    //}    
 }
 async function onMouseMove(e) {
     await onPointerMove(e.clientX, e.clientY);
