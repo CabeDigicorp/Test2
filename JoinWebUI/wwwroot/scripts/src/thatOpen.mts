@@ -472,27 +472,11 @@ async function initModels() { //model: TO_Frag.FragmentsGroup, index: number) {
     }
     transparentFragmentsMap = {}
 
-
-    //highlightedOriginalMaterials = {};
-    //highlighter.updateHighlight();
-
     shownFragmentsMap = structuredClone(allFragmentsMap)
     hider.set(true);
     //hider.update();
     world.renderer!.update();
     culler.needsUpdate = true;
-
-    //classifier.byModel(model.uuid, model);
-    //allClassified = classifier.find({
-    //    models: [model.uuid],
-    //});
-    //const fragmentBbox = viewer.tools.get(TO_Core.FragmentBoundingBox);
-    //boundingBoxer = viewer.get(TO_Core.BoundingBoxer);
-    //for (const [modelKey, model] of fragmentsManager.groups) {
-    //    boundingBoxer.add(model);
-    //}
-    //boundingBoxMesh = boundingBoxer.getMesh();
-    //boundingBoxer.reset();
 
     extractUnits();
     extractSpatialStructure();
