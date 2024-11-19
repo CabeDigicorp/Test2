@@ -1,0 +1,614 @@
+﻿@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using JoinWebUI.Models.Filtri
+@using ModelData.Dto;
+@using ModelData.Model;
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Layouts
+@using System.Collections.Specialized
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Blazored.LocalStorage
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Popups
+@using System.Text
+@using Syncfusion.Blazor.Grids
+@using System.ComponentModel;
+@using Syncfusion.Blazor.Notifications
+
+@inject JoinWebApiClient _apiClient
+@inject NavigationManager _navigation
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject Log Log
+
+<div class="allelementcontainer">
+    @if (IsFiltriLoaded)
+    {
+        <FiltroGruppoComponent LogicalOperation="_rootOperationLogica"
+                               AttributiFiltroOptions="_dataFromInput"
+                               Level="0">
+        </FiltroGruppoComponent>
+    }
+    else
+    {
+        <div style="text-align: center; margin-top: 20px;">
+            <SfSpinner Type="SpinnerType.Material"
+                       @bind-Visible="@IsFiltriLoaded" />
+            <p style="margin-top: 10px;">Caricamento...</p>
+        </div>
+    }
+</div>
+<div class="buttonscontainer">
+    <SfButton CssClass="e-btn-blue custombuttonblue"
+              IconCss="e-icons icon-conferma"
+              OnClick="HandleButtonOkClick"
+              IconPosition="IconPosition.Left"
+              IsPrimary="true">
+        Ok
+    </SfButton>
+    <SfButton CssClass="e-btn-blue custombuttonblue"
+              IconCss="e-icons icon-annulla-azione"
+              OnClick="HandleButtonUndoClick"
+              IconPosition="IconPosition.Left">
+        Annulla
+    </SfButton>
+</div>
+<SfDialog ID="localDialog"
+          Width="300px"
+          Height="200px"
+          IsModal="true"
+          ShowCloseIcon="true"
+          CloseOnEscape="true"
+          @bind-Visible="@isErrorDialogVisible"
+          ZIndex="1000">
+    <DialogTemplates>
+        <Header> Errore </Header>
+        <Content> @errorMessage </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="Chiudi" IsPrimary="true" OnClick="@CloseErrorDialog" />
+    </DialogButtons>
+</SfDialog>
+
+<style>
+    /* Contenitore per raggruppare firstline e secondline */
+    .group-container {
+        border: 0px solid #ccc;
+        padding: 0.5rem;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        /* margin: 0.5rem 0 0.5rem 0.5rem; */
+        margin-right: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /*     .group-container-inner:first-of-type {
+                                            border: none;
+                                        } */
+
+    /* Contenitore per raggruppare elementi secondari */
+    .group-container-inner {
+        border-left: 3px solid #ccc;
+        /* padding: 0.3rem; */
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        /* margin: 0.5rem 0; */
+        display: flex;
+        flex-direction: column;
+        /* gap: 0.5rem; */
+    }
+
+    /* Contenitore completo */
+    .allelementcontainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        float: left;
+        border-radius: 0px;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-right: 0.3rem;
+        background-color: #f9f9f9;
+        /*         display: flex;
+                                            flex-direction: row;
+                                            justify-content: flex-start; */
+    }
+
+    /* Contenitore filtri */
+    .mainfiltercontainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    /* Contenitore filtri */
+    .firstline {
+        border: 0px solid #ccc;
+        padding: 0.5rem;
+        background-color: #f9f9f9;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.3rem;
+        border-radius: 10px;
+        padding-right: 4px;
+    }
+
+    /* Contenitore filtri */
+    .secondline {
+        /* border: 1px solid #ccc; */
+        padding: 0.3rem;
+        background-color: inherit;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.3rem;
+        margin-left: 1rem;
+    }
+    /*
+                                            .secondline > * {
+                                                flex-shrink: 1;
+                                                min-width: 0;
+                                            } */
+
+    /* Classi per la nidificazione */
+    .level-0 {
+        margin-left: 0;
+        border-color: #000000;
+    }
+
+    .level-1 {
+        margin-left: 1.5rem;
+        border-color: #F3A401;
+    }
+
+    .level-2 {
+        margin-left: 1.5rem;
+        border-color: #006400;
+    }
+
+    .level-3 {
+        margin-left: 1.5rem;
+        border-color: #8B0000;
+    }
+
+    .level-4 {
+        margin-left: 1.5rem;
+        border-color: #808080;
+    }
+
+    .level-5 {
+        margin-left: 1.5rem;
+        border-color: #4B0082;
+    }
+
+    .level-6 {
+        margin-left: 1.5rem;
+        border-color: #00008B;
+    }
+
+    .level-7 {
+        margin-left: 1.5rem;
+        border-color: #8B4513;
+    }
+
+    .level-8 {
+        margin-left: 1.5rem;
+        border-color: #FF69B4;
+    }
+
+    .level-9 {
+        margin-left: 1.5rem;
+        border-color: #F5F5DC;
+    }
+
+    .e-btn {
+        margin-right: 0px;
+    }
+
+        .e-btn:hover {
+            border-color: var(--bs-secondary);
+            box-shadow: 0 0 10px var(--bs-secondary);
+        }
+
+
+    .remove-icon {
+        position: relative;
+        padding: 7px;
+        cursor: pointer;
+        color: white;
+        background-color: var(--bs-gray-600);
+        border-radius: 50%;
+        font-family: 'sficonsets';
+        font-weight: bold;
+        content: "\e703";
+        font-size: 12px;
+        line-height: 1;
+        z-index: 9999;
+        transition: color 0.1s ease-in-out;
+        line-height: 100%;
+        flex-shrink: 0;
+        min-width: 1rem;
+        text-align: center;
+    }
+
+    /* Barra inferiore con i pulsanti*/
+    .buttonscontainer {
+        background-color: var(--bs-secondary);
+        position: fixed;
+        bottom: 2rem;
+        width: 100%;
+        left: 0rem;
+        right: 0;
+        padding: 0;
+        height: 3rem;
+        z-index: 9999;
+        pointer-events: auto;
+    }
+
+        .buttonscontainer * {
+            pointer-events: auto;
+        }
+
+    /* Combobox */
+    .e-colorcombobox {
+        min-width: 4rem;
+        width: auto;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* padding: 0 1rem; */
+        flex-grow: 1;
+        z-index: 9999;
+    }
+
+        /* Input field combobox */
+        .e-colorcombobox .e-input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            box-sizing: border-box;
+        }
+
+    /* Pusalnte*/
+    .custombuttonblue {
+        margin-top: 0.5rem;
+        bottom: 2.5rem;
+        width: 7rem;
+        height: 2rem;
+        margin-left: 1rem;
+        border-radius: 5px;
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+        /* Stato pulsante*/
+        .custombuttonblue:hover, .custombuttonblue:focus, .custombuttonblue:active {
+            background-color: var(--bs-secondary);
+            color: var(--bs-white);
+        }
+
+    .e-btn-grey {
+        color: var(--bs-white) !important;
+        background-color: var(--bs-join-grey-dark) !important;
+        border-color: var(--bs-join-grey-dark) !important;
+        /* margin-left: 1rem !important; */
+        border-radius: 5px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        min-width: 2.5rem;
+    }
+        /* Stato pulsante*/
+        .e-btn-grey:hover, .e-btn-grey:focus, .e-btn-grey:active {
+            background-color: var(--bs-secondary) !important;
+            color: var(--bs-white) !important;
+            box-shadow: 0 0 10px var(--bs-secondary) !important;
+        }
+
+    #localDialog .e-dlg-header {
+        color: red;
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>
+
+
+@code {
+    [Parameter]
+    public Guid ProgettoId { get; set; }
+
+    [Parameter]
+    public EventCallback<(bool, AttributoFiltroCompositoDto?)> OnInteractWithPaginaComputo { get; set; }
+
+    [Parameter]
+    public bool RefreshData { get; set; } = false;
+
+    private bool IsFiltriLoaded = false;
+    private AttributoFiltroCompositoDto? _dataToOutput { get; set; }
+    private AttributoFiltroCompositoDto _filteredDataToOutputMemento = new AttributoFiltroCompositoDto();
+    private List<AttributoFiltroDto> _dataFromInput = new List<AttributoFiltroDto>();
+    private List<AttributoFiltroDto> _filteredDataFromInputMemento = new List<AttributoFiltroDto>();
+    private FilterLogicalOperation _rootOperationLogica;
+    private FilterLogicalOperation _rootOperationLogicaMemento;
+    private string logicalOperationOperator { get; set; } = "";
+    private bool isErrorDialogVisible = false;
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var allAttributi = await _apiClient.JsonGetAsync<List<AttributoFiltroDto>?>($"computo/get-computo-attributi-per-filtro/{ProgettoId}");
+            if (!allAttributi.Success)
+            {
+                IsFiltriLoaded = false;
+            }
+            else
+            {
+                // _listFiltriReceived = allAttributi.ResponseContentData?.OrderBy(x => x.Descrizione).ToList() ?? new List<AttributiFiltroDto>();
+                _dataFromInput = allAttributi.ResponseContentData;
+
+                // Inizializzazione dell'oggetto contenitore dei filtri, altrimenti estrapolarlo dal database (server), e caricarlo qui
+                _rootOperationLogica = CreateInitialFilterStructure(allAttributi.ResponseContentData);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    protected override async void OnParametersSet()
+    {
+        base.OnParametersSet();
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        IsFiltriLoaded = true;
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private FilterLogicalOperation CreateInitialFilterStructure(List<AttributoFiltroDto>? attributiFiltriOptions)
+    {
+        try
+        {
+
+            var rootOperation = new FilterLogicalOperation(ValoreConditionsGroupOperator.And);
+            return rootOperation;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return default;
+    }
+
+    private async void DatiFiltriChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        try
+        {
+            // await DataStorageHelper.SetSessionState(SessionStorage, $"progettoComputoFiltriOutput_{ProgettoId}", FiltriOutput);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void HandleButtonUndoClick()
+    {
+        // try-catch per la conferma
+        try
+        {
+            if (OnInteractWithPaginaComputo.HasDelegate) { _ = OnInteractWithPaginaComputo.InvokeAsync((false, null)); }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+
+        // try-catch per la clonazione
+        try
+        {
+            _dataToOutput = (_filteredDataToOutputMemento ?? new()).Clone();
+            // _dataFromInput = new List<AttributoFiltroDto>((_filteredDataFromInputMemento ?? new()));
+            _rootOperationLogica = (FilterLogicalOperation)(_rootOperationLogicaMemento ?? new FilterLogicalOperation(ValoreConditionsGroupOperator.And)).Clone();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private async void HandleButtonOkClick()
+    {
+        // Prima di procedere, verifichiamo se la struttura del filtro è valida
+        if (!ValidateFilterStructure(_rootOperationLogica))
+        {
+            Log.Information("Errore: la struttura del filtro non è valida. Controlla gli operatori e i parametri.");
+            ShowErrorDialog("La struttura del filtro contiene campi mancanti o non validi. Verifica i dati e riprova, altrimenti annulla.");
+            return;
+        }
+
+        // try-catch per la conferma
+        try
+        {
+            _dataToOutput = CollectFilterData(_rootOperationLogica);
+            var filterString = GenerateFilterString(_dataToOutput);
+            filterString = string.IsNullOrEmpty(filterString) ? "nessun filtro impostato" : filterString;
+            Log.Information($"Filtro generato: {filterString}");
+
+            if (OnInteractWithPaginaComputo.HasDelegate) { _ = OnInteractWithPaginaComputo.InvokeAsync((true, string.IsNullOrEmpty(filterString) ? null : _dataToOutput)); }
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di salvataggio dei dati di output per i filtri del computo: {ex.Message}.");
+        }
+
+        // try-catch per la clonazione
+        try
+        {
+            _filteredDataToOutputMemento = _dataToOutput?.Clone() ?? new();
+            _filteredDataFromInputMemento = new List<AttributoFiltroDto>(_dataFromInput);
+            _rootOperationLogicaMemento = (FilterLogicalOperation)_rootOperationLogica.Clone();
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di salvataggio dei dati di rollback per i filtri del computo: {ex.Message}.");
+        }
+    }
+
+    private bool ValidateFilterStructure(FilterLogicalOperation operation)
+    {
+        try
+        {
+            if (operation == null || operation?.Operator == null)
+            {
+                Log.Information("Operatore logico nullo o operazione non valida.");
+                return false; // L'operatore logico è nullo
+            }
+
+            foreach (var component in operation.Parameters)
+            {
+                if (component is FilterLogicalOperation subOperation)
+                {
+                    // Validazione ricorsiva per eventuali operazioni logiche annidate
+                    if (!ValidateFilterStructure(subOperation))
+                    {
+                        Log.Information("Struttura di filtro non valida in un'operazione logica annidata.");
+                        return false;
+                    }
+                }
+                else if (component is FilterParameter<AttributoFiltroDto> filterParameter)
+                {
+                    // Verifica che i parametri del filtro non siano null
+                    if (filterParameter.AttributoFiltroSelezionato == null || filterParameter.ValoreAttributoSelezionato == null)
+                    {
+                        Log.Information("Attributo filtro o valore selezionato nullo.");
+                        return false; // Uno dei parametri è nullo
+                    }
+                }
+                else
+                {
+                    Log.Information("Componente di filtro non valido.");
+                    return false; // Il componente non è né un'operazione logica né un parametro valido
+                }
+            }
+
+            return true; // La struttura è valida
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di controllo nella struttura dati di output dei filtri: {ex.Message}.");
+            return false;
+        }
+    }
+
+    private AttributoFiltroCompositoDto CollectFilterData(FilterLogicalOperation operation)
+    {
+        var filterDto = new AttributoFiltroCompositoDto
+            {
+                OperatoreLogico = operation.Operator
+            };
+
+        try
+        {
+            filterDto.ProgettoId = ProgettoId;
+            bool isWithParameter = false;
+            foreach (var component in operation.Parameters)
+            {
+                if (component is FilterLogicalOperation subOperation)
+                {
+                    var subFilterDto = CollectFilterData(subOperation);
+                    if (subFilterDto != null) { filterDto?.Children?.Add(subFilterDto); }
+                }
+                else if (component is FilterParameter<AttributoFiltroDto> filterParameter)
+                {
+                    var attributoFiltro = filterParameter.AttributoFiltroSelezionato;
+                    var subFilterDto = new AttributoFiltroCompositoDto
+                        {
+                            ProgettoId = ProgettoId,
+                            AttributoFiltro = attributoFiltro,
+                            Condizione = filterParameter.Condition,
+                            Valore = filterParameter.ValoreAttributoSelezionato
+                        };
+                    if (attributoFiltro == null || filterParameter.ValoreAttributoSelezionato == null) { continue; }
+                    filterDto?.Children?.Add(subFilterDto);
+                    isWithParameter = true;
+                }
+            }
+            if (!isWithParameter) { return null; }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+
+        return filterDto;
+    }
+
+    private void ShowErrorDialog(string message)
+    {
+        errorMessage = message;
+        isErrorDialogVisible = true;
+    }
+
+    // Metodo per chiudere il dialog
+    private void CloseErrorDialog()
+    {
+        isErrorDialogVisible = false;
+    }
+
+    private string? GenerateFilterString(AttributoFiltroCompositoDto filterDto)
+    {
+        try
+        {
+            if (filterDto != null && filterDto.AttributoFiltro != null)
+            {
+                return ((!string.IsNullOrEmpty(filterDto.AttributoFiltro.Codice) &&
+                !string.IsNullOrEmpty(filterDto.Condizione.ToString()) &&
+                !string.IsNullOrEmpty(filterDto.Valore)) ? $"({filterDto.AttributoFiltro.Codice}  {filterDto.Condizione}  {filterDto.Valore})" :
+                string.Empty);
+            }
+
+            var childrenStrings = filterDto?.Children?.Select(GenerateFilterString).ToList() ?? new List<string>();
+            var joinedChildren = string.Join($" {filterDto?.OperatoreLogico} ", childrenStrings);
+            return ((!string.IsNullOrEmpty(joinedChildren)) ? $"({joinedChildren})" : string.Empty);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+}

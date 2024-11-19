@@ -1,0 +1,119 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MasterDetailWpf"
+                    xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+                    xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+                    xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+                    xmlns:masterDetailView="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView">
+    
+    <commons:VisibilityConverter x:Key="VisibilityConverter"/>
+    <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+    <commons:InverseVisibilityHiddenConverter x:Key="InverseVisibilityHiddenConverter"/>
+    <commons:InverseConverter x:Key="InverseConverter"/>
+    <commons:ColorConverter x:Key="colorConverter"/>
+    <masterDetailView:ValoreConditionSingleTemplateSelector x:Key="ValoreConditionSingleTemplateSelectorKey" />
+
+    <DataTemplate x:Key="templateAttributoValoreConditionSingle">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" ItemsSource="{Binding AttributiEtichetta}" Margin="0,5,5,0" SelectedIndex="{Binding SelectedAttributoIndex}"/>
+            <ContentControl Grid.Column="1" Content="{Binding ValoreConditionSingleView}" ContentTemplateSelector="{StaticResource ValoreConditionSingleTemplateSelectorKey}"/>
+            <Button Grid.Column="2" Content="&#xe03A;" Command="{Binding RemoveConditionCommand}" Style="{StaticResource smallButtonStyle}"/>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateValoreContabilitaConditionSingle">
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" IsEditable="False" Margin="0,0,5,0" ItemsSource="{Binding ConditionsView}" 
+                      DisplayMemberPath="Name" SelectedItem="{Binding CurrentCondition}"/>
+            <ComboBox Grid.Column="1"  ItemsSource="{Binding ValoriUnivociView}" IsEditable="True" Margin="0,0,5,0" Text="{Binding ComparisonValue}" IsTextSearchEnabled="False"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateValoreRealeConditionSingle">
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" IsEditable="False" Margin="0,0,5,0" ItemsSource="{Binding ConditionsView}" 
+                      DisplayMemberPath="Name" SelectedItem="{Binding CurrentCondition}"/>
+            <ComboBox Grid.Column="1"  ItemsSource="{Binding ValoriUnivociView}" IsEditable="True" Margin="0,0,5,0" Text="{Binding ComparisonValue}" IsTextSearchEnabled="False"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateValoreDataConditionSingle">
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" IsEditable="False" Margin="0,0,5,0" ItemsSource="{Binding ConditionsView}" 
+                      DisplayMemberPath="Name" SelectedItem="{Binding CurrentCondition}"/>
+            <!--<ExtendedWPFToolkit:DateTimePicker Grid.Column="1" Value="{Binding ComparisonValue}" 
+                                               Format="Custom" FormatString="{Binding FormatString}"
+                                               TimePickerVisibility="{Binding TimePickerVisibility, Converter={StaticResource VisibilityConverter}}"/>-->
+            <dxe:DateEdit Grid.Column="1" DateTime="{Binding ComparisonValue}" 
+                                               DisplayFormatString="{Binding FormatString}" Mask="{Binding Mask}"
+                                               dx:ThemeManager.Theme="Office2019Colorful" ShowClearButton="False">
+                <dxe:DateEdit.StyleSettings>
+                    <dxe:DateEditNavigatorWithTimePickerStyleSettings GlyphKind="Arrow" />
+                </dxe:DateEdit.StyleSettings>
+            </dxe:DateEdit>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateValoreTestoConditionSingle">
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" IsEditable="False" Margin="0,0,5,0" ItemsSource="{Binding ConditionsView}" 
+                      DisplayMemberPath="Name" SelectedItem="{Binding CurrentCondition}"/>
+            <ComboBox Grid.Column="1"  ItemsSource="{Binding ValoriUnivociView}" IsEditable="True" Margin="0,0,5,0" Text="{Binding ComparisonValue}" IsTextSearchEnabled="False"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateValoreElencoConditionSingle">
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" IsEditable="False" Margin="0,0,5,0" ItemsSource="{Binding ConditionsView}" 
+                      DisplayMemberPath="Name" SelectedItem="{Binding CurrentCondition}"/>
+            <ComboBox Grid.Column="1"  ItemsSource="{Binding ValoriUnivociView}" IsEditable="True" Margin="0,0,5,0" Text="{Binding ComparisonValue}" IsTextSearchEnabled="False"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateValoreBooleanoConditionSingle">
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" IsEditable="False" Margin="0,0,5,0" ItemsSource="{Binding ConditionsView}" 
+                      DisplayMemberPath="Name" SelectedItem="{Binding CurrentCondition}"/>
+            <CheckBox Grid.Column="1" Margin="0,0,5,0" IsChecked="{Binding ComparisonValue}"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateValoreConditionsGroup">
+        <Grid>
+            <local:ValoreConditionsGroupCtrl >
+            </local:ValoreConditionsGroupCtrl>
+        </Grid>
+    </DataTemplate>
+
+
+</ResourceDictionary>
+
+

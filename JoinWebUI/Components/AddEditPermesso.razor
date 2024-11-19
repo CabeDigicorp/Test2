@@ -1,0 +1,541 @@
+﻿@using AutoMapper;
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Cards
+@using System.Collections.ObjectModel
+@using JoinWebUI.Pages
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+<SfDialog Width="480px" CloseOnEscape="true" ShowCloseIcon="true" @bind-Visible="@IsVisible">
+    
+    <DialogTemplates>
+        <Header>@Header</Header>
+        <Content>
+
+            <div class="mt-0 mb-1">
+                <span><b>OGGETTO</b></span>
+            </div>
+            <div class="mt-0 mb-1">
+                <span>Cliente: @(Cliente.Info)</span>
+            </div>
+            <div class="mt-0 mb-1 d-flex justify-content-between align-items-center">
+                <span>Settore:</span>
+                <SfDropDownList TValue="Guid?" TItem="SettoreModel"
+                                DataSource="@Settori" @bind-Value="_selectedSettore"
+                                SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                                Width="70%" ShowClearButton="@(!_settoreRO)" Readonly="@_settoreRO"
+                @ref="@_settoreCombo">
+                    <DropDownListFieldSettings Value="Id" Text="Info"></DropDownListFieldSettings>
+                    <DropDownListEvents TItem="SettoreModel" TValue="Guid?" ValueChange="OnSettoreValueChange"></DropDownListEvents>
+                </SfDropDownList>
+            </div>
+            <div class="mt-0 mb-1 d-flex justify-content-between align-items-center">
+                <span>Opera:</span>
+                <SfDropDownList TValue="Guid?" TItem="OperaModel"
+                                DataSource="@FilteredOpere" @bind-Value="_selectedOpera"
+                                SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                                Width="70%" ShowClearButton="@(!_operaRO)" Readonly="@_operaRO"
+                @ref="@_operaCombo">
+                    <DropDownListFieldSettings Value="Id" Text="Info"></DropDownListFieldSettings>
+                    <DropDownListEvents TItem="OperaModel" TValue="Guid?" ValueChange="OnOperaValueChange"></DropDownListEvents>
+                </SfDropDownList>
+            </div>
+            <div class="mt-0 mb-1 d-flex justify-content-between align-items-center">
+                <span>Progetto:</span>
+                <SfDropDownList TValue="Guid?" TItem="ProgettoModel"
+                                DataSource="@FilteredProgetti" @bind-Value="_selectedProgetto"
+                                SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                                Width="70%" ShowClearButton="@(!_progettoRO)" Readonly="@_progettoRO"
+                @ref="@_progettoCombo">
+                    <DropDownListFieldSettings Value="Id" Text="Info"></DropDownListFieldSettings>
+                    <DropDownListEvents TItem="ProgettoModel" TValue="Guid?" ValueChange="OnProgettoValueChange"></DropDownListEvents>
+                </SfDropDownList>
+            </div>
+
+            <div class="mt-4 mb-1">
+                <span><b>SOGGETTO</b></span>
+            </div>
+            <div class="mt-0 mb-1 d-flex justify-content-between align-items-center">
+                <span>Tipo:</span>
+                <SfDropDownList TValue="string" TItem="KeyValuePair<string, string>"
+                                DataSource="@(new Dictionary<string, string>() { {"Team", "Team"}, {"Gruppo", "Gruppo"} })" @bind-Value="_tipoSoggetto"
+                                SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                                Width="70%" Readonly="@_tipoSoggettoRO"
+                @ref="@_tipoSoggettoCombo">
+                    <DropDownListFieldSettings Value="Key" Text="Value"></DropDownListFieldSettings>
+                    <DropDownListEvents TItem="KeyValuePair<string, string>" TValue="string" ValueChange="OnTipoSoggettoValueChange"></DropDownListEvents>
+                </SfDropDownList>
+            </div>
+            <div class="mt-0 mb-1 d-flex justify-content-between align-items-center">
+                <span>Soggetto:</span>
+                <SfDropDownList TValue="Guid?" TItem="EntitaPermessiModel"
+                                DataSource="@FilteredSoggetti" @bind-Value="_selectedSoggetto"
+                                SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                                Width="70%" ShowClearButton="@(!_soggettoRO)" Readonly="@_soggettoRO"
+                @ref="@_soggettoCombo">
+                    <DropDownListFieldSettings Value="Id" Text="Info"></DropDownListFieldSettings>
+                    <DropDownListEvents TItem="EntitaPermessiModel" TValue="Guid?" ValueChange="OnSoggettoValueChange"></DropDownListEvents>
+                </SfDropDownList>
+            </div>
+            <div class="mt-4 mb-0">
+                <SfGrid @ref="_gridRuoli" DataSource="@_markedRuoli" TValue="RuoloListItem"
+                        AllowSelection="true"
+                        AllowGrouping="false"
+                        AllowFiltering="false"
+                        AllowReordering="false"
+                        AllowResizing="false"
+                        AllowSorting="false"
+                        AllowMultiSorting="false"
+                        @attributes="GridRuoliAttributes">
+                    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"
+                                           EnableSimpleMultiRowSelection="false"
+                                           CheckboxOnly="false"
+                                           Mode="Syncfusion.Blazor.Grids.SelectionMode.Both" />
+                    <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" ShowDeleteConfirmDialog="true" Mode="EditMode.Batch" AllowEditOnDblClick="false" />
+                    <GridEvents CellSelected="@OnRuoliCellSelected" TValue="RuoloListItem"></GridEvents>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(RuoloListItem.RuoloId)" IsPrimaryKey="true" AllowEditing="false" Visible="false"></GridColumn>
+                        <GridColumn Field="@nameof(RuoloListItem.RuoloNome)" HeaderText="RUOLI" Type="ColumnType.String" AllowEditing="false" Width="auto"></GridColumn>
+                        <GridColumn Field="@nameof(RuoloListItem.Inherited)" HeaderText="Ereditato" Type="ColumnType.Boolean" AllowEditing="false" DisplayAsCheckBox="true" Width="15%" Visible="@Editing">
+                            <Template>
+                                @if ((context as RuoloListItem)?.Inherited ?? false)
+                                {
+                                    <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-secondary" />
+                                }
+                            </Template>
+                        </GridColumn>
+                        <GridColumn HeaderText="Assegnato" Type="ColumnType.Boolean" Width="15%">
+                            <Template>
+                                   <SfCheckBox @bind-Checked="@((context as RuoloListItem).Value)" CssClass="e-large"></SfCheckBox>
+                            </Template>
+                            
+                        </GridColumn>
+
+                    </GridColumns>
+                </SfGrid>
+            </div>
+
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" OnClick="@OkClick" Content="OK" IsPrimary="true" Disabled="@InvalidInput"></DialogButton>
+        <DialogButton CssClass="e-btn-blue" OnClick="@CancelClick" Content="Annulla"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+@code {
+
+
+    [Parameter] public EventCallback<PermessoModel> OkCallback { get; set; }
+    [Parameter] public EventCallback CancelCallback { get; set; }
+    [Parameter] public bool IsVisible { get; set; } = false;
+
+    [Parameter] public ClienteModel Cliente { get; set; }
+    [Parameter] public List<SettoreModel> Settori { get; set; }
+    [Parameter] public List<OperaModel> Opere { get; set; }
+    [Parameter] public List<ProgettoModel> Progetti { get; set; }
+    [Parameter] public List<TeamModel> Teams { get; set; }
+    [Parameter] public List<GruppoUtentiModel> Gruppi { get; set; }
+    [Parameter] public List<RuoloModel> Ruoli { get; set; }
+
+
+    [Parameter] public PermessiTreeNode? PreSelectedTreeNode { get; set; }
+    [Parameter] public List<PermessoModel> Permessi { get; set; } = null;
+
+    private ObservableCollection<EntitaPermessiModel> FilteredSoggetti { get; set; } = new ObservableCollection<EntitaPermessiModel>();
+    private ObservableCollection<OperaModel> FilteredOpere { get; set; } = new ObservableCollection<OperaModel>();
+    private ObservableCollection<ProgettoModel> FilteredProgetti { get; set; } = new ObservableCollection<ProgettoModel>();
+
+    private PermessoModel? _selectedPermesso = null;
+    private Dictionary<string, object> GridRuoliAttributes { get; set; } = new Dictionary<string, object>() { { "disable", "yes" } };
+
+    private bool Editing { get; set; }
+    private string Header { get { return Editing ? "Modifica permesso" : "Nuovo permesso"; } }
+
+    SfDropDownList<string, KeyValuePair<string, string>> _tipoSoggettoCombo;
+    bool _tipoSoggettoRO = false;
+    string _tipoSoggetto = "Team";
+    SfDropDownList<Guid?, EntitaPermessiModel> _soggettoCombo;
+    bool _soggettoRO = false;
+    Guid? _selectedSoggetto;
+    SfDropDownList<Guid?, SettoreModel> _settoreCombo;
+    bool _settoreRO = false;
+    Guid? _selectedSettore;
+    SfDropDownList<Guid?, OperaModel> _operaCombo;
+    bool _operaRO = false;
+    Guid? _selectedOpera;
+    SfDropDownList<Guid?, ProgettoModel> _progettoCombo;
+    bool _progettoRO = false;
+    Guid? _selectedProgetto;
+    bool _computoItemRO = false;
+    Guid? _selectedComputoItem;
+
+    //private string[] _selectedRuoli;
+    private SfGrid<RuoloListItem> _gridRuoli;
+    private ObservableCollection<RuoloListItem> _markedRuoli;
+
+    private bool InvalidInput
+    {
+        get
+        {
+            //return Cliente == null || _selectedSoggetto == null || (_selectedRuoli?.Count(x => !string.IsNullOrEmpty(x)) ?? 0) <= 0;
+            return Cliente == null || _selectedSoggetto == null || (_markedRuoli?.Count(x => x.Value) ?? 0) <= 0;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (IsVisible)
+        {
+            Editing = PreSelectedTreeNode?.Soggetto != null && PreSelectedTreeNode?.Oggetto != null;
+
+            _tipoSoggettoRO = _soggettoRO = PreSelectedTreeNode?.Soggetto != null;
+            _settoreRO = _operaRO = _progettoRO = PreSelectedTreeNode?.Oggetto != null;
+
+            _selectedSoggetto = null;
+            _selectedSettore = _selectedOpera = _selectedProgetto = null;
+
+            Guid? chkOperaId = null;
+            if (PreSelectedTreeNode?.Soggetto != null && PreSelectedTreeNode.Soggetto.Type == nameof(GruppoUtentiModel))
+            {
+                chkOperaId = PreSelectedTreeNode.Soggetto.ParentId;
+                PreSelectedTreeNode.Oggetto ??= Opere.FirstOrDefault(o => o.Id == chkOperaId);
+            }
+
+            //Oggetti
+            if (PreSelectedTreeNode?.Oggetto != null)
+            {
+                Guid? tmpProgetto = null, tmpOpera = null;
+
+                EntitaPermessiModel? obj = PreSelectedTreeNode.Oggetto;
+                if (obj != null && obj.Type == nameof(ProgettoModel))
+                {
+                    //_progettoRO = true;
+                    tmpProgetto = obj.Id;
+                    obj = Opere.FirstOrDefault(entry => entry.Id == obj.ParentId);
+                }
+                if (obj != null && obj.Type == nameof(OperaModel))
+                {
+                    if (chkOperaId != null)
+                    {
+                        if (obj.Id != chkOperaId)
+                        {
+                            throw new Exception("Opera non coerente");
+                            //TODO Errore
+                        }
+                    }
+
+                    //_operaRO = true;
+                    tmpOpera = obj.Id;
+                    obj = Settori.FirstOrDefault(entry => entry.Id == obj.ParentId);
+                }
+                if (obj != null && obj.Type == nameof(SettoreModel))
+                {
+                    //_settoreRO = true;
+                    _selectedSettore = obj.Id;
+                }
+
+                var se = new ChangeEventArgs<Guid?, SettoreModel>();
+                se.Value = _selectedSettore;
+                OnSettoreValueChange(se);
+
+                var oe = new ChangeEventArgs<Guid?, OperaModel>();
+                oe.Value = _selectedOpera = tmpOpera;
+                OnOperaValueChange(oe);
+
+                var pe = new ChangeEventArgs<Guid?, ProgettoModel>();
+                pe.Value = _selectedProgetto = tmpProgetto;
+                OnProgettoValueChange(pe);
+
+            }
+
+            //Soggetti
+            var e = new ChangeEventArgs<string, KeyValuePair<string, string>>();
+
+            if (PreSelectedTreeNode.Soggetto != null)
+            {
+                EntitaPermessiModel sbj = PreSelectedTreeNode.Soggetto;
+
+
+                if (sbj.Type == nameof(TeamModel))
+                {
+                    _tipoSoggetto = "Team";
+                }
+                else
+                {
+                    _tipoSoggetto = "Gruppo";
+                }
+                e.Value = _tipoSoggetto;
+                OnTipoSoggettoValueChange(e);
+                _selectedSoggetto = sbj.Id;
+                //_tipoSoggettoRO = true;
+                //_soggettoRO = true;
+            }
+            else
+            {
+                _tipoSoggetto = "Team";
+                e.Value = _tipoSoggetto;
+                OnTipoSoggettoValueChange(e);
+            }
+
+            UpdateRuoli();
+
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnTipoSoggettoValueChange(ChangeEventArgs<string, KeyValuePair<string, string>> e)
+    {
+        if (e.Value != e.PreviousItemData.Key)
+        {
+            FilteredSoggetti.Clear();
+            if (e.Value == "Team")
+            {
+                foreach (var t in Teams)
+                    FilteredSoggetti.Add(t);
+            }
+            else if (e.Value == "Gruppo" && _selectedOpera != null && _selectedOpera != Guid.Empty)
+            {
+                foreach (var g in Gruppi)
+                    if (g.OperaId == _selectedOpera)
+                        FilteredSoggetti.Add(g);
+
+            }
+        }
+
+        UpdateRuoli();
+    }
+
+    private void OnSoggettoValueChange(ChangeEventArgs<Guid?, EntitaPermessiModel> e)
+    {
+        UpdateRuoli();
+    }
+
+    private void OnSettoreValueChange(ChangeEventArgs<Guid?, SettoreModel> e)
+    {
+        if (e.Value != e.PreviousItemData?.Id)
+        {
+            FilteredProgetti.Clear();
+            FilteredOpere = new ObservableCollection<OperaModel>(Opere.Where(o => o.SettoreId == e.Value));
+        }
+
+        UpdateRuoli();
+
+    }
+
+    private void OnOperaValueChange(ChangeEventArgs<Guid?, OperaModel> e)
+    {
+        if (e.Value != e.PreviousItemData?.Id)
+        {
+            FilteredProgetti = new ObservableCollection<ProgettoModel>(Progetti.Where(p => p.OperaId == e.Value));
+        }
+
+        UpdateRuoli();
+    }
+
+    private void OnProgettoValueChange(ChangeEventArgs<Guid?, ProgettoModel> e)
+    {
+        UpdateRuoli();
+    }
+
+
+    private void UpdateRuoli()
+    {
+        ////Ruoli
+        ////if (Permessi?.Ruoli != null)
+        ////{
+        ////int count = 0;
+        //foreach (var r in Ruoli)
+        //{
+        //    RuoloValues v = RuoloValues.NotAssigned;
+        //    if (Permessi?.Ruoli != null)
+        //    {
+        //        bool found = Permessi.Ruoli.TryGetValue(r.Id, out v);
+        //    }
+        //    //if (found && v == RuoloValues.DirectlyAssigned)
+        //    //{
+        //    //_selectedRuoli[count++] = r.IdString;
+        //    //}
+        //    _markedRuoli.Add(new RuoloListItem(r, v));
+        //}
+        ////}
+
+        //_selectedRuoli = new string[Ruoli.Count];
+        _markedRuoli = new ObservableCollection<RuoloListItem>();
+        if (_selectedSoggetto == null)
+        {
+            _selectedPermesso = null;
+            GridRuoliAttributes["disable"] = "yes";
+        }
+        else
+        {
+            Guid selectedOggetto = _selectedProgetto ?? _selectedOpera ?? _selectedSettore ?? Cliente.Id;
+            _selectedPermesso = Permessi.Find(x => x.SoggettoId == _selectedSoggetto.Value && x.OggettoId == selectedOggetto);            
+            GridRuoliAttributes["disable"] = "no";
+        }
+
+        foreach (var r in Ruoli)
+        {
+            bool value = _selectedPermesso != null && _selectedPermesso.RuoliIds.Contains(r.Id);
+            bool inherited = false;
+            RuoloValues v;
+            if (_selectedPermesso != null && Editing && PreSelectedTreeNode?.Ruoli != null)
+            {
+                bool found = PreSelectedTreeNode.Ruoli.TryGetValue(r.Id, out v);
+                inherited = found && v == RuoloValues.Inherited;
+            }
+
+            _markedRuoli.Add(new RuoloListItem(r.Id, r.Name, inherited, value));
+        }
+    }
+
+
+
+    private async Task OnRuoliCellSelected(CellSelectEventArgs<RuoloListItem> args)
+    {
+        var fields = await _gridRuoli.GetColumnFieldNamesAsync();    
+
+        if (fields[args.CellIndex] == nameof(RuoloListItem.Value))
+        {
+            await _gridRuoli.UpdateRowAsync(args.RowIndex, new RuoloListItem(args.Data.RuoloId, args.Data.RuoloNome, args.Data.Inherited, !args.Data.Value));
+        }
+    }
+
+
+    private async Task OkClick()
+    {
+        if (!InvalidInput)
+        {
+            bool res = false;
+
+            var dto = new PermessoDto();
+            PermessoModel permesso;
+
+            dto.SoggettoId = _selectedSoggetto!.Value;
+
+            if (_selectedComputoItem != null)
+            {
+                dto.OggettoTipo = TipiOggettoPermessi.Computo;
+                dto.OggettoId = _selectedComputoItem.Value;
+            }
+            if (_selectedProgetto != null)
+            {
+                dto.OggettoTipo = TipiOggettoPermessi.Progetto;
+                dto.OggettoId = _selectedProgetto.Value;
+            }
+            else if (_selectedOpera != null)
+            {
+                dto.OggettoTipo = TipiOggettoPermessi.Opera;
+                dto.OggettoId = _selectedOpera.Value; 
+            }
+            else if (_selectedSettore != null)
+            {
+                dto.OggettoTipo = TipiOggettoPermessi.Settore;
+                dto.OggettoId = _selectedSettore.Value;
+            }
+            else
+            {
+                dto.OggettoTipo = TipiOggettoPermessi.Cliente;
+                dto.OggettoId = Cliente.Id;
+            }
+
+            dto.RuoliIds = new List<Guid>();
+            //dto.RuoliIds.AddRange(Ruoli.Where(r => _selectedRuoli.Contains(r.IdString)).Select(r => r.Id));
+            dto.RuoliIds.AddRange(_markedRuoli.Where(r => r.Value).Select(r => r.RuoloId));
+
+            if (_selectedPermesso?.Id != null)
+            {
+                //Edit esistente
+                dto.Id = _selectedPermesso.Id;
+                var result = await _apiClient.JsonPutAsync<PermessoDto>("permessi", _selectedPermesso.IdString!, dto);
+                if (result.Success)
+                {
+                    permesso = _mapper.Map<PermessoModel>(dto);
+                    res = true;
+                }
+                else
+                {
+                    //_requestError = true;
+                    //_requestErrorMessage = "Errore modifica permessi";
+                    return;
+                }
+
+            }
+            else
+            {
+                //Nuovo
+                var result = await _apiClient.JsonPostAsync<PermessoDto>("permessi", dto);
+                if (result.Success)
+                {
+                    permesso = _mapper.Map<PermessoModel>(result.ResponseContentData);
+                    res = true;
+                }
+                else
+                {
+                    //_requestError = true;
+                    //_requestErrorMessage = "Errore creazione nuovi permessi";
+                    return;
+                }
+
+            }
+
+
+            if (res && OkCallback.HasDelegate)
+            {
+                OkCallback.InvokeAsync(permesso);
+                IsVisible = false;
+            }
+        }
+    }
+
+    private void CancelClick()
+    {
+        if (CancelCallback.HasDelegate)
+        {
+            CancelCallback.InvokeAsync();
+            IsVisible = false;
+        }
+
+    }
+
+    private class RuoloListItem
+    {
+        public Guid RuoloId { get; set; }
+        public string RuoloNome { get; set; }
+        public bool Inherited { get; set; }
+        public bool Value { get; set; }
+
+        //public RuoloListItem(RuoloModel r, RuoloValues v)
+        //{
+        //    RuoloId = r.Id;
+        //    RuoloNome = r.Name ?? "[Non definito]";
+        //    Inherited = v == RuoloValues.Inherited;
+        //    Value = v == RuoloValues.DirectlyAssigned;
+        //}
+
+
+        public RuoloListItem(Guid id, string? nome = null, bool inherited = false, bool value = false)
+        {
+            RuoloId = id;
+            RuoloNome = nome ?? "[Non definito]";
+            Inherited = inherited;
+            Value = value;
+        }
+
+        public RuoloListItem()
+        {
+            RuoloId = Guid.NewGuid();
+            RuoloNome = "[Non definito]";
+            Inherited = false;
+            Value = false;
+        }
+    }
+
+}

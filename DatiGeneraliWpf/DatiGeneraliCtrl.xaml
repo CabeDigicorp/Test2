@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="DatiGeneraliWpf.DatiGeneraliCtrl"
+             xmlns:syncfusionskin ="clr-namespace:Syncfusion.SfSkinManager;assembly=Syncfusion.SfSkinManager.WPF"
+             xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DatiGeneraliWpf"
+             xmlns:localView="clr-namespace:DatiGeneraliWpf.View"
+             xmlns:contattiwpf="clr-namespace:ContattiWpf;assembly=DigiCorp.ContattiWpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             DataContext="{StaticResource DatiGeneraliViewKey}"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DatiGeneraliTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:DatiGeneraliTemplateSelector x:Key="DatiGeneraliTemplateSelector" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <!--<syncfusion:HierarchyNavigatorDropDownItem syncfusionskin:SfSkinManager.VisualStyle="Metro"/>-->
+            <syncfusion:HierarchyNavigator Name="DatiGeneraliNavigator" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                       BorderThickness="0" IsEnableHistory="False" ShowRefreshButton="Collapsed" ShowDropDownButton="Collapsed" Height="40"
+                                       Style="{StaticResource MetroHierarchyNavigatorStylenew}"
+            >
+                <!--syncfusionskin:SfSkinManager.VisualStyle="Metro"-->
+                <!---->
+
+                <syncfusion:HierarchyNavigator.ItemsSource>
+                    <localView:DatiGeneraliHierarchicalItemsSource />
+                </syncfusion:HierarchyNavigator.ItemsSource>
+                <syncfusion:HierarchyNavigator.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SectionItems}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Icon}" Margin="2,0" Style="{StaticResource smallTextBlockStyle}" FontSize="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding HierarchyText}" Margin="2,0" FontSize="20"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </syncfusion:HierarchyNavigator.ItemTemplate>
+            </syncfusion:HierarchyNavigator>
+            <ListView ItemsSource="{Binding SiblingSectionItems}" MaxWidth="400" Margin="3"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ItemContainerStyle="{StaticResource sectionButtonsStyle}"
+                      BorderThickness="0">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Name="SectionButton" BorderThickness="0" Padding="0" Margin="0" Click="SectionButton_Click">
+                            <Grid Background="Gainsboro" Height="19" Width="120">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Icon}" Style="{StaticResource smallTextBlockStyle}" FontSize="12"
+                                       VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Title, Mode=TwoWay}" Grid.Column="1" Foreground="SteelBlue" FontSize="12" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <ContentControl Content="{Binding CurrentTemplateView, Mode=TwoWay}"
+                        ContentTemplateSelector="{StaticResource DatiGeneraliTemplateSelector}" 
+                        Grid.Row="1"
+                        />
+        <!--Istanzio subito i controlli per avere pronta la View (questi controlli non sono mai visibili)-->
+        <contattiwpf:ContattiCtrl Name="ContattiCtrl" Visibility="Collapsed" DataContext="{StaticResource ContattiViewKey}"/>
+        <local:InfoProgettoCtrl x:Name="InfoProgettoCtrl" Visibility="Collapsed" DataContext="{StaticResource InfoProgettoViewKey}"/>
+        <local:StiliProgettoCtrl x:Name="StiliCtrl" Visibility="Collapsed" DataContext="{StaticResource StiliProgettoViewKey}"/>
+        <local:UnitaMisuraCtrl x:Name="UnitaMisuraCtrl" Visibility="Collapsed" DataContext="{StaticResource UnitaMisuraViewKey}"/>
+        <local:VariabiliCtrl x:Name="VariabiliCtrl" Visibility="Collapsed" DataContext="{StaticResource VariabiliViewKey}"/>
+        <local:AllegatiCtrl x:Name="AllegatiCtrl" Visibility="Collapsed" DataContext="{StaticResource AllegatiViewKey}"/>
+        <local:TagCtrl x:Name="TagCtrl" Visibility="Collapsed" DataContext="{StaticResource TagViewKey}"/>
+
+    </Grid>
+</UserControl>

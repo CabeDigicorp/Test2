@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DigiCorp.ModelData</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dto\PasswordChangeDto.cs" />
+    <Compile Remove="Dto\PasswordForgottenDto.cs" />
+    <Compile Remove="Dto\PasswordResetDto.cs" />
+    <Compile Remove="Dto\RegisterBeginDto.cs" />
+    <Compile Remove="Dto\RegisterBeginResponseDto.cs" />
+    <Compile Remove="Dto\RegisterDto.cs" />
+    <Compile Remove="Dto\RegisterOtherDto.cs" />
+    <Compile Remove="Dto\TagCreateDto.cs" />
+    <Compile Remove="Dto\TagUpdateDto.cs" />
+    <Compile Remove="Utilities\AuthorizationPolicies.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+    <PackageReference Include="protobuf-net" Version="3.2.30" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dto\Error\" />
+  </ItemGroup>
+
+</Project>

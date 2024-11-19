@@ -1,0 +1,143 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using System.Collections.ObjectModel
+@using JoinWebUI.Utilities
+
+<div id="object" style="height:100%; overflow-y:auto">
+
+    @{
+        int selectedCount = Helper?.SelectedExpressIdsCount ?? 0;
+        switch (selectedCount)
+        {
+            case 0:
+                <p class="italicsCentered">Nessun oggetto selezionato</p>
+                break;
+
+            case 1:
+
+                string? IfcModelKey = Helper!.SelectedNodes.First()!.ID.IfcModelKey;
+
+                if (DataSource == null)
+                {
+                    <p class="italicsCentered">Informazione non disponibile</p>
+                }
+                else if (DataSource.Count <= 0 || (DataSource?.Count() == 1 && DataSource.First().Value.Count() == 0))
+                {
+                    <p class="italicsCentered">Nessun valore trovato</p>
+                }
+                else if (DataSource?.Count() == 1 && DataSource.First().Value.Count() > 0)
+                {
+                    if (IsQuantities)
+                    {
+                        <QuantitiesTabGrid DataSource=@DataSource[0].Value ShowNull=@ShowNull />
+                    }
+                    else
+                    {
+                        <PropertiesTabGrid IfcModelKey=@IfcModelKey DataSource =@DataSource[0].Value Helper=@Helper ShowNull=@ShowNull />
+                    }
+                }
+                else
+                {
+                    var allIndexes = new int[DataSource.Count()];
+                    for (int i = 0; i < allIndexes.Length; i++)
+                    {
+                        allIndexes[i] = i;
+                    }
+                    <SfAccordion ID="propertiesAccordion" ExpandMode="ExpandMode.Multiple" ExpandedIndices=@allIndexes EnablePersistence=true LoadOnDemand=false>
+                        <AccordionItems>
+                            @{
+                                items = new List<PropertiesTabGrid>();
+
+                                foreach (var collection in DataSource)
+                                {
+                                    if (IsQuantities)
+                                    {
+                                        <AccordionItem>
+                                            <HeaderTemplate>
+                                                @collection.Key
+                                            </HeaderTemplate>
+                                            <ContentTemplate>
+                                                <QuantitiesTabGrid DataSource =@collection.Value ShowNull=@ShowNull />
+                                            </ContentTemplate>
+                                        </AccordionItem>
+                                    }
+                                    else
+                                    {
+                                        var grid = new PropertiesTabGrid();
+                                        items.Add(grid);
+                                        <AccordionItem>
+                                            <HeaderTemplate>
+                                                @collection.Key
+                                            </HeaderTemplate>
+                                            <ContentTemplate>
+                                                <PropertiesTabGrid @ref=grid IfcModelKey=@IfcModelKey DataSource =@collection.Value Helper=@Helper ShowNull=@ShowNull />
+                                            </ContentTemplate>
+                                        </AccordionItem>
+                                    }
+                                }
+                            }
+                        </AccordionItems>
+                    </SfAccordion>
+                }
+                break;
+
+            default:
+                <p class="italicsCentered">@(selectedCount.ToString()) oggetti selezionati</p>
+                break;
+        }
+    }
+
+</div>
+
+<style>
+    .e-accordion .e-acrdn-item .e-acrdn-panel .e-acrdn-content {
+        padding-top: 0px !important;
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+
+    .e-row {
+        line-height: 22px !important;
+        min-height: 22px !important;
+    }
+
+    .italicsCentered {
+        text-align: center;
+        font-style: italic;
+        padding-top: 1rem;
+    }
+
+</style>
+
+@code {
+    // [Parameter]
+    // public SfGrid<PropertyItem> Grid { get; set; } = new SfGrid<PropertyItem>();
+
+    [Parameter]
+    public ObservableCollection<(string Key, ObservableCollection<PropertyItem> Value)> DataSource { get; set; } = new ObservableCollection<(string Key, ObservableCollection<PropertyItem> Value)>();
+
+    [Parameter]
+    public FragmentsHelper? Helper { get; set; } = null;
+
+    [Parameter]
+    public bool ShowNull { get; set; } = true;
+
+    [Parameter]
+    public bool IsQuantities { get; set; } = false;
+
+    private List<PropertiesTabGrid> items = new List<PropertiesTabGrid>();
+
+    protected override void OnParametersSet()
+    {
+        //return base.OnParametersSetAsync();
+    }
+
+    public void ForceUpdate()
+    {
+        StateHasChanged();
+        // foreach (PropertiesTabGrid item in items)
+        //     item.ForceUpdate();
+    }
+
+   
+}

@@ -1,0 +1,66 @@
+version: '3.4'
+
+services:
+  joinapi:
+    container_name: JoinApi
+    image: ${DOCKER_REGISTRY-}joinapi
+    build:
+      context: .
+      dockerfile: JoinApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:5100;https://+:5000
+      - MONGODB_URL=mongodb://localhost:27017/join
+      - AuthServer__RequireHttpsMetadata=false 
+    # ports:
+    #   - "5000:5000" 
+    #   - "5100:5100"  
+    depends_on:
+      - mongodb
+    hostname: localhost
+    volumes:
+      - joinlogs:/logs
+    # networks:
+    #   - node-network
+    restart: always
+    network_mode: "host"
+
+  joinwebui:
+    container_name: JoinWebUI
+    image: ${DOCKER_REGISTRY-}joinwebui
+    build:
+      context: .
+      dockerfile: JoinWebUI/Dockerfile  
+    depends_on:
+      - joinapi 
+    hostname: localhost
+    # ports:
+    #   - "5101:5101"  
+    #   - "5001:5001"  
+    #   - "5002:80"  
+    #   - "5003:443"  
+    volumes:
+      - joinlogs:/logs
+    network_mode: "host"
+    # networks:
+    #   - node-network
+
+  mongodb:
+    container_name: MongoDb
+    image: mongo:latest 
+    volumes:
+      - mongodata:/data/db 
+    # ports:
+    #   - "27017:27017"  
+    hostname: localhost
+    network_mode: "host"
+    # networks:
+    #   - node-network
+
+volumes:
+    mongodata: 
+    joinlogs: 
+
+# networks:
+#   node-network:
+#     driver: bridge

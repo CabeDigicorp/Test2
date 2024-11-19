@@ -1,0 +1,652 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Layouts
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using Newtonsoft.Json.Bson
+@using System.Linq
+@using System.Collections.ObjectModel
+@using JoinWebUI.Utilities
+@using System.ComponentModel
+@using JoinWebUI.Components
+
+@inject JoinWebApiClient _apiClient
+@inject IJSRuntime _jsRuntime
+@inject IConfiguration _configuration
+@inject SfDialogService _dialogService
+
+@implements IDisposable;
+
+@switch (_fragmentsHelper.ModelLoadResult)
+{
+   @*  case FragmentsHelper.LoadResult.NotLoaded:
+        <div class="d-flex justify-content-center">
+            <h2 class="fw-bold color-primary">
+                Modello non caricato
+            </h2>
+        </div>
+        break; *@
+
+    case FragmentsHelper.LoadResult.Fail:
+        <div class="d-flex justify-content-center mb-4">
+            <h3 class="fw-bold color-red">
+                Caricamento fallito.
+            </h3>
+        </div>
+        break;
+
+    case FragmentsHelper.LoadResult.NotFound:
+        <div class="d-flex justify-content-center mb-4">
+            <h2 class="fw-bold color-primary">
+               Modello non trovato.
+            </h2>
+        </div>
+        break;
+
+    default:
+
+        <div id="wrapper" class="ext-wrapper">
+
+            <SfSpinner Visible=@(_fragmentsHelper.ActiveSpinner==FragmentsHelper.Spinners.Init) Label="Inizializzazione in corso..." ZIndex="100" />
+            <SfSpinner Visible=@(_fragmentsHelper.ActiveSpinner==FragmentsHelper.Spinners.Download) Label="Download del modello in corso..." ZIndex="100" />
+            <SfSpinner Visible=@(_fragmentsHelper.ActiveSpinner==FragmentsHelper.Spinners.Conversion) Label="Conversione in corso. L'operazione potrebbe richiedere qualche minuto..." ZIndex="100" />
+            @*<SfSpinner Visible=@(_fragmentsHelper.ActiveSpinner==FragmentsHelper.Spinners.Properties) Label="Caricamento delle proprietà in corso..." ZIndex="100" />*@
+            <SfSpinner Visible=@(_fragmentsHelper.ActiveSpinner==FragmentsHelper.Spinners.Geometries) Label="Caricamento del modello in corso..." ZIndex="100" />
+
+            <SfButton CssClass="side-button center-left"
+                      IconCss="e-icons icon-espandi-ramo" IconPosition=IconPosition.Left
+                      OnClick=@ToggleIndexSidebar>
+            </SfButton>
+
+            <SfSidebar @ref=_indexSidebar
+                       id="leftSidebar"
+                       Width="calc(min(90%,400px))"
+                       Position=SidebarPosition.Left
+                       DockSize="20"
+                       CloseOnDocumentClick="false"
+                       Type=SidebarType.Over
+                       ZIndex="100"
+                       EnableGestures="false"
+                       Target="wrapper"
+                       @bind-IsOpen=@ShowIndexSidebar>
+                <ChildContent>
+                    <div style="display: flex; width: 100%; height: 100%">
+                        <div style="width: calc(100% - 8px); height: 100%">
+                            <SfSplitter Orientation=Syncfusion.Blazor.Layouts.Orientation.Vertical
+                                        Height="100%" Width="100%"
+                                        SeparatorSize="0"
+                                        Enabled="true">
+                                <SplitterPanes>
+                                    <SplitterPane Size="38px" Resizable="false">
+                                        <SfButton CssClass="e-btn-blue top-left" IconCss="e-icons icon-collassa-tutto" IconPosition=IconPosition.Right OnClick=@CollapseAll />
+                                        <SfButton CssClass="e-btn-blue top-left" IconCss="e-icons icon-espandi-tutto" IconPosition=IconPosition.Right OnClick=@ExpandAll />
+                                        <SfButton CssClass="e-btn-blue top-left" IconCss="e-icons icon-Seleziona-albero" IconPosition=IconPosition.Right OnClick=@HighlightSubTrees />
+                                        <SfButton CssClass="e-btn-blue top-left" IconCss="e-icons icon-trova-su-finestra-principale" IconPosition=IconPosition.Right Disabled=@(_fragmentsHelper?.SelectedExpressIdsCount == 0) OnClick=@ShowInBoQ />
+                                        <SfButton CssClass="e-btn-blue top-right" IconCss="e-icons icon-chiudi" IconPosition=IconPosition.Right OnClick=@ToggleIndexSidebar />
+                                    </SplitterPane>
+                                    <SplitterPane Resizable="false">
+                                        <ContentTemplate>
+                                            <SfTab HeaderPlacement="HeaderPosition.Top" CssClass="e-fill" @ref=@_treesTabs LoadOn=ContentLoad.Demand>
+                                                @*SelectedItemChanged=@OnTreeTabChanged>*@
+                                                <TabItems>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Gerarchia" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            @* <ModelNavTabItem @ref=_spatialTabItem IdPrefix=@FragmentsHelper.PropertyNames.SpatialStructure DataSource=@_fragmentsHelper.SpatialStructureTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnSubTreeSelection=@_fragmentsHelper.HighlightSubTree OnDeselection=@_fragmentsHelper.RemoveHighlight /> *@
+                                                            <ModelNavTabItem @ref=_spatialTabItem IdPrefix=@FragmentsHelper.PropertyNames.SpatialStructure DataSource=@_fragmentsHelper.SpatialStructureTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnDeselection=@_fragmentsHelper.RemoveHighlight />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Elementi" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            @* <ModelNavTabItem @ref=_elementsTabItem IdPrefix=@FragmentsHelper.PropertyNames.ClassesTree DataSource=@_fragmentsHelper.ClassesTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnSubTreeSelection=@_fragmentsHelper.HighlightSubTree OnDeselection=@_fragmentsHelper.RemoveHighlight /> *@
+                                                            <ModelNavTabItem @ref=_elementsTabItem IdPrefix=@FragmentsHelper.PropertyNames.ClassesTree DataSource=@_fragmentsHelper.ClassesTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnDeselection=@_fragmentsHelper.RemoveHighlight />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Tipi/Stili" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            @* <ModelNavTabItem @ref=_typesTabItem IdPrefix=@FragmentsHelper.PropertyNames.TypesTree DataSource=@_fragmentsHelper.TypesTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnSubTreeSelection=@_fragmentsHelper.HighlightSubTree OnDeselection=@_fragmentsHelper.RemoveHighlight /> *@
+                                                            <ModelNavTabItem @ref=_typesTabItem IdPrefix=@FragmentsHelper.PropertyNames.TypesTree DataSource=@_fragmentsHelper.TypesTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnDeselection=@_fragmentsHelper.RemoveHighlight />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Gruppi" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            @* <ModelNavTabItem @ref=_groupsTabItem IdPrefix=@FragmentsHelper.PropertyNames.GroupsTree DataSource=@_fragmentsHelper.GroupsTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnSubTreeSelection=@_fragmentsHelper.HighlightSubTree OnDeselection=@_fragmentsHelper.RemoveHighlight /> *@
+                                                            <ModelNavTabItem @ref=_groupsTabItem IdPrefix=@FragmentsHelper.PropertyNames.GroupsTree DataSource=@_fragmentsHelper.GroupsTree FragmentsHelper=@_fragmentsHelper OnSelection=@_fragmentsHelper.Highlight OnDeselection=@_fragmentsHelper.RemoveHighlight />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+
+                                                </TabItems>
+                                            </SfTab>
+                                        </ContentTemplate>
+                                    </SplitterPane>
+                                </SplitterPanes>
+                            </SfSplitter>
+                        </div>
+                        <div id="leftResizer" style="width:8px; height:100%; background-color:var(--bs-secondary); cursor: col-resize; user-select: none" />
+                    </div>
+                </ChildContent>
+            </SfSidebar>
+
+            <SfButton CssClass="side-button center-right"
+                      IconCss="e-icons icon-proprieta" IconPosition=IconPosition.Right
+                      OnClick=@(() => ShowPropertiesSidebar = true)>
+            </SfButton>
+
+            <SfSidebar @ref=_propertiesSidebar
+                       id="rightSidebar"
+                       Width="calc(min(90%,400px))"
+                       Position=SidebarPosition.Right
+                       DockSize="20"
+                       CloseOnDocumentClick="false"
+                       Type=SidebarType.Over
+                       ZIndex="100"
+                       EnableGestures="false"
+                       Target="wrapper"
+                       @bind-IsOpen=@ShowPropertiesSidebar>
+                <ChildContent>
+                    <div style="display: flex; width: 100%; height: 100%">
+                        <div id="rightResizer" style="width:8px; height:100%; background-color:var(--bs-secondary); cursor: col-resize; user-select: none" />
+                        <div style="width: calc(100% - 8px); height: 100%">
+                            <SfSplitter Orientation=Syncfusion.Blazor.Layouts.Orientation.Vertical
+                                        Height="100%" Width="100%"
+                                        SeparatorSize="0"
+                                        Enabled="true">
+                                <SplitterPanes>
+                                    <SplitterPane Size="38px" Resizable="false">
+                                        <PropertiesTabHeader @ref=_propHeader Helper=@_fragmentsHelper OnHighlightCurrent=@HighlightCurrent OnToggleNullProperties=@(() => ShowNullProperties = !ShowNullProperties) />
+                                        <SfButton CssClass="e-btn-blue top-right" IconCss="e-icons icon-chiudi" IconPosition=IconPosition.Right OnClick=@(() => ShowPropertiesSidebar = false) />
+                                    </SplitterPane>
+                                    <SplitterPane Resizable="false">
+                                        <ContentTemplate>
+                                            <SfTab HeaderPlacement="HeaderPosition.Top" CssClass="e-fill" @ref=@_propertiesTabs LoadOn=ContentLoad.Demand>
+                                                <TabItems>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Generale" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            <PropertiesTabItem @ref=_generalTabItem DataSource=@_fragmentsHelper.GeneralInfo Helper=@_fragmentsHelper ShowNull=@ShowNullProperties />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Tipo" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            <PropertiesTabItem @ref=_typeTabItem DataSource=@_fragmentsHelper.TypeInfo Helper=@_fragmentsHelper ShowNull=@ShowNullProperties />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Proprietà" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            <PropertiesTabItem @ref=_propTabItem DataSource=@_fragmentsHelper.Properties Helper=@_fragmentsHelper ShowNull=@ShowNullProperties />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Quantità" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            <PropertiesTabItem @ref=_quantitiesTabItem DataSource=@_fragmentsHelper.Quantities Helper=@_fragmentsHelper ShowNull=@ShowNullProperties IsQuantities=true />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                    <TabItem>
+                                                        <ChildContent>
+                                                            <TabHeader Text="Materiali" />
+                                                        </ChildContent>
+                                                        <ContentTemplate>
+                                                            <PropertiesTabItem @ref=_materialsTabItem DataSource=@_fragmentsHelper.Materials Helper=@_fragmentsHelper ShowNull=@ShowNullProperties />
+                                                        </ContentTemplate>
+                                                    </TabItem>
+                                                </TabItems>
+                                            </SfTab>
+                                        </ContentTemplate>
+                                    </SplitterPane>
+                                </SplitterPanes>
+                            </SfSplitter>
+                        </div>
+
+                    </div>
+                </ChildContent>
+            </SfSidebar>
+
+            <SfMenu TValue="MenuItem" CssClass="toolbar-3d bottom-center" ShowItemOnClick="true">
+                <MenuItems>
+                    <MenuItem Id=@(MenuItems.RestoreMenu.ToString()) class=@RestoreMenuClass IconCss=@RestoreMenuIconCss></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.highlightVisible.ToString()) IconCss="e-icons icon-yellow icon-selezione"></MenuItem>
+                    <MenuItem Id=@(MenuItems.ShowMenu.ToString()) class=@ShowMenuClass IconCss=@ShowMenuIconCss></MenuItem>
+                    <MenuItem Id=@(MenuItems.TransparencyMenu.ToString()) class=@TransparencyMenuClass IconCss=@TransparencyMenuIconCss></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ToggleIfcSpaces.ToString()) class=@SpacesMenuClass IconCss=@SpacesMenuIconCss></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.toggleCameraProjection.ToString()) IconCss=@ProjectionMenuIconCss></MenuItem>
+                    <MenuItem Id=@(MenuItems.ClippingMenu.ToString()) class=@ClippingMenuClass IconCss=@ClippingMenuIconCss></MenuItem>
+                    <MenuItem Id=@(MenuItems.MeasureMenu.ToString()) class=@MeasureMenuClass IconCss=@MeasureMenuIconCss></MenuItem>
+                </MenuItems>
+                <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+            </SfMenu>
+
+            @if (_menuShown == MenuItems.RestoreMenu)
+            {
+                <SfMenu TValue="MenuItem" CssClass="toolbar-3d bottom-center-submenu" ShowItemOnClick="true">
+                    <MenuItems>
+                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.RestoreAll.ToString()) IconCss="e-icons icon-yellow icon-ripristina-tutto"></MenuItem> @* Text="Ripristina tutto" class="withString" *@
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.resetZoom.ToString()) IconCss="e-icons icon-yellow icon-zoom-esteso"></MenuItem> @*Text="Reset zoom" class="withString" *@
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.focusSelection.ToString()) IconCss="e-icons icon-yellow icon-filtro-on" Disabled=@(_fragmentsHelper == null || _fragmentsHelper.SelectedExpressIdsCount !=1 || !_fragmentsHelper.GeometriesSelected)></MenuItem> @*Text="Reset zoom" class="withString" *@
+
+                    </MenuItems>
+                    <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+                </SfMenu>
+            }
+            else if (_menuShown == MenuItems.ShowMenu)
+            {
+                <SfMenu TValue="MenuItem" CssClass="toolbar-3d bottom-center-submenu" ShowItemOnClick="true">
+                    <MenuItems>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.showAll.ToString()) IconCss="e-icons icon-yellow icon-visualizza-elemento"></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.flipHidden.ToString()) IconCss="e-icons icon-yellow icon-inverti-visualizza-nascondi"></MenuItem>
+                    </MenuItems>
+                    <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+                </SfMenu>
+            }
+            else if (_menuShown == MenuItems.TransparencyMenu)
+            {
+                <SfMenu TValue="MenuItem" CssClass="toolbar-3d bottom-center-submenu" ShowItemOnClick="true">
+                    <MenuItems>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.setAllTransparent.ToString()) IconCss="e-icons icon-yellow icon-trasparenza-on"></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.removeAllTransparency.ToString()) IconCss="e-icons icon-yellow icon-opaco"></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.flipTransparency.ToString()) IconCss="e-icons icon-yellow icon-trasparenza-off"></MenuItem>
+                    </MenuItems>
+                    <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+                </SfMenu>
+            }
+            else if (_menuShown == MenuItems.ClippingMenu)
+            {
+                <SfMenu TValue="MenuItem" CssClass="toolbar-3d bottom-center-submenu" ShowItemOnClick="true">
+                    <MenuItems>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.toggleClipper.ToString()) class=@ToggleClipperClass IconCss=@ToggleClipperIconCss></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.createClip.ToString()) class=@CreateClipClass IconCss=@CreateClipIconCss disabled=@(_fragmentsHelper.ClippingState == null)></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteClip.ToString()) class=@DeleteClipClass IconCss=@DeleteClipIconCss disabled=@(_fragmentsHelper.ClippingState == null)></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteAllClips.ToString()) IconCss="e-icons icon-yellow icon-cancella-tutti-piani-taglio" disabled=@(_fragmentsHelper.ClippingState == null)></MenuItem>
+                    </MenuItems>
+                    <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+                </SfMenu>
+            }
+            else if (_menuShown == MenuItems.MeasureMenu)
+            {
+                <SfMenu TValue="MenuItem" CssClass="toolbar-3d bottom-center-submenu" ShowItemOnClick="true">
+                    <MenuItems>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.toggleLengthMeasure.ToString()) class=@toggleLengthMeasureClass IconCss=@ToggleLengthMeasureIconCss></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteLengthMeasure.ToString()) class=@DeleteLengthMeasureClass IconCss=@DeleteLengthMeasureIconCss></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteAllLengthMeasures.ToString()) IconCss="e-icons icon-yellow icon-elimina-lunghezze"></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.toggleAngleMeasure.ToString()) class=@ToggleAngleMeasureClass IconCss=@ToggleAngleMeasureIconCss></MenuItem>
+                        @* <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteAngleMeasure.ToString()) class=@DeleteAngleMeasureClass IconCss=@DeleteAngleMeasureIconCss></MenuItem> *@
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteAllAngleMeasures.ToString()) IconCss="e-icons icon-yellow icon-elimina-misure_angoli"></MenuItem>
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.toggleAreaMeasure.ToString()) class=@ToggleAreaMeasureClass IconCss=@ToggleAreaMeasureIconCss></MenuItem>
+                        @* <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteAreaMeasure.ToString()) class=@DeleteAreaMeasureClass IconCss=@DeleteAreaMeasureIconCss></MenuItem> *@
+                        <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.deleteAllAreaMeasures.ToString()) IconCss="e-icons icon-yellow icon-elimina-aree"></MenuItem>
+                    </MenuItems>
+                    <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+                </SfMenu>
+            }
+
+            <div id=@DivId
+                 class="int-wrapper"
+                 @oncontextmenu:preventDefault="true">
+            </div>
+
+            <SfContextMenu @ref=contextMenuWithSelection TValue="MenuItem">
+                <MenuItems>
+                    <MenuItem Text="Seleziona" IconCss="e-icons icon-selezione" Disabled=@NothingSelected>
+                        <MenuItems>
+                            @if (_fragmentsHelper?.HasHiddenObjects ?? false)
+                            {
+                                <MenuItem Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightClass.ToString() + INCLUDE_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightClass.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightType.ToString() + INCLUDE_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightType.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightStorey.ToString() + INCLUDE_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightStorey.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Contenitore spaziale" IconCss="e-icons icon-relating" Disabled=true>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightContainer.ToString() + INCLUDE_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightContainer.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                            }
+                            else
+                            {
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightContainer.ToString()) Text="Contenitore spaziale" IconCss="e-icons icon-relating" Disabled=true></MenuItem>
+                            }
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Text="Isola" IconCss="e-icons icon-isola" Disabled=@NothingSelected>
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.isolate.ToString() + RESET_HIDDEN_SUFFIX) Text="Selezione" IconCss="e-icons icon-selezione" Disabled=@NoGeometriesSelected></MenuItem>
+                            @if (_fragmentsHelper?.HasHiddenObjects ?? false)
+                            {
+                                <MenuItem Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateClass.ToString() + RESET_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateClass.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateType.ToString() + RESET_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateType.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateStorey.ToString() + RESET_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateStorey.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                            }
+                            else
+                            {
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.IsolateStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                            }
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Text="Evidenzia" IconCss="e-icons icon-evidenzia" Disabled=@NothingSelected>
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.highlightOpaque.ToString()) Text="Selezione" IconCss="e-icons icon-selezione" Disabled=@NoGeometriesSelected></MenuItem>
+                            @if (_fragmentsHelper?.HasHiddenObjects ?? false)
+                            {
+                                <MenuItem Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueClass.ToString() + RESET_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueClass.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueType.ToString() + RESET_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueType.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                                <MenuItem Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected>
+                                    <MenuItems>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueStorey.ToString() + RESET_HIDDEN_SUFFIX) Text="Tutte le entità"></MenuItem>
+                                        <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueStorey.ToString()) Text="Solo entità visibili"></MenuItem>
+                                    </MenuItems>
+                                </MenuItem>
+                            }
+                            else
+                            {
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                                <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HighlightOpaqueStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                            }
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Text="Visualizza" IconCss="e-icons icon-visualizza-elemento" Disabled=@NothingSelected>
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.show.ToString()) Text="Selezione" IconCss="e-icons icon-selezione" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.showAll.ToString()) Text="Tutto" IconCss="e-icons icon-visualizza-elemento"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Text="Nascondi" IconCss="e-icons icon-nascondi-elemento" Disabled=@NothingSelected>
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.hide.ToString()) Text="Selezione" IconCss="e-icons icon-selezione" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HideClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HideType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.HideStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.flipHidden.ToString()) Text="Inverti Visualizza/Nascondi" IconCss="e-icons icon-inverti-visualizza-nascondi" Disabled=@NothingSelected></MenuItem>
+                    <MenuItem Text="Trasparente" IconCss="e-icons icon-trasparenza-on">
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.setTransparent.ToString()) Text="Selezione" IconCss="e-icons icon-selezione" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.SetTransparentClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.SetTransparentType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.SetTransparentStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.setAllTransparent.ToString()) Text="Tutto" IconCss="e-icons icon-trasparenza-on"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Text="Opaco" IconCss="e-icons icon-opaco">
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.removeTransparency.ToString()) Text="Selezione" IconCss="e-icons icon-selezione" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.RemoveTransparencyClass.ToString()) Text="Classe IFC" IconCss="e-icons icon-elementi" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.RemoveTransparencyType.ToString()) Text="Tipo" IconCss="e-icons icon-element-type" Disabled=@NoGeometriesSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.RemoveTransparencyStorey.ToString()) Text="Piano" IconCss="e-icons icon-building-storey" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.removeAllTransparency.ToString()) Text="Tutto" IconCss="e-icons icon-opaco"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.flipTransparency.ToString()) Text="Inverti Trasparente/Opaco" IconCss="e-icons icon-trasparenza-off"></MenuItem>
+                    @* <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.isolateOrthogonal.ToString()) Text="Isola ortogonale" IconCss="e-icons icon-isola-ortogonale" ></MenuItem> *@
+                    <MenuItem Text="Colore" IconCss="e-icons icon-colora-tutto" Disabled=true></MenuItem>
+                    <MenuItem Text="Visualizza nell'albero" IconCss="e-icons icon-espandi-ramo" Disabled=@NothingSelected>
+                        <MenuItems>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowSelectedInSpatialStructureTree.ToString()) Text="Gerarchia" IconCss="e-icons icon-espandi-ramo" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowSelectedInClassesTree.ToString()) Text="Elementi" IconCss="e-icons icon-espandi-ramo" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowSelectedInTypesTree.ToString()) Text="Tipi/Stili" IconCss="e-icons icon-espandi-ramo" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowSelectedInGroupsTree.ToString()) Text="Gruppi" IconCss="e-icons icon-espandi-ramo" Disabled=@NothingSelected></MenuItem>
+                            <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.ShowSelectedInAllTrees.ToString()) Text="Tutti" IconCss="e-icons icon-espandi-ramo" Disabled=@NothingSelected></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                    @* <MenuItem Text="Aggiungi nella sezione Elementi" IconCss="e-icons icon-aggiungi-nella-sezione-elementi" Disabled=true></MenuItem> *@
+                    <MenuItem Id="ShowInBoQ" Text="Visualizza nel computo" IconCss="e-icons icon-trova-su-finestra-principale"></MenuItem>
+                    <MenuItem Text="Aggiungi filtro" IconCss="e-icons icon-aggiungi-filtro" Disabled=true></MenuItem>
+                    @* <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.propJson.ToString()) Text="Mostra proprietà JSON" IconCss="e-icons icon-proprieta"></MenuItem> *@
+                </MenuItems>
+                <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+            </SfContextMenu>
+
+            <SfContextMenu @ref=contextMenuWithoutSelection TValue="MenuItem">
+                <MenuItems>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.highlightVisible.ToString()) Text="Seleziona gli elementi visibili" IconCss="e-icons icon-selezione"></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.flipHidden.ToString()) Text="Inverti Visualizza/Nascondi" IconCss="e-icons icon-inverti-visualizza-nascondi"></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.showAll.ToString()) Text="Visualizza tutto" IconCss="e-icons icon-visualizza-elemento"></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.setAllTransparent.ToString()) Text="Trasparente tutto" IconCss="e-icons icon-trasparenza-on"></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.removeAllTransparency.ToString()) Text="Opaco tutto" IconCss="e-icons icon-opaco"></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.flipTransparency.ToString()) Text="Inverti Trasparente/Opaco" IconCss="e-icons icon-trasparenza-off"></MenuItem>
+                    <MenuItem Text="Colora tutto" IconCss="e-icons icon-colora-tutto" Disabled=true></MenuItem>
+                    <MenuItem Text="Aggiungi nella sezione Elementi" IconCss="e-icons icon-aggiungi-nella-sezione-elementi" Disabled=true></MenuItem>
+                    <MenuItem Separator=true></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.ComplexFunctionNames.RestoreAll.ToString()) Text="Ripristina tutto" IconCss="e-icons icon-ripristina-tutto"></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.resetZoom.ToString()) Text="Reset zoom" IconCss="e-icons icon-zoom-esteso"></MenuItem>
+                    <MenuItem Separator=true></MenuItem>
+                    <MenuItem Id=@(FragmentsHelper.SimpleFunctionNames.toggleClipper.ToString()) Text="Mostra/nascondi piani di taglio" IconCss="e-icons icon-piani-mostra-nascondi"></MenuItem>
+                </MenuItems>
+                <MenuEvents TValue="MenuItem" ItemSelected="@OnMenuItemSelected"></MenuEvents>
+            </SfContextMenu>
+
+        </div>
+
+        break;
+}
+
+<SfDialog @ref=jsonDiag Visible=@jsonDiagVisible CloseOnEscape=true IsModal=true Content=@jsonDiagContent>
+
+</SfDialog>
+
+<style>
+
+    textarea.e-input,
+    .e-float-input textarea,
+    .e-float-input.e-control-wrapper textarea,
+    .e-input-group textarea,
+    .e-input-group.e-control-wrapper textarea {
+        resize: none;
+        height: 90%;
+    }
+
+    .ext-wrapper {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        z-index: 20;
+    }
+
+    .int-wrapper {
+        all: initial;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background-color: dimgrey;
+        z-index: 25;
+    }
+
+    .e-message {
+        width: 400px,
+    }
+
+    .center-left {
+        position: absolute;
+        top: 50% !important;
+        left: 12px !important;
+        transform: translateY(-50%) !important;
+    }
+
+    .center-right {
+        position: absolute;
+        top: 50% !important;
+        right: 12px !important;
+        transform: translateY(-50%) !important;
+    }
+
+    .top-left {
+        position: relative;
+        top: 4px;
+        left: 4px;
+        z-index: 90 !important;
+    }
+
+    .top-left-2 {
+        position: relative;
+        top: 4px;
+        left: 4px;
+        z-index: 90 !important;
+    }
+
+    .top-right {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        z-index: 90 !important;
+    }
+
+    .bottom-full {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        left: 4px;
+        z-index: 90 !important;
+    }
+
+    .bottom-center {
+        position: absolute;
+        bottom: 4px;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    .bottom-center-submenu {
+        position: absolute;
+        bottom: 50px;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    .center-full {
+        position: relative;
+        top: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 90 !important;
+    }
+
+    .e-tab {
+        height: 100% !important;
+        max-height: 100% !important;
+    }
+
+    .e-menu-container,
+    .e-menu-container .e-menu,
+    .e-menu-container .e-menu .e-menu-item.e-selected,
+    .e-menu-container .e-menu .e-menu-item.e-focused,
+    .e-menu-icon {
+        background-color: transparent !important;
+    }
+
+        .e-menu-container .e-menu .e-menu-item,
+        .e-menu-container .e-menu .e-menu-item.e-selected,
+        .e-menu-container .e-menu .e-menu-item.e-focused {
+            background-color: transparent !important;
+            color: var(--bs-secondary) !important;
+            border: 1px solid !important;
+            border-color: var(--bs-secondary) !important;
+            text-align: center !important;
+            width: 36px !important;
+            margin-right: 4px !important;
+        }
+
+            .e-menu-container .e-menu .e-menu-item.e-toggled {
+                background-color: var(--bs-secondary) !important;
+            }
+
+
+
+    .icon-yellow {
+        /* background-color: transparent !important; */
+        color: var(--bs-secondary) !important;
+        position: absolute;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    .icon-yellow-rev {
+        /* background-color: transparent !important; */
+        background-color: var(--bs-secondary) !important;
+        color: var(--bs-primary) !important;
+        position: absolute;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+</style>
+
+
+

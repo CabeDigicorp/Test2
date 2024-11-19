@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "MainApp": {
+      "commandName": "Project"
+    },
+    "Revit 2025": {
+      "commandName": "Executable",
+      "executablePath": "%ProgramW6432%\\Autodesk\\Revit 2025\\Revit.exe"
+    }
+  }
+}

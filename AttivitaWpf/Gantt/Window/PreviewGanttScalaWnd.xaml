@@ -1,0 +1,101 @@
+﻿<Window x:Class="AttivitaWpf.PreviewGanttScalaWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        mc:Ignorable="d"
+        Title="{lex:Loc Impostazioni Scala}" Height="200" Width="400">
+
+    <Window.Resources>
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="mymenuButtonStyle">
+            <Setter Property="TextElement.FontFamily" Value="CommonResource/Resources/#digicorp" />
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Width" Value="125"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="mynothingCheckedToggleButtonStyle">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="{x:Type TextBlock}" x:Key="myTextObejectStyle">
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="{x:Type Control}" x:Key="baseStyle">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBlock Text="{lex:Loc Scala}" Style="{StaticResource myTextObejectStyle}"  />
+        </StackPanel>
+
+        <Button Click="AcceptButton_Click" Style="{StaticResource menuButtonStyle}" Grid.Column="2" Width="100" Height="40" HorizontalAlignment="Right" Background="LightGreen" >
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe086;"/>
+            </StackPanel>
+        </Button>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
+            <RadioButton Content="{lex:Loc Fattore}" IsChecked="{Binding IsZoomRadioButtonChecked}" Margin="0,5,0,0"/>
+            <RadioButton Content="{lex:Loc Adatta a}" IsChecked="{Binding IsAdattaRadioButtonChecked}" Margin="0,5,0,0"/>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
+            <syncfusion:ComboBoxAdv IsEnabled="{Binding IsZoomRadioButtonEnable}" IsEditable="False" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" BorderBrush="White" AllowMultiSelect="False" ItemsSource="{Binding ListaFattoriZoom}" SelectedItem="{Binding SelectedItemFattoreZoom}" ItemStringFormat="{}{0:0.0%}"/>
+            <syncfusion:ComboBoxAdv IsEnabled="{Binding IsAdattaRadioButtonEnable}" IsEditable="False" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" BorderBrush="White" AllowMultiSelect="False" ItemsSource="{Binding ListaAddattaAPagine}" SelectedItem="{Binding SelectedItemAdattaAPagine}"/>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2">
+            <TextBlock Text="{lex:Loc dimensione normale}" Margin="0,5,0,0"/>
+            <TextBlock Text="{lex:Loc pagine}" Margin="0,5,0,0"/>
+        </StackPanel>
+    </Grid>
+
+</Window>

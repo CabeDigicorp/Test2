@@ -1,0 +1,128 @@
+﻿<Window x:Class="AttivitaWpf.GanttCtrl"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AttivitaWpf" 
+            xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxgn="http://schemas.devexpress.com/winfx/2008/xaml/gantt"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+            xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+            mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <dxgn:GanttControl x:Name="Gantt" dx:ThemeManager.Theme="Office2019Colorful" ItemsSource="{Binding Tasks}">
+            <dxgn:GanttControl.Resources>
+                <DataTemplate x:Key="StripLineTemplate">
+                    <ContentControl>
+                        <dxgn:StripLine StartDate="{Binding StartDateTime}" 
+                                                    Duration ="{Binding StripLineDuration}"
+                                                    Background="{Binding Background}"/>
+                    </ContentControl>
+                </DataTemplate>
+                <Style x:Key="CustomGanttTaskControlStyle" TargetType="{x:Type dxgn:GanttTaskControl}">
+                    <Setter Property="Background" Value="{Binding Row.TaskColor}" />
+                    <Setter Property="Height" Value="20" />
+                </Style>
+                <Style x:Key="CustomGanttSummaryTaskControlStyle" TargetType="{x:Type dxgn:GanttSummaryTaskControl}">
+                    <!--<Setter Property="Background" Value="{Binding HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                    <Setter Property="Background"  Value="{Binding Path=View.DataContext.HeaderTaskNodeBackground}"/>
+                    <Setter Property="BracketBrush" Value="{Binding Path=View.DataContext.HeaderTaskNodeBackground}"/>
+                </Style>
+                <Style x:Key="CustomGanttConnectorStyle" TargetType="{x:Type dxgn:GanttConnector}">
+                    <!--<Setter Property="Stroke" Value="{Binding PrintConnectorStrokeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                    <Setter Property="Stroke"  Value="{Binding Path=(dxg:DataControlBase.ActiveView).DataContext.ConnectorStrokeBackground, RelativeSource={RelativeSource Mode=Self}}"/>
+                </Style>
+                <Style x:Key="CustomMarkedTimeControlStyle" TargetType="{x:Type dxgn:MarkedTimeControl}">
+                    <!--<Setter Property="Background" Value="{Binding PrintNonWorkingHoursBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                    <Setter Property="Background"  Value="{Binding Path=Content.View.DataContext.NonWorkingHoursBackground}"/>
+                </Style>
+                <Style TargetType="dxgn:GanttRowControl">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectionState}" Value="Focused">
+                            <Setter Property="Background" Value="LightGray" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectionState}" Value="Selected">
+                            <Setter Property="Background" Value="LightGray" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Height" Value="34"/>
+                </Style>
+                <Style TargetType="dxgn:TimescaleControl">
+                    <Setter Property="FontSize" Value="{Binding ScalaCronologicaView.FontSize, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="FontFamily" Value="{Binding ScalaCronologicaView.FontFamily, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="Foreground" Value="{Binding ScalaCronologicaView.ColorCharacther, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="FontWeight" Value="{Binding ScalaCronologicaView.FontWeight, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="FontStyle" Value="{Binding ScalaCronologicaView.FontStyle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                </Style>
+            </dxgn:GanttControl.Resources>
+            <dxgn:GanttControl.Columns>
+                <dxgn:GanttColumn FieldName="Code" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Codice}" Width="{Binding WidthCode}"/>
+                <dxgn:GanttColumn FieldName="Description" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Descrizione}" Width="{Binding WidthDescription}"/>
+                <dxgn:GanttColumn FieldName="Durata" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Dur}" Width="{Binding WidthDurata}">
+                    <dxgn:GanttColumn.EditSettings>
+                        <dxe:TextEditSettings x:Name="valueColumnEditSetttingsDurata" HorizontalContentAlignment="Right" DisplayFormat="0"/>
+                    </dxgn:GanttColumn.EditSettings>
+                </dxgn:GanttColumn>
+                <dxgn:GanttColumn FieldName="DurataCalendario" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Dur cal}" Width="{Binding WidthDurataCalendario}">
+                    <dxgn:GanttColumn.EditSettings>
+                        <dxe:TextEditSettings x:Name="valueColumnEditSetttingsDurataCalendario" HorizontalContentAlignment="Right" DisplayFormat="0"/>
+                    </dxgn:GanttColumn.EditSettings>
+                </dxgn:GanttColumn>
+                <dxgn:GanttColumn BindTo="StartDate" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Inizio}" Width="{Binding WidthStartDate}">
+                    <dxgn:GanttColumn.EditSettings>
+                        <dxe:DateEditSettings x:Name="valueColumnEditSetttingsStartDate" HorizontalContentAlignment="Right" />
+                    </dxgn:GanttColumn.EditSettings>
+                </dxgn:GanttColumn>
+                <dxgn:GanttColumn BindTo="FinishDate" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Fine}" Width="{Binding WidthFinishDate}">
+                    <dxgn:GanttColumn.EditSettings>
+                        <dxe:DateEditSettings x:Name="valueColumnEditSetttingsFinishDate" HorizontalContentAlignment="Right" />
+                    </dxgn:GanttColumn.EditSettings>
+                </dxgn:GanttColumn>
+            </dxgn:GanttControl.Columns>
+            <dxgn:GanttControl.View>
+                <dxgn:GanttView 
+                            TreeListWidth="0"
+                            SplitterWidth="0"
+                            RequestTimescaleRulers="GanttView_RequestTimescaleRulers"
+                            TimescaleRulerCount="{Binding TimescaleRulerCount}"
+                            StripLinesSource="{Binding StripLines}"
+                            StripLineTemplate="{StaticResource StripLineTemplate}"
+                            WorkdayRulesSource="{Binding WorkdayRulesSource}"
+                            WorkingTimeRulesSource="{Binding WorkingTimeRulesSource}"
+                            PrintArea="EntireControl"
+                            PrintTaskStyle="{StaticResource CustomGanttTaskControlStyle}"
+                            PrintSummaryTaskStyle="{StaticResource CustomGanttSummaryTaskControlStyle}"
+                            PrintConnectorStyle="{StaticResource CustomGanttConnectorStyle}"
+                            PrintMarkedTimeIntervalsStyle="{StaticResource CustomMarkedTimeControlStyle}"
+                            TaskContentPosition="Left"
+                            AllowSchedulingOnEditing="False"
+                            AllowTaskRemove="False"
+                            KeyFieldName="Id"
+                            ChildNodesPath="Children"
+                            StartDateMapping="StartDate"
+                            FinishDateMapping="FinishDate"
+                            NameMapping="Name"
+                            ProgressMapping="Progress"
+                            TreeDerivationMode="ChildNodesSelector"
+                            PredecessorLinksPath="DependencyLinks">
+                    <dxgn:GanttView.PredecessorLinkMappings>
+                        <dxgn:GanttPredecessorLinkMappings
+                                        PredecessorTask="PredecessorId"
+                                        LinkType="Type"/>
+                    </dxgn:GanttView.PredecessorLinkMappings>
+                    <dxgn:GanttView.PrintCellStyle>
+                        <Style xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"  
+                            TargetType="dxe:BaseEdit" BasedOn="{StaticResource {dxgt:TableViewThemeKey ResourceKey=DefaultPrintCellStyle}}">
+                            <Setter Property="Height" Value="20" />
+                            <!--<Setter Property="FontSize" Value="20" />-->
+                        </Style>
+                    </dxgn:GanttView.PrintCellStyle>
+                </dxgn:GanttView>
+            </dxgn:GanttControl.View>
+        </dxgn:GanttControl>
+    </Grid>
+</Window>
+
+

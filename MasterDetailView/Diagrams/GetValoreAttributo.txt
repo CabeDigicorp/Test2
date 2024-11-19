@@ -1,0 +1,14 @@
+﻿
+
+GetValoreAttributo(string, bool deep, bool brief) (MasterDetailModel.Entity)
+----GetValoreAttributo(MasterDetailModel.Entity, string, bool deep, bool brief) (MasterDetailModel.ProjectService)
+----GetValoreAttributo(string, bool deep, bool brief) (MasterDetailModel.TreeEntity)
+----GetValoreAttributo(MasterDetailModel.Entity, string, bool deep, bool brief) (MasterDetailView.EntitiesListMasterDetailView)
+--------CopyClipboardEntities(bool, System.Collections.Generic.IEnumerable<System.Guid>, System.Collections.Generic.IEnumerable<string>) (MasterDetailView.EntitiesListMasterDetailView)
+--------GetAttributoValore(string, bool) (MasterDetailView.EntityView)
+------------EntityAttributoView00 (MasterDetailView.EntityView)
+------------ValueEntityAttributoView00 (MasterDetailView.EntityView)
+------------...
+--------GetValoreAttributo(string, bool, bool) (MasterDetailView.MultiDetailAttributiView)
+----CopyClipboardEntities(bool, System.Collections.Generic.IEnumerable<System.Guid>, System.Collections.Generic.IEnumerable<string>) (MasterDetailView.EntitiesTreeMasterDetailView)
+----SetDetailAttributiView() (MasterDetailView.EntityView)

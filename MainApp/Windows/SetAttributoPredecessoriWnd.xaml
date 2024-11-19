@@ -1,0 +1,109 @@
+﻿<Window x:Class="MainApp.SetAttributoPredecessoriWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF"
+        Title="{lex:Loc Gestione predecessori}" 
+        Height="450" Width="700"
+        MinHeight="450" MinWidth="700">
+
+    <Window.Resources>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyleReadOnly">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="DimGray"/>
+        </Style>
+        <Style TargetType="Button" x:Key="menuButtonStyle1" BasedOn="{StaticResource menuButtonStyle}">
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DetailDataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="{lex:Loc Predecessori}" Grid.Column="0" FontSize="30" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}" Grid.ColumnSpan="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="3" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="{lex:Loc Codice}" Grid.Row="0" Grid.Column="0" Margin="10"/>
+            <TextBlock Text="{Binding Codice}" Grid.Row="0" Grid.Column="1" Margin="10" HorizontalAlignment="Left"/>
+
+            <TextBlock Text="{lex:Loc Descrizione}" Grid.Row="1" Grid.Column="0" Margin="10"/>
+            <TextBlock Text="{Binding Descrizione}" Grid.Row="1" Grid.Column="1" Margin="10"/>
+
+        </Grid>
+       
+        <syncfusion:SfDataGrid Name="PredecessorsGrid" Grid.Row="2" Grid.ColumnSpan="3"
+                                                ItemsSource="{Binding Path=Predecessors}"
+                                                SelectedItem="Predecessor"
+                                                ColumnSizer="None" AllowResizingColumns="True" AllowEditing="True"
+                                                AutoGenerateColumns="False"
+                                                AllowDeleting="True"
+                                                AllowDraggingRows="False" AllowDrop="False" AllowSorting="False" Margin="10">
+            <syncfusion:SfDataGrid.Columns>
+                <syncfusion:GridTextColumn HeaderText="{lex:Loc Codice}" MappingName="Codice" CellStyle="{StaticResource DataGridCellStyleReadOnly}" ColumnSizer="Star" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="{lex:Loc Descrizione}" MappingName="Descrizione" CellStyle="{StaticResource DataGridCellStyleReadOnly}" ColumnSizer="Star" AllowEditing="False"/>
+                <syncfusion:GridTemplateColumn HeaderText="{lex:Loc Tipo}" MappingName="TipoRelazione" CellStyle="{StaticResource DataGridCellStyleReadOnly}">
+                    <syncfusion:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NomeRelazione}" Foreground="{Binding Path=DefinitionNameColor,Converter={StaticResource colorConverter}}" VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </syncfusion:GridTemplateColumn.CellTemplate>
+                    <syncfusion:GridTemplateColumn.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding TipiRelazioni}"
+                                      SelectedItem="{Binding TipoRelazione}"
+                                      IsEditable="False"
+                                      DisplayMemberPath="Value" IsEnabled="True">
+                            </ComboBox>
+                        </DataTemplate>
+                    </syncfusion:GridTemplateColumn.EditTemplate>
+                </syncfusion:GridTemplateColumn>
+                <syncfusion:GridNumericColumn HeaderText="{lex:Loc Ritardo}" MappingName="Ritardo" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star" NumberDecimalDigits="0" />
+                <syncfusion:GridTemplateColumn HeaderText="{lex:Loc Blocca ritardo}" MappingName="IsRitardoBloccato" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="SizeToHeader">
+                    <syncfusion:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding LockCommand}" Content="{Binding IsRitardoBloccato, Converter={StaticResource padLockGlyphConverter}}"
+                                                    Style="{StaticResource smallButtonStyle}"
+                                                    Foreground="{Binding Path=IsValoreLockedByDefaultColor,Converter={StaticResource colorConverter}}" IsEnabled="True"/>
+                        </DataTemplate>
+                    </syncfusion:GridTemplateColumn.CellTemplate>
+                </syncfusion:GridTemplateColumn>
+            </syncfusion:SfDataGrid.Columns>
+        </syncfusion:SfDataGrid>
+        <!--DataGridCellStyle-->
+    </Grid>
+</Window>

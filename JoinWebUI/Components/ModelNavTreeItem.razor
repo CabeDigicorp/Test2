@@ -1,0 +1,378 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.TreeGrid
+@using System.Collections.ObjectModel
+@using System.ComponentModel
+@using JoinWebUI.Utilities
+@using Syncfusion.Blazor.Buttons
+
+@inject IJSRuntime _jsRuntime
+
+@implements IDisposable;
+
+@if (Node != null)
+{
+    <li>
+        <table id=@DocElemId style="width: 100%; max-width: 100%; table-layout: fixed; border:none">
+            <tr style=@RowStyle >
+                <td style="width: 18px; padding-left:2px; padding-right:2px; border:none" >
+                    @if (Node.HasChildren)
+                    {
+                        if (Node.Expanded)
+                        {
+                            <i class="icon-collassa-verticale" onclick=@(() => ToggleExpand())></i>
+                        }
+                        else
+                        {
+                            <i class="icon-espandi-verticale" onclick=@(() => ToggleExpand())></i>
+                        }
+                    }
+                </td>
+                <td @onclick=OnRowClicked style=@NameStyle >
+
+                    @{
+                        string formattedName = IfcCategories.IfcCategoryFormattedNames.ContainsKey(Node.Name) ? IfcCategories.IfcCategoryFormattedNames[Node.Name] : Node.Name;
+                        if (Node.NodeType == ModelNavTreeNodeTypes.GroupByType)
+                        {
+                            <span><b>[@formattedName]</b></span>
+                        }
+                        // else if (!string.IsNullOrEmpty(formattedName))
+                        // {
+                        //     if ((Node.IsIfcSpace && !FragmentsHelper.IfcSpacesShown)
+                        //         || (FragmentsHelper.HasHiddenObjects && FragmentsHelper.HiddenObjects.Contains(Node.ID.ExpressID)))
+                        //     {
+                        //         <span class="color-text-greyed">@formattedName</span>
+                        //     }
+                        //     else
+                        //     {
+                        //         <span>@formattedName</span>
+                        //     }
+                        // }
+                        else
+                        {
+                            string colorClass = "";
+                            if ((Node.IsIfcSpace && !FragmentsHelper.IfcSpacesShown)
+                            || (FragmentsHelper.HasHiddenObjects && FragmentsHelper.HiddenObjects.Contains(Node.ID.ExpressID)))
+                            {
+                                colorClass = _highlighted ? "color-white" : "color-text-greyed";
+                            }
+                            string italicClass="";
+                            if (string.IsNullOrEmpty(formattedName))
+                            {
+                                formattedName = "(nome mancante)";
+                                italicClass = " fst-italic";
+                            }
+
+                            <span class=@(colorClass+italicClass)>@formattedName</span>
+                        }
+                            
+                    }
+                </td>
+                <td @onclick=OnRowClicked style=@NumStyle>
+                    @if (Node.HasChildren)
+                    {
+                        <span><i>(@(Node.Children.Count))</i></span>
+                    }
+                </td>
+                <td style="width:30px; padding-left:2px; padding-right:2px; border:none">
+                    @*@if (Node.IsSelectable(FragmentsHelper.IfcSpacesShown) || Node.HasSelectableChildren(FragmentsHelper.IfcSpacesShown))*@
+                    @if (Node.IsCheckable(FragmentsHelper.IfcSpacesShown))
+                    {
+                        <SfCheckBox TChecked=Boolean Checked=@Node.Checked CheckedChanged=@OnCheckedChanged CssClass="e-smallcheckbox" />
+                    }
+
+                </td>
+@*                 <td style="width:26px; padding-left:2px; padding-right:2px; border:none">
+                    @if (Node.HasSelectableChildren(FragmentsHelper.IfcSpacesShown))
+                    {
+                        <SfButton CssClass="e-btn-blue btn-inline" IconCss="e-icons icon-seleziona-tutto icon-inline" IconPosition=IconPosition.Right OnClick=@((e) => OnSelectSubTree(e)) />
+                    }
+
+                </td> *@
+            </tr>
+        </table>
+        @if (Node.HasChildren && Node.Expanded)
+        {
+            _children.Clear();
+            <ul class="nested" style="list-style-type: none; padding-left: 12px">
+                @foreach (var childNode in Node.Children)
+                {
+                    @* <ModelNavTreeItem @ref=ChildRef IdPrefix=@IdPrefix Node=@childNode FragmentsHelper=@FragmentsHelper OnSelection=@OnSelection OnSubTreeSelection=@OnSubTreeSelection OnDeselection=@OnDeselection /> *@
+                    <ModelNavTreeItem @ref=ChildRef IdPrefix=@IdPrefix Node=@childNode FragmentsHelper=@FragmentsHelper OnSelection=@OnSelection OnDeselection=@OnDeselection />
+                }
+            </ul>
+        }
+        
+</li>
+}
+
+<style type="text/css">
+
+    .width-100 {
+        display: inline-block;
+        width: calc(100% - 70px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .width-40px {
+        display: inline-block;
+        width: 40px;
+    }
+
+    .width-20px {
+        display: inline-block;
+        width: 20px;
+    }
+
+    .btn-inline {
+        height: 22px !important;
+        width: 22px !important;
+        padding: 3px !important;
+        vertical-align:top !important;
+    }
+
+    .icon-inline.e-btn-icon {
+        @* width: 14px !important; *@
+        margin: 0px !important;
+@*         padding-top: 1px !important; *@
+        font-size: 14px !important;
+        vertical-align: top !important;
+    }
+
+    .e-smallcheckbox.e-checkbox-wrapper .e-frame {
+        height: 20px !important;
+        width: 20px !important;
+        padding: 2px 0 !important;
+    }
+</style>
+
+@code {
+
+    [Parameter]
+    public string IdPrefix { get; set; } = string.Empty;
+
+    [Parameter]
+    public Utilities.ModelNavTreeNode Node { get; set; }
+
+    [Parameter]
+    public FragmentsHelper FragmentsHelper { get; set; }
+
+    [Parameter]
+    public EventCallback<(ModelNavTreeNode node, bool RemovePrevious)> OnSelection { get; set; }
+
+    // [Parameter]
+    // public EventCallback<(ModelNavTreeNode Node, bool RemovePrevious)> OnSubTreeSelection { get; set; }
+
+    [Parameter]
+    public EventCallback<ModelNavTreeNode> OnDeselection { get; set; }
+
+    private bool _highlighted;
+    // private bool _shown;
+
+    private List<ModelNavTreeItem> _children = new List<ModelNavTreeItem>();
+    private ModelNavTreeItem ChildRef { set => _children.Add(value); }
+
+
+    private string RowStyle
+    {
+        get
+        {
+            var result = "line-height: 22px !important; font-size: 13px !important; border: none";
+            if (Node != null && _highlighted)
+            {
+                result += "; background-color: var(--bs-join-grey-medium);  color: var(--bs-primary)";
+            }
+            return result;
+        }
+
+    }
+
+    private string NameStyle
+    {
+        get
+        {
+            var result = "width: calc(100% - 148px); padding-left:4px; padding-right:4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border:none";
+            if (Node != null && Node.IsSelectable(FragmentsHelper.IfcSpacesShown)) // && Node.IsFragment)
+            {
+                result += "; cursor: pointer";
+            }
+            return result;
+        }
+
+    }
+
+    private string NumStyle
+    {
+        get
+        {
+            var result = "width: 58px; padding-left:4px; padding-right:4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border:none ";
+            if (Node != null && Node.IsSelectable(FragmentsHelper.IfcSpacesShown)) // && Node.IsFragment)
+            {
+                result += "; cursor: pointer";
+            }
+            return result;
+        }
+
+    }
+
+    private string DocElemId
+    {
+        get
+        {
+            if (Node == null || Node.NodeType == ModelNavTreeNodeTypes.GroupByType)
+                return string.Empty;
+
+            return IdPrefix + "_" + Node.ID.IfcModelKey + "-" + Node.ID.ExpressID;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Node != null)
+        {
+            Node.PropertyChanged -= OnItemPropertyChanged;
+            Node.PropertyChanged += OnItemPropertyChanged;
+        }
+        if (FragmentsHelper != null)
+        {
+            if (Node != null)
+            {
+                _highlighted = FragmentsHelper.SelectedNodes.Contains(Node);
+            }
+            else
+            {
+                _highlighted = false;
+            }
+            // _shown = !_highlighted && FragmentsHelper.ShownExpressIDs.Find(id => id.IfcModelKey == Node.ID.IfcModelKey && id.ExpressID == Node.ID.ExpressID) != null;
+            FragmentsHelper.PropertyChanged -= OnHelperPropertyChanged;
+            FragmentsHelper.PropertyChanged += OnHelperPropertyChanged;
+        }
+        base.OnParametersSet();
+    }
+
+
+    private async void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        await InvokeAsync(StateHasChanged);
+        // if (Highlighted && args.PropertyName == nameof(Utilities.ModelNavTreeNode.Highlighted))
+        // {
+        //     await _jsRuntime.InvokeVoidAsync("scrollToElement", DocElemId);
+        // }
+    }
+
+    private async void OnHelperPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == FragmentsHelper.PropertyNames.Selection || args.PropertyName == FragmentsHelper.PropertyNames.ShownExpressIDs)
+        {
+            // bool invoke = false;
+            bool selected = (FragmentsHelper.SelectedNodes.Contains(Node));
+            if (selected != _highlighted)
+            {
+                _highlighted = selected;
+                await InvokeAsync(StateHasChanged);
+                // invoke = true;
+                // if (Highlighted)1
+                // {
+                //     await _jsRuntime.InvokeVoidAsync("scrollToElement", DocElemId);
+                // }
+            }
+
+            // bool shown = !_highlighted;
+            // shown &= (FragmentsHelper.ShownExpressIDs.Find(id => id.IfcModelKey == Node.ID.IfcModelKey && id.ExpressID == Node.ID.ExpressID) != null);
+            // if (shown != _shown)
+            // {
+            //     _shown = shown;
+            //     invoke = true;
+            //     // if (Highlighted)
+            //     // {
+            //     //     await _jsRuntime.InvokeVoidAsync("scrollToElement", DocElemId);
+            //     // }
+            // }
+
+            // if (invoke) await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void ToggleExpand()
+    {
+        Node!.Expanded = !Node.Expanded;
+    }
+
+    private async void OnRowClicked(MouseEventArgs e)
+    {
+        if (e.Button == 0 && Node != null && Node.IsSelectable(FragmentsHelper.IfcSpacesShown)) // && Node.IsFragment)
+        {
+            if (_highlighted && e.CtrlKey)
+            {
+                await OnDeselect();
+            }
+            else 
+            {
+                await OnSelect(e, _highlighted || !e.CtrlKey);
+            }
+        }
+    }
+
+    private async Task OnCheckedChanged(bool newValue)
+    {
+        Node.Checked = newValue;
+        if (Node.IsSelectable(FragmentsHelper.IfcSpacesShown))
+        {
+            if (newValue)
+            {
+                await OnSelect(null, false);
+            }
+            else
+            {
+                await OnDeselect();
+            }
+        }
+    }
+
+    private async Task OnSelect(MouseEventArgs? e, bool removePrevious)
+    {
+
+        if (OnSelection.HasDelegate && Node != null) //&& Node.IsSelectable)
+        {
+            await OnSelection.InvokeAsync((Node, removePrevious));
+        }
+    }
+
+
+    // private async Task OnSelectSubTree(MouseEventArgs e)
+    // {
+    //     if (OnSubTreeSelection.HasDelegate && Node != null)
+    //     {
+    //         await OnSubTreeSelection.InvokeAsync((Node, true));
+    //     }
+    // }
+
+    private async Task OnDeselect()
+    {
+        if (OnDeselection.HasDelegate && Node != null && _highlighted)
+        {
+            await OnDeselection.InvokeAsync(Node);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (Node != null)
+        {
+            Node.PropertyChanged -= OnItemPropertyChanged;
+        }
+        if (FragmentsHelper != null)
+        {
+            FragmentsHelper.PropertyChanged -= OnHelperPropertyChanged;
+        }
+    }
+
+    ~ModelNavTreeItem()
+    {
+        Dispose();
+    }
+
+
+}

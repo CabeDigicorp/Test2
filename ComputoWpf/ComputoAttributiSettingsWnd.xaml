@@ -1,0 +1,354 @@
+﻿<Window x:Class="ComputoWpf.ComputoAttributiSettingsWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComputoWpf"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"		
+        xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+        xmlns:masterdetailview="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+        mc:Ignorable="d"
+        Title="{lex:Loc GestioneAttributiComputo}" Height="800" Width="1200" MinHeight="300" MinWidth="450"
+        DataContext="{StaticResource ComputoAttributiSettingsViewKey}"
+        >
+    <Window.Resources>
+        <masterdetailview:AttributoSettingsTemplateSelector x:Key="AttributoSettingsTemplateSelector" />
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyleReadOnly">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="DimGray"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DetailDataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="PrivateDataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="{StaticResource AdvancedModeColor}"/>
+        </Style>
+
+    </Window.Resources>
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!--<RowDefinition Height="50"/>-->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Name="MessageBar" Style="{StaticResource messageBarStyle}" Grid.Row="0" Height="25" Visibility="{Binding MessageBarView.IsVisible, Converter={StaticResource VisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Text="{Binding MessageBarView.Text}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                <Button Content="{lex:Loc Ok}" Command="{Binding MessageBarView.OkCommand}" Visibility="{Binding MessageBarView.IsOkButtonVisible, Converter={StaticResource VisibilityConverter}}"  VerticalAlignment="Center" Width="50"/>
+            </StackPanel>
+            <ProgressBar Grid.Row="1" Minimum="0" Maximum="100" Value="{Binding MessageBarView.ProgressValue}"  BorderThickness="0" Foreground="Sienna" Background="Transparent" IsIndeterminate="False" Visibility="{Binding MessageBarView.IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}"/>
+        </Grid>
+        <Grid Grid.Row="1" IsEnabled="{Binding MessageBarView.IsVisible, Converter={StaticResource InverseConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{lex:Loc AttributiComputo}" Grid.Row="0" FontSize="30" Margin="5,0,0,0" Foreground="{StaticResource TitleColor}"/>
+            <TabControl Name="AttributiSettingsTabCtrl" Grid.Row="1" Margin="5,10,5,5"  BorderThickness="0" FontSize="20" SelectionChanged="AttributiSettingsTabCtrl_SelectionChanged">
+                <TabItem Name="AttributiSettingsTabItem" IsSelected="{Binding IsSelected}" Header="{lex:Loc Definizione}" Style="{StaticResource tabItemStyle}">
+                    <Grid Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="100"/>
+                            <ColumnDefinition Width="3"/>
+                            <ColumnDefinition Width="300" MinWidth="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" Name="MasterAttributiGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,3,0,3">
+                                <Button Command="{Binding AddAttributoCommand}" Style="{StaticResource menuButtonExtStyle}" Margin="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;"/>
+                                        <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Name="AddAttributoChild" Command="{Binding AddAttributoChildCommand}" Style="{StaticResource menuButtonExtStyle}" Margin="0" Visibility="{Binding IsAddAttributoChildEnabled, Converter={StaticResource VisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02e;"/>
+                                        <TextBlock Text="{lex:Loc AggiungiARiferimento}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding RemoveAttributoCommand}" Style="{StaticResource menuButtonExtStyle}" Margin="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe03a;"/>
+                                        <TextBlock Text="{lex:Loc Elimina}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <syncfusion:SfDataGrid Name="AttributiSettingsGrid" Grid.Row="2" ItemsSource="{Binding Path=AttributiFirstLevelItems}"
+                                               ColumnSizer="None" AllowResizingColumns="True" AllowEditing="True"
+                                               CurrentItem="{Binding CurrentAttributoSettings, Mode=TwoWay}"
+                                               CurrentCellActivated="AttributiSettingsGrid_CurrentCellActivated"
+                                               AutoGenerateColumns="False"
+                                               AllowDraggingRows="False" AllowDrop="False" AllowSorting="False"
+                                               HideEmptyGridViewDefinition="True"
+                                               >
+                                <!---->
+                                <!--<syncfusion:SfDataGrid.GroupColumnDescriptions>
+                                    <syncfusion:GroupColumnDescription ColumnName="GroupName"/>
+                                </syncfusion:SfDataGrid.GroupColumnDescriptions>-->
+                                <syncfusion:SfDataGrid.Columns>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Gruppo}" MappingName="GroupName" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Auto"/>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Nome}" MappingName="Etichetta" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Auto"/>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Codice}" MappingName="Codice" IsReadOnly="True" CellStyle="{StaticResource PrivateDataGridCellStyle}"/>
+                                    <syncfusion:GridTemplateColumn x:Name="DefinitionComboBoxColumn" HeaderText="{lex:Loc Definizione}" MappingName="DefinitionName" CellStyle="{StaticResource DataGridCellStyle}">
+                                        <syncfusion:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DefinitionName}" Foreground="{Binding Path=DefinitionNameColor,Converter={StaticResource colorConverter}}" VerticalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.CellTemplate>
+                                        <syncfusion:GridTemplateColumn.EditTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding DefinizioniAttributoLoc, Source={StaticResource ComputoAttributiSettingsViewKey}}"
+                                                                            Text="{Binding DefinitionName}"
+                                                                            IsReadOnly="True" IsEditable="True" IsEnabled="{Binding IsNew}"
+                                                                            IsDropDownOpen="{Binding IsNew, Mode=OneWay}"
+                                                                            />
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.EditTemplate>
+                                    </syncfusion:GridTemplateColumn>
+                                    <syncfusion:GridTemplateColumn HeaderText="{lex:Loc Sezione}" MappingName="EntityTypeName" CellStyle="{StaticResource DataGridCellStyle}">
+                                        <syncfusion:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding EntityTypeName}" Foreground="{Binding Path=EntityTypeNameColor,Converter={StaticResource colorConverter}}" VerticalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.CellTemplate>
+                                        <syncfusion:GridTemplateColumn.EditTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding EntityTypesNameLoc, Source={StaticResource ComputoAttributiSettingsViewKey}}"
+                                                      SelectedIndex="{Binding EntityTypeIndex, Mode=TwoWay}"
+                                                      Text="{Binding EntityTypeName}"
+                                                      IsReadOnly="True" IsEditable="True" IsEnabled="{Binding IsEntityTypeNameEnabled}"
+                                                      IsDropDownOpen="{Binding IsEntityTypeNameEnabled, Mode=OneWay}"
+                                                      >
+                                                    <ComboBox.GroupStyle>
+                                                        <GroupStyle>
+                                                            <GroupStyle.HeaderTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Name}"/>
+                                                                </DataTemplate>
+                                                            </GroupStyle.HeaderTemplate>
+                                                        </GroupStyle>
+                                                    </ComboBox.GroupStyle>
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Name}"/>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.EditTemplate>
+                                    </syncfusion:GridTemplateColumn>
+                                    <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc Visibile}" MappingName="IsVisible" ColumnSizer="SizeToHeader" CellStyle="{StaticResource DataGridCellStyle}"/>
+                                    <syncfusion:GridTemplateColumn HeaderText="{lex:Loc DefaultBloccato}" MappingName="IsValoreLockedByDefault" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="SizeToHeader">
+                                        <syncfusion:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding LockCommand}" Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                                                        Style="{StaticResource smallButtonStyle}"
+                                                        Foreground="{Binding Path=IsValoreLockedByDefaultColor,Converter={StaticResource colorConverter}}"/>
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.CellTemplate>
+                                    </syncfusion:GridTemplateColumn>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Default}" MappingName="ValoreDefaultPlain" CellStyle="{StaticResource DataGridCellStyleReadOnly}" ColumnSizer="AutoWithLastColumnFill"/>
+                                </syncfusion:SfDataGrid.Columns>
+
+                                <syncfusion:SfDataGrid.DetailsViewDefinition>
+                                    <syncfusion:GridViewDefinition RelationalColumn="AttributoRiferimentoItems">
+                                        <syncfusion:GridViewDefinition.DataGrid>
+                                            <syncfusion:DetailsViewDataGrid x:Name="AttributiRiferimentoGrid"
+                                                                   ColumnSizer="Star" AllowResizingColumns="True" AllowEditing="True"
+                                                                   SelectionChanged="AttributoRiferimentoGrid_SelectionChanged"
+                                                                   AutoGenerateColumns="False"
+                                                                   AllowDraggingRows="False" AllowDrop="False" AllowSorting="False"
+                                                                   CellStyle="{StaticResource DetailDataGridCellStyle}"
+                                                                   BorderThickness="3" BorderBrush="Black"
+                                                                   >
+                                                <syncfusion:SfDataGrid.Columns>
+                                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Gruppo}" MappingName="GroupName"/>
+                                                    <syncfusion:GridTemplateColumn x:Name="AttributoRiferitoComboBoxColumn" HeaderText="{lex:Loc AttributoRiferito}" MappingName="AttributoRiferitoName">
+                                                        <syncfusion:GridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding NomeAttributo}" Foreground="{Binding Path=DefinitionNameColor,Converter={StaticResource colorConverter}}" VerticalAlignment="Center"/>
+                                                            </DataTemplate>
+                                                        </syncfusion:GridTemplateColumn.CellTemplate>
+                                                        <syncfusion:GridTemplateColumn.EditTemplate>
+                                                            <DataTemplate>
+                                                                <ComboBox ItemsSource="{Binding Attributi}"
+                                                                            Text="{Binding NomeAttributo}"
+                                                                            IsReadOnly="True" IsEditable="True" IsEnabled="{Binding IsNew}"
+                                                                            IsDropDownOpen="{Binding IsNew, Mode=OneWay}"
+                                                                            />
+                                                            </DataTemplate>
+                                                        </syncfusion:GridTemplateColumn.EditTemplate>
+                                                    </syncfusion:GridTemplateColumn>
+                                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Nome}" MappingName="Etichetta"/>
+                                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Codice}" MappingName="Codice" IsHidden="True" IsReadOnly="True" CellStyle="{StaticResource PrivateDataGridCellStyle}"/>
+                                                    <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc Visibile}" MappingName="IsVisible" ColumnSizer="SizeToHeader"/>
+                                                </syncfusion:SfDataGrid.Columns>
+                                                <syncfusion:SfDataGrid.RecordContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxMenuItemHeader}"
+                                                                    Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxCommand}">
+                                                            <MenuItem.Icon>
+                                                                <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" FontSize="13"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </syncfusion:SfDataGrid.RecordContextMenu>
+                                            </syncfusion:DetailsViewDataGrid>
+                                        </syncfusion:GridViewDefinition.DataGrid>
+                                    </syncfusion:GridViewDefinition>
+                                </syncfusion:SfDataGrid.DetailsViewDefinition>
+                                <syncfusion:SfDataGrid.RecordContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxMenuItemHeader}"
+                                                                    Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxCommand}">
+                                            <MenuItem.Icon>
+                                                <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" FontSize="13"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                               </syncfusion:SfDataGrid.RecordContextMenu>
+                            </syncfusion:SfDataGrid>
+                        </Grid>
+                        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+                        <Grid Name="DetailAttributiCtrl" Grid.Column="2" Margin="3,0,3,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="" Grid.Row="0"/>
+                            <ContentControl Grid.Row="1" Name="DetailCtrl" Content="{Binding CurrentAttributoSettings, Mode=TwoWay}"
+                                        ContentTemplateSelector="{StaticResource AttributoSettingsTemplateSelector}"
+                                        IsEnabled="True" 
+                                        />
+                        </Grid>
+                        </Grid>
+
+                </TabItem>
+                <TabItem  Name="OrdinamentoSettingsTabItem" Header="{lex:Loc Ordinamento}" Style="{StaticResource tabItemStyle}">
+                    <Grid Grid.Column="0" Name="OrdinamentoGrid" Margin="10,0,0,0">
+                        <Grid.RowDefinitions>
+                            <!--<RowDefinition Height="30"/>-->
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <!--<StackPanel Grid.Row="0" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,3,0,3">
+                            <Button Command="{Binding AddRiferimentoCommand}" Style="{StaticResource menuButtonStyle1}" Margin="0" IsEnabled="True">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;"/>
+                                    <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RemoveRiferimentoCommand}" Style="{StaticResource menuButtonStyle1}" Margin="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe03a;"/>
+                                    <TextBlock Text="{lex:Loc Elimina}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>-->
+                        <syncfusion:SfDataGrid Name="OrdinamentoSettingsGrid" Grid.Row="2" ItemsSource="{Binding Path=AttributiItems}"
+                                               ColumnSizer="Star" AllowResizingColumns="True" AllowEditing="False"
+                                               CurrentItem="{Binding CurrentAttributoSettings, Mode=TwoWay}"
+                                               SelectionUnit="Row" SelectionMode="Single"
+                                               AutoGenerateColumns="False"
+                                               AllowDraggingRows="True" AllowDrop="True" AllowSorting="False"
+                                               Width="500" HorizontalAlignment="Left"
+                                               >
+<!--CurrentItem="{Binding CurrentAttOrdinamentoSettings, Mode=TwoWay}"-->
+                            <syncfusion:SfDataGrid.Columns>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Gruppo}" MappingName="GroupName" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Nome}" MappingName="Etichetta" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                            </syncfusion:SfDataGrid.Columns>
+                        </syncfusion:SfDataGrid>
+                    </Grid>
+                </TabItem>
+                <!--<TabItem  Name="RiferimentiSettingsTabItem" Header="{lex:Loc Riferimenti}" Style="{StaticResource tabItemStyle}">
+                    <Grid Grid.Column="0" Name="OrdinamentoGrid" Margin="10,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,3,0,3">
+                            <Button Command="{Binding AddRiferimentoCommand}" Style="{StaticResource menuButtonStyle1}" Margin="0" IsEnabled="True">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;"/>
+                                    <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RemoveRiferimentoCommand}" Style="{StaticResource menuButtonStyle1}" Margin="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe03a;"/>
+                                    <TextBlock Text="{lex:Loc Elimina}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <syncfusion:SfDataGrid Name="RiferimentiSettingsGrid" Grid.Row="2" ItemsSource="{Binding Path=RiferimentiItems}"
+                                               ColumnSizer="Star" AllowResizingColumns="True" AllowEditing="True"
+                                               CurrentItem="{Binding CurrentRiferimentoSettings, Mode=TwoWay}"
+                                               AutoGenerateColumns="False"
+                                               AllowSorting="False"
+                                               >
+
+                            <syncfusion:SfDataGrid.Columns>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Nome}" MappingName="Etichetta" CellStyle="{StaticResource DataGridCellStyle}"/>
+                                <syncfusion:GridTemplateColumn HeaderText="{lex:Loc Sezione}" MappingName="EntityTypeName">
+                                    <syncfusion:GridTemplateColumn.CellStyle>
+                                        <Style TargetType="syncfusionGrid:GridCell" BasedOn="{StaticResource DataGridCellStyle}">
+                                            <Setter Property="Foreground" Value="{Binding Path=EntityTypeNameColor,Converter={StaticResource colorConverter}}"/>
+                                        </Style>
+                                    </syncfusion:GridTemplateColumn.CellStyle>
+                                    <syncfusion:GridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding EntityTypeName}" />
+                                        </DataTemplate>
+                                    </syncfusion:GridTemplateColumn.CellTemplate>
+                                    <syncfusion:GridTemplateColumn.EditTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding EntityTypesNameLoc, Source={StaticResource ComputoAttributiSettingsViewKey}}"
+                                                      SelectedIndex="{Binding EntityTypeIndex, Mode=TwoWay}"
+                                                      Text="{Binding EntityTypeName}"
+                                                      IsReadOnly="True" IsEditable="True" IsEnabled="{Binding IsEnabled}"
+                                                      IsDropDownOpen="{Binding IsEnabled, Mode=OneWay}"
+                                                      >
+                                                <ComboBox.GroupStyle>
+                                                    <GroupStyle>
+                                                        <GroupStyle.HeaderTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Name}"/>
+                                                            </DataTemplate>
+                                                        </GroupStyle.HeaderTemplate>
+                                                    </GroupStyle>
+                                                </ComboBox.GroupStyle>
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </syncfusion:GridTemplateColumn.EditTemplate>
+                                </syncfusion:GridTemplateColumn>
+                            </syncfusion:SfDataGrid.Columns>
+                        </syncfusion:SfDataGrid>
+                    </Grid>
+                </TabItem>-->
+            </TabControl>
+            <Button x:Name="AcceptButton" Style="{StaticResource acceptButtonStyle}" Grid.Row="0"
+                    Click="AcceptButton_Click" Width="100" Height="40" Margin="2,0,0,0"
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Content="&#xe086;"
+                    IsEnabled="{Binding IsAcceptButtonEnabled}"/>
+        </Grid>
+    </Grid>
+</Window>

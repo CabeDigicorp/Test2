@@ -1,0 +1,80 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DigiCorp.Commons</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Configurations>Debug;Release;Release NoObfuscator</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\Output\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>..\Output\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release NoObfuscator|AnyCPU'">
+    <DebugType>none</DebugType>
+    <OutputPath>..\Output\Release NoObfuscator\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release NoObfuscation|AnyCPU'">
+    <OutputPath>bin\Release NoObfuscation\</OutputPath>
+    <Optimize>true</Optimize>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_ale|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Output\Debug_ale\</OutputPath>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonResources\CommonResources.csproj" />
+    <ProjectReference Include="..\nrtftree\nrtftree-library.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Wpf.RichEdit" Version="24.1.3" />
+    <PackageReference Include="Log4NetCoreEx" Version="1.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Syncfusion.DocIO.Wpf" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfRichTextBoxAdv.WPF" Version="27.1.55" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="RtfHelpers_telerik.cs" />
+    <Compile Remove="SfRichTextBoxAdvExtension.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\DayJsonConverter.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\EasterMonday.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\EasterSunday.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\HoliDay.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\ThanksgivingDay.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\WorkingDateTimeExtension.cs" />
+    <Compile Remove="WorkingDaysAndTimeUtility\WorkingDaysConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="CryptoLicense\LogicNP.CryptoLicensing.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="LogicNP.CryptoLicensing">
+      <HintPath>..\References\LogicNP\LogicNP.CryptoLicensing.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 2021.4</PostBuildEvent>
+  </PropertyGroup>
+</Project>

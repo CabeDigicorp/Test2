@@ -1,0 +1,539 @@
+﻿<ResourceDictionary x:Class="MasterDetailView.AttributoSettingsCtrl"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:lex="http://wpflocalizeextension.codeplex.com"
+                    xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+                    xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:mvvmlight="http://www.galasoft.ch/mvvmlight"
+                    xmlns:masterdetailwpf="clr-namespace:MasterDetailWpf" 
+                    xmlns:ExtendedWPFToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                    >
+    
+    <DataTemplate x:Key="templateAttributoSettingsTesto">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+            <commons:VisibilityConverter x:Key="VisibilityConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+        </DataTemplate.Resources>
+        <Grid Visibility="{Binding HasDetailSettings, Converter={StaticResource VisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{lex:Loc ValoreDiDefault}" Grid.Row="0" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+            <Grid Grid.Row="1" Margin="20,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding ValoreDefault, Mode=TwoWay}" Grid.Column="0" FontSize="15" IsReadOnly="{Binding IsValoreLockedByDefault}" />
+                <Button Grid.Column="1" FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+            </Grid>
+            <CheckBox Grid.Row="2" Content="{lex:Loc UseDeepValore}" IsChecked="{Binding UseDeepValore}" FontSize="15" Margin="20,10,0,0" VerticalContentAlignment="Center"
+                      Visibility="{Binding IsUseDeepValoreVisible, Converter={StaticResource VisibilityConverter}}"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsData">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{lex:Loc ValoreDiDefault}" Grid.Row="0" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+            <Grid Grid.Row="1" Margin="20,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <!--<ExtendedWPFToolkit:DateTimePicker Value="{Binding ValoreDefault, Mode=TwoWay}" Grid.Row="1" FontSize="13" Height="24"
+                                                   TimePickerVisibility="{Binding TimePickerVisibility}" Format="Custom" FormatString="{Binding ValoreUserFormat}"/>-->
+                <dxe:DateEdit DateTime="{Binding ValoreDefault, Mode=TwoWay}" Grid.Row="1" FontSize="13" Height="24"
+                                                 Mask="{Binding Mask}" DisplayFormatString="{Binding ValoreUserFormat}"
+                                                 dx:ThemeManager.Theme="Office2019Colorful" ShowClearButton="False"
+                                                 >
+                    <dxe:DateEdit.StyleSettings>
+                        <dxe:DateEditNavigatorWithTimePickerStyleSettings GlyphKind="Arrow" />
+                    </dxe:DateEdit.StyleSettings>
+                </dxe:DateEdit>
+                <Button Grid.Column="1" FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+            </Grid>
+            <TextBlock Text="{lex:Loc Formato}" Grid.Row="2" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+            <TextBox Name="FormatTextBox" Grid.Row="3" Text="{Binding ValoreUserFormat, Mode=OneWay}" Margin="20,0,0,0" IsReadOnly="True" Foreground="Gray"/>
+            <TextBlock Text="{Binding FormattedExample}" Grid.Row="4" Foreground="DimGray" FontSize="12" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+            <ListView Name="DateFormatsList"  Grid.Row="5" ItemsSource="{Binding DateFomats}" SelectedIndex="{Binding CurrentFormatIndex}" Margin="20,0,0,0"
+                  Panel.ZIndex="0" SelectionMode="Single">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+            
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsTestoRtf">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{lex:Loc ValoreDiDefault}" Grid.Row="0" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+            <Grid Grid.Row="1" Margin="20,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" FontSize="15" 
+                        Content="{lex:Loc Imposta Rtf}"
+                        Command="{Binding SetDefaultRtfCommand}"/>
+                <Button Grid.Column="1" FontSize="15" 
+                        IsEnabled="{Binding IsResetEnabled}"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="R"
+                        ToolTip="{lex:Loc Reset default}"
+                        Command="{Binding ResetDefaultRtfCommand}"
+                        /><!---->
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsReale">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+            <commons:InverseConverter x:Key="InverseConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+        </DataTemplate.Resources>
+        <Grid Name="AttributoSettingsRealeGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding ValoreDefault, Mode=TwoWay}" Grid.Row="1" FontSize="15" IsReadOnly="{Binding IsValoreLockedByDefault}"/>
+                    <Button Grid.Column="1" FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Row="1" Visibility="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseVisibilityConverter}}">
+                <TextBlock Text="{lex:Loc OperazioneDiRaggruppamento}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox SelectedIndex="{Binding GridGroupOperationIndex}" ItemsSource="{Binding GroupOperations}" FontSize="15" Margin="20,0,0,0"
+                      IsEnabled="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <TextBlock Text="{lex:Loc Formato}" Grid.Row="2" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+            <CheckBox Content="{lex:Loc UsaCifreSignificativeDelFormato}" Grid.Row="3" IsChecked="{Binding UseSignificantDigitsByFormat}" FontSize="15" Margin="20,10,0,0" Visibility="Visible"/>
+            <TextBox Name="FormatTextBox" Grid.Row="4" Text="{Binding ValoreUserFormat, Mode=OneWay}" Margin="20,0,0,0" IsReadOnly="True" Foreground="Gray"/>
+            <TextBlock Text="{Binding FormattedExample}" Grid.Row="5" Foreground="DimGray" FontSize="12" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+            <masterdetailwpf:NumericFormatCtrl x:Name="FormatNumeroCtrl" IsSingleSelection="False" Format="{Binding ElementName=AttributoSettingsRealeGrid, Path=DataContext.ValoreFormat, Mode=TwoWay}"
+                                          IsCurrency="False" Grid.Row="6" Margin="20,0,0,0"/>
+                
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsContabilita">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+            <commons:InverseConverter x:Key="InverseConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+        </DataTemplate.Resources>
+        <Grid Name="AttributoSettingsContabilitaGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding ValoreDefault, Mode=TwoWay}" Grid.Column="0" FontSize="15" IsReadOnly="{Binding IsValoreLockedByDefault}"/>
+                    <Button FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}" Grid.Column="1"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel >
+            <StackPanel Orientation="Vertical" Grid.Row="1" Visibility="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseVisibilityConverter}}">
+                <TextBlock Text="{lex:Loc OperazioneDiRaggruppamento}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox SelectedIndex="{Binding GridGroupOperationIndex}" ItemsSource="{Binding GroupOperations}" FontSize="15" Margin="20,0,0,0"
+                      IsEnabled="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <TextBlock Text="{lex:Loc Formato}" Grid.Row="2" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+            <CheckBox Content="{lex:Loc UsaCifreSignificativeDelFormato}" Grid.Row="3" IsChecked="{Binding UseSignificantDigitsByFormat}" FontSize="15" Margin="20,10,0,0" Visibility="Visible"/>
+            <TextBox Name="FormatTextBox" Grid.Row="4" Text="{Binding ValoreUserFormat, Mode=OneWay}" Margin="20,0,0,0" IsReadOnly="True" Foreground="Gray"/>
+            <TextBlock Text="{Binding FormattedExample}" Grid.Row="5" Foreground="DimGray" FontSize="12" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+            <masterdetailwpf:NumericFormatCtrl x:Name="FormatNumeroCtrl" IsSingleSelection="False" Format="{Binding ElementName=AttributoSettingsContabilitaGrid, Path=DataContext.ValoreFormat, Mode=TwoWay}"
+                                          IsCurrency="True"  Grid.Row="6" Margin="20,0,0,0"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsGuidRiferimento">
+        <DataTemplate.Resources>
+            <commons:InverseConverter x:Key="InverseConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0" Visibility="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseVisibilityConverter}}">
+                <TextBlock Text="{lex:Loc OperazioneDiRaggruppamento}" Grid.Row="0" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox Grid.Row="1" SelectedIndex="{Binding GridGroupOperationIndex}" ItemsSource="{Binding GroupOperations}" FontSize="15" Margin="20,0,0,0"
+                      IsEnabled="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsGuid">
+        <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ItemPath}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <TextBox Text="{Binding ItemPath}" FontSize="15" Margin="20,0,0,0"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsTestoCollection">
+        <Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsGuidCollection">
+        <DataTemplate.Resources>
+            <commons:InverseConverter x:Key="InverseConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0" Visibility="{Binding IsByCode, Converter={StaticResource InverseVisibilityConverter}}">
+                <TextBlock Text="{lex:Loc Selezione voci}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox SelectedIndex="{Binding ItemsSelectionTypesIndex}" ItemsSource="{Binding ItemsSelectionTypes}" FontSize="15" Margin="20,0,0,0"
+                          IsEnabled="{Binding IsItemsSelectionTypesReadOnly}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Nome}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Row="1">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="{lex:Loc _Condizione}" FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}"
+                        Command="{Binding ValoreDefaultCommand}"
+                        />
+                    <Button Grid.Column="1" FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsElenco">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!--<ComboBox ItemsSource="{Binding ElencoItems}" Text="{Binding ValoreDefault, Mode=TwoWay}" DisplayMemberPath="Name" Grid.Column="0" FontSize="15" IsReadOnly="{Binding IsValoreLockedByDefault}"/>-->
+                    <syncfusion:ComboBoxAdv ItemsSource="{Binding ElencoItems}" DisplayMemberPath="Name" FontSize="15" IsReadOnly="{Binding IsValoreLockedByDefault}"
+                      SelectedValueDelimiter="{Binding Delimiter}" SelectedItems="{Binding SelectedItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                      SelectedItem="{Binding SelectedItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AllowMultiSelect="{Binding IsMultiSelection}"/>
+                    <Button FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}" Grid.Column="1"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel >
+            <CheckBox IsChecked="{Binding IsMultiSelection}" Content="{lex:Loc Multiselezione}" FontSize="15" VerticalContentAlignment="Center" Grid.Row="1" Margin="0,10,0,0" Visibility="Collapsed"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{lex:Loc Elenco}" FontSize="15" Foreground="DimGray" Margin="0,10,0,5" Grid.Row="0"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="20,2,2,2">
+                    <Button  Command="{Binding AddElencoItemCommand}"
+                        Height="22" Width="Auto"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource menuButtonStyle}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;" FontSize="20"/>
+                            <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center" FontSize="16"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <commons:SfDataGridExt x:Name="ElencoGrid" ItemsSource="{Binding ElencoItems}" Grid.Row="2"
+                                   AllowDeleting="True" AllowEditing="True"
+                                   ColumnSizer="Star" AllowDraggingRows="True" AllowDrop="True"
+                                   Margin="20,0,0,0" HeaderRowHeight="0" CellStyle="{StaticResource cellStyle}"
+                                       
+                                   >
+                    <syncfusion:SfDataGrid.Columns>
+                        <syncfusion:GridTextColumn MappingName="Name" HeaderText="{lex:Loc Elenco}"/>
+                    </syncfusion:SfDataGrid.Columns>
+                </commons:SfDataGridExt>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="templateAttributoSettingsColore">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox ItemsSource="{Binding ColoreItems}" Text="{Binding ValoreDefault, Mode=TwoWay}" DisplayMemberPath="Name" FontSize="12" Grid.Column="0" IsReadOnly="{Binding IsValoreLockedByDefault}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="1,1,1,1">
+                                    <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                                    <TextBlock Width="130" Text="{Binding Name}"/>
+                                    <TextBlock Width="70" Text="{Binding HexValue}" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}" Grid.Column="1"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateAttributoSettingsBooleano">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox IsChecked="{Binding ValoreDefault, Mode=TwoWay}" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <Button FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}" Grid.Column="1"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateAttributoSettingsFormatoNumero">
+        <DataTemplate.Resources>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc ValoreDiDefault}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <Grid Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox ItemsSource="{Binding FormatoNumeroItems}" Text="{Binding ValoreDefault, Mode=TwoWay}" DisplayMemberPath="Format"
+                              Grid.Column="0" FontSize="15" IsReadOnly="{Binding IsValoreLockedByDefault}"/>
+                    <Button FontSize="15" IsEnabled="{Binding IsIsValoreLockedByDefaultEditable}" Grid.Column="1"
+                        Style="{StaticResource smallButtonStyle}"
+                        Content="{Binding IsValoreLockedByDefault, Converter={StaticResource padLockGlyphConverter}}"
+                        Command="{Binding LockCommand}"
+                        />
+                </Grid>
+            </StackPanel >
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{lex:Loc Elenco}" FontSize="15" Foreground="DimGray" Margin="0,10,0,5" Grid.Row="0"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="20,2,2,2">
+                    <Button  Command="{Binding AddFormatoNumeroCommand}"
+                        Height="22" Width="Auto"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource menuButtonStyle}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;" FontSize="20"/>
+                            <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center" FontSize="16"/>
+                        </StackPanel>
+                    </Button>
+                    <Button  Command="{Binding EditFormatoNumeroCommand}"
+                        Height="22"  Width="Auto" FontSize="15"
+                        VerticalAlignment="Center" IsEnabled="{Binding IsAnyCurrentFormatoNumero}"
+                        Style="{StaticResource menuButtonStyle}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe040;"/>
+                            <TextBlock Text="{lex:Loc Modifica}" VerticalAlignment="Center" FontSize="16"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <commons:SfDataGridExt x:Name="UnitaMisuraGrid" ItemsSource="{Binding FormatoNumeroItems}" Grid.Row="2"
+                                   AllowDeleting="True" AllowEditing="True"
+                                   ColumnSizer="Star" AllowDraggingRows="True" AllowDrop="True"
+                                   Margin="20,0,0,0" HeaderRowHeight="0" CellStyle="{StaticResource cellStyle}"
+                                   AutoGenerateColumns="False"
+                                   CurrentItem="{Binding CurrentFormatoNumero, Mode=TwoWay}"
+                                   >
+                    <syncfusion:SfDataGrid.Columns>
+                        <!--<syncfusion:GridTextColumn MappingName="Name"/>-->
+                        <syncfusion:GridTextColumn MappingName="UserFormat" AllowEditing="False"
+                                                   />
+                    </syncfusion:SfDataGrid.Columns>
+                </commons:SfDataGridExt>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsGuidCollectionRiferimento">
+        <DataTemplate.Resources>
+            <commons:InverseConverter x:Key="InverseConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc OperazioneTraVoci}" Grid.Row="0" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox Grid.Row="1" SelectedIndex="{Binding GuidCollectionOperationIndex}" ItemsSource="{Binding GuidCollectionOperations}" FontSize="15" Margin="20,0,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Row="1" Visibility="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseVisibilityConverter}}">
+                <TextBlock Text="{lex:Loc OperazioneDiRaggruppamento}" Grid.Row="0" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox Grid.Row="1" SelectedIndex="{Binding GridGroupOperationIndex}" ItemsSource="{Binding GroupOperations}" FontSize="15" Margin="20,0,0,0"
+                      IsEnabled="{Binding IsGridGroupOperationReadOnly, Converter={StaticResource InverseConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateAttributoSettingsVariabile">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <TextBlock Text="{lex:Loc Variabile}" FontSize="15" Margin="0,10,0,5" Foreground="DimGray"/>
+                <ComboBox SelectedIndex="{Binding VariabiliItemsIndex}" ItemsSource="{Binding VariabiliItems}" FontSize="15" Margin="20,0,0,0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Nome}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>
+    <!--Text="{Binding NomeAttributo, Mode=TwoWay}"-->
+    

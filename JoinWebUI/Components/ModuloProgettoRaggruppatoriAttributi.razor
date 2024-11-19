@@ -1,0 +1,1059 @@
+﻿@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Layouts
+@using System.Collections.Specialized
+@using Syncfusion.Blazor.Popups
+@using System.Text;
+@using RtfPipe;
+@using BracketPipe;
+@using Blazored.LocalStorage;
+
+@inject JoinWebApiClient _apiClient
+@inject NavigationManager _navigation
+@inject ILocalStorageService LocalStorage
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject Log Log
+
+<div class="allgroupercontainer">
+    @if (_isGroupersLoaded)
+    {
+        <div class="maingroupercontainer">
+            <SfSplitter Height="100%" Width="100%">
+                <SplitterPanes>
+                    <SplitterPane Min="20%" Max="80%" Size="50%">
+                        <ContentTemplate>
+                            <div class="accordion-left">
+                                <SfAccordion ID="accordion"
+                                             @ref="_accordionLeft"
+                                             Height="100%"
+                                             Width="100%"
+                                             class="e-grouper-accordion"
+                                             ExpandedIndices=AccordionLeftExpandedIndexes
+                                             ExpandMode="ExpandMode.Multiple"
+                                             EnablePersistence=true
+                                             ExpandedIndicesChanged="OnAccordionExpandedCollapsed"
+                                             LoadOnDemand=false>
+                                    <AccordionItems>
+                                        @foreach (AttributoRaggruppatoreDto group in _dataFromInput)
+                                        {
+                                            <AccordionItem>
+                                                <HeaderTemplate>
+                                                    <div class="nodeFatherText">
+                                                        <span class="headername">@(group.ValoreEtichetta)</span>
+                                                        @if (group.SottoGruppo != null)
+                                                        {
+                                                            <div class="nodebadge">
+                                                                <span class="treeCount e-badge e-badge-primary">@(group.SottoGruppo.Count)</span>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </HeaderTemplate>
+                                                <ContentTemplate>
+                                                    @foreach (AttributoRaggruppatoreDto attributo in group.SottoGruppo ?? new List<AttributoRaggruppatoreDto>())
+                                                    {
+                                                        if (attributo.IsAllowMasterGrouping)
+                                                        {
+                                                            <div class="e-custom-button-accordion nodeChildText accordionnode">
+                                                                <span class="node-name" @onclick="() => DialogHandleClick(attributo)">
+                                                                    @attributo.ValoreEtichetta
+                                                                </span>
+                                                                <button id="btn-action-@attributo.AttributoId" title="Title" class="e-btn icon-sposta-destra" @onclick="() => MoveSelectedFromFirstToSecond(attributo)"></button>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </ContentTemplate>
+                                            </AccordionItem>
+                                        }
+                                    </AccordionItems>
+                                </SfAccordion>
+                            </div>
+                        </ContentTemplate>
+                    </SplitterPane>
+                    <SplitterPane Min="20%" Max="80%" Size="50%">
+                        <ContentTemplate>
+                            <div class="accordion-right">
+                                <SfAccordion ID="accordion"
+                                             @ref="_accordionRight"
+                                             Height="100%"
+                                             Width="100%"
+                                             class="e-grouper-accordion"
+                                             ExpandedIndices=AccordionRightExpandedIndexes
+                                             ExpandMode="ExpandMode.Multiple"
+                                             EnablePersistence=true
+                                             LoadOnDemand=false>
+                                    <AccordionItems>
+                                        <AccordionItem Expanded="true">
+                                            <HeaderTemplate>
+                                                <div class="nodeFatherText">
+                                                    <span class="headername">Raggruppatori</span>
+                                                    <div class="nodebadge">
+                                                        <span class="treeCount e-badge e-badge-primary">@(_dataToOutput?.Count)</span>
+                                                    </div>
+                                                </div>
+                                            </HeaderTemplate>
+                                            <ContentTemplate>
+                                                @foreach (AttributoRaggruppatoreDto attributo in _dataToOutput)
+                                                {
+                                                    <div class="e-custom-button-accordion accordionnode">
+                                                        <span class="node-name" @onclick="() => DialogHandleClick(attributo)">
+                                                            @attributo.ValoreEtichetta
+                                                        </span>
+                                                        <span class="e-btn move-up-icon" @onclick="@(e => MoveUpSelectedItem(attributo, e))">
+                                                            <i class="icon-sposta-su"></i>
+                                                        </span>
+                                                        <span class="e-btn move-down-icon" @onclick="@(e => MoveDownSelectedItem(attributo, e))">
+                                                            <i class="icon-sposta-giu"></i>
+                                                        </span>
+                                                        <span class="e-btn remove-icon" @onclick="@(e => RemoveSelectedItem(attributo, e))">
+                                                            <i class="icon-elimina"></i>
+                                                        </span>
+                                                    </div>
+                                                }
+                                                @if (_dataToOutput != null && !_dataToOutput.Any())
+                                                {
+                                                    <div class="containernodata">
+                                                        <span class="nodata">Nessun raggruppatore</span>
+                                                    </div>
+                                                }
+                                            </ContentTemplate>
+                                        </AccordionItem>
+                                    </AccordionItems>
+                                </SfAccordion>
+                            </div>
+                        </ContentTemplate>
+                    </SplitterPane>
+                </SplitterPanes>
+            </SfSplitter>
+        </div>
+
+        <SfDialog EnableResize="true"
+                  Target="e-custommodal"
+                  EnablePersistence="true"
+                  Height="90%"
+                  Width="80%"
+                  ShowCloseIcon="true"
+                  CssClass="e-customModal"
+                  IsModal="true"
+                  CloseOnEscape="true"
+                  AllowDragging="true"
+                  AllowPrerender="true"
+                  FooterTemplate="@($"Raggruppatori del progetto: {ProgettoId}, type: {ContentType}.")"
+                  ResizeHandles="@DialogResizeDirections"
+                  @bind-Visible="@IsDialogVisible"
+                  @key="DialogHeather?.GetHashCode()">
+            <DialogTemplates>
+                <Header><b>Dettagli di "@DialogHeather"</b></Header>
+                <Content>
+                    <div class="dialogcontainer">
+
+                        @switch (ContentType)
+                        {
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                                {
+                                    @((RenderFragment)((builder) => builder.AddMarkupContent(0, (string?)_contentDialog ?? "")))
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Testo:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.ColonNewLineTextList"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Elenco:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.ColonNewLineTextList"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Riferimento:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.BoldColonNewLineTextList"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoCollection) || (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection):
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.BoldColonNewLineTextList"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Booleano:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.WingdingsBoolean"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Reale) || (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Contabilita):
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.RealValue"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            default:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                        }
+                    </div>
+                </Content>
+            </DialogTemplates>
+            <DialogAnimationSettings Effect="@AnimationEffect"
+                                     Duration=300 />
+            <DialogEvents OnOverlayModalClick="OverlayClick">
+            </DialogEvents>
+        </SfDialog>
+    }
+    else
+    {
+        <div style="text-align: center; margin-top: 20px;">
+            <SfSpinner Type="SpinnerType.Material"
+                       @bind-Visible="@_isGroupersLoaded" />
+            <p style="margin-top: 20px;">Nessun dato da visualizzare come raggruppatori di questo progetto.</p>
+        </div>
+    }
+</div>
+<div class="buttonscontainer">
+    <SfButton CssClass="e-btn-blue custombuttonblue"
+              IconCss="e-icons icon-conferma"
+              OnClick="HandleButtonOkClick"
+              IconPosition="IconPosition.Left"
+              IsPrimary="true">
+        Ok
+    </SfButton>
+    <SfButton CssClass="e-btn-blue custombuttonblue"
+              IconCss="e-icons icon-annulla-azione"
+              OnClick="HandleButtonUndoClick"
+              IconPosition="IconPosition.Left">
+        Annulla
+    </SfButton>
+</div>
+
+<style>
+
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-left,
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-center,
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-right {
+        height: 100%;
+        top: 0;
+        z-index: 9999;
+    }
+
+    .e-toolbar {
+        z-index: 9999;
+    }
+
+    .e-grouper-accordion {
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        border-radius: 1px;
+        border: 0px solid #dee2e6;
+    }
+
+    /* Contenitore albero 1*/
+    .maingroupercontainer {
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    /* Contenitore albero 1*/
+    .accordion-left {
+        width: 100%;
+        height: 100%;
+        float: left;
+        border-radius: 5px;
+        padding-right: 0.3rem;
+    }
+
+    /* Contenitore albero 2*/
+    .accordion-right {
+        width: 100%;
+        height: 100%;
+        float: left;
+        border-radius: 5px;
+        padding-left: 0.3rem;
+    }
+
+    .e-accordion .e-acrdn-item.e-selected.e-select.e-select:last-child {
+        border-bottom: inherit;
+    }
+
+    .e-splitter.e-splitter-horizontal .e-pane.e-pane-horizontal,
+    .e-splitter.e-splitter-vertical .e-pane.e-pane-horizontal {
+        overflow: hidden;
+    }
+
+    /* Contenitore del contatore di elementi per gruppo */
+    .nodebadge {
+        height: 100%;
+        padding-right: 0.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Allinea orizzontalmente a destra */
+        text-align: center;
+        flex-shrink: 0; /* Impedisce di essere schiacciato */
+        margin-left: auto; /* Spinge il contenitore verso destra */
+        padding-right: 1.5rem;
+    }
+
+    /* Personalizzazione nel caso di nodo padre (gruppo) */
+    .nodeFatherText {
+        float: left;
+        height: 100%;
+        width: 100%;
+        flex: 1;
+        color: var(--bs-primary);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        overflow: hidden;
+    }
+
+    /* Contenitore testo */
+    .nodeChildText {
+        float: left;
+        height: 100%;
+        width: 98%;
+        color: var(--bs-primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: justify;
+        cursor: pointer;
+    }
+
+    .nodata {
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .containernodata {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 3rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .e-accordion .e-acrdn-item .e-acrdn-header .e-acrdn-header-content {
+        width: 100%;
+    }
+
+    .accordionnode {
+        float: left;
+        height: 100%;
+        width: 100%;
+        color: var(--bs-primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: justify;
+    }
+
+        .accordionnode .node-name {
+            margin-right: auto;
+        }
+
+        .accordionnode .e-btn {
+            margin-left: 10px;
+        }
+
+    /* Accordion 2 - Contenuto (Testo) */
+    .node-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /*white-space: normal;
+                                        overflow-wrap: break-word;
+                                        display: flex; */
+        cursor: pointer;
+        z-index: 9999;
+        float: left;
+        height: 100%;
+        width: 100%;
+        color: var(--bs-primary);
+        align-items: center;
+        justify-content: space-between;
+        text-align: justify;
+        font-weight: bold;
+    }
+
+    /* Contenitore degli accordion */
+    .allgroupercontainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        float: left;
+        border-radius: 0px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        overflow: hidden;
+    }
+
+    /* Contenitore albero 1*/
+    .accordion {
+        width: 100%;
+        height: 100%;
+        float: left;
+        border-radius: 5px;
+    }
+
+    .headername {
+        max-width: 70%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Testo che descrivere il numero di elementi per gruppo */
+    .e-badge.e-badge-primary:not(.e-badge-ghost):not([href]),
+    .e-badge.e-badge-primary[href]:not(.e-badge-ghost) {
+        background-color: var(--bs-gray-200);
+        color: var(--bs-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        width: 1.7rem;
+        height: 1.7rem;
+        aspect-ratio: 1 / 1;
+    }
+
+    /* Aggiunge uno spazio tra il badge e il pulsante di ogni elemento */
+    .e-btn {
+        margin-right: 0px;
+    }
+
+        .e-btn:hover {
+            border-color: var(--bs-secondary);
+            box-shadow: 0 0 10px var(--bs-secondary);
+        }
+
+    /* Barra inferiore con i pulsanti*/
+    .buttonscontainer {
+        background-color: var(--bs-secondary);
+        position: fixed;
+        bottom: 2rem;
+        width: 100%;
+        left: 0rem;
+        right: 0;
+        padding: 0;
+        height: 3rem;
+        z-index: 9999;
+        pointer-events: auto;
+        clip-path: inset(0 0 -9999px 0); /* Impedisce al contenuto dietro di essere visibile */
+    }
+
+        .buttonscontainer * {
+            pointer-events: auto;
+        }
+
+    /* Pusalnte*/
+    .custombuttonblue {
+        margin-top: 0.5rem;
+        bottom: 2.5rem;
+        width: 7rem;
+        height: 2rem;
+        margin-left: 1rem;
+        border-radius: 5px;
+    }
+        /* Stato pulsante*/
+        .custombuttonblue:hover, .custombuttonblue:focus, .custombuttonblue:active {
+            background-color: var(--bs-secondary);
+            color: var(--bs-white);
+        }
+
+        .custombuttonblue:hover, .custombuttonblue:focus, .custombuttonblue:hover {
+            background-color: var(--bs-secondary);
+            color: var(--bs-white);
+        }
+
+    /* Albero 2 - Icona di muovi su (Freccia su) */
+    .move-up-icon {
+        flex-shrink: 0;
+        min-width: 1rem;
+        text-align: center;
+        position: relative;
+        margin-left: auto;
+        margin-right: 0;
+        top: 2px;
+        padding: 7px;
+        cursor: pointer;
+        color: white;
+        background-color: var(--bs-gray-600);
+        border-radius: 50%;
+        font-family: 'sficonsets';
+        font-weight: bold;
+        content: "\e703";
+        font-size: 12px;
+        line-height: 1;
+        z-index: 9999;
+        transition: color 0.1s ease-in-out;
+    }
+
+    /* Albero 2 - Icona di muovi giu (Freccia Giu) */
+    .move-down-icon {
+        flex-shrink: 0;
+        min-width: 1rem;
+        text-align: center;
+        position: relative;
+        margin-left: auto;
+        margin-right: 0;
+        top: 2px;
+        padding: 7px;
+        cursor: pointer;
+        color: white;
+        background-color: var(--bs-gray-600);
+        border-radius: 50%;
+        font-family: 'sficonsets';
+        font-weight: bold;
+        content: "\e703";
+        font-size: 12px;
+        line-height: 1;
+        z-index: 9999;
+        transition: color 0.1s ease-in-out;
+    }
+
+    /* Albero 2 - Icona di chiusura (Cestino) */
+    .remove-icon {
+        position: relative;
+        margin-right: 2px;
+        top: 2px;
+        padding: 7px;
+        cursor: pointer;
+        color: white;
+        background-color: var(--bs-gray-600);
+        border-radius: 50%;
+        font-family: 'sficonsets';
+        font-weight: bold;
+        content: "\e703";
+        font-size: 12px;
+        line-height: 1;
+        z-index: 9999;
+        transition: color 0.1s ease-in-out;
+        line-height: 100%;
+        flex-shrink: 0;
+        min-width: 1rem;
+        text-align: center;
+    }
+
+        /* Icone specifiche */
+        .move-up-icon .icon-sposta-su,
+        .move-down-icon .icon-sposta-giu,
+        .remove-icon .icon-elimina {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: inherit;
+        }
+
+        .remove-icon:hover {
+            background-color: var(--bs-secondary);
+            border-color: var(--bs-secondary);
+        }
+
+    .dialogcontainer {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+</style>
+
+
+@code {
+    [Parameter]
+    public Guid ProgettoId { get; set; }
+
+    [Parameter]
+    // public Action<bool, IEnumerable<AttributiRaggruppatoreDto>?>? InteractWithGroupFilter { get; set; } // tramite gestore delegate standard .net (multicast, sincrono e senza statehaschanged automatico)
+    public EventCallback<(bool, IEnumerable<AttributoRaggruppatoreDto>?, bool)> OnInteractWithPaginaComputo { get; set; }
+
+    [Parameter]
+    public IEnumerable<AttributoRaggruppatoreDto>? InputComputoData { get; set; }
+
+    [Parameter]
+    public bool RefreshData { get; set; } = false;
+
+    public int[] AccordionLeftExpandedIndexes { get; set; } = new int[1];
+    public int[] AccordionRightExpandedIndexes { get; set; } = new int[1];
+    public ResizeDirection[] DialogResizeDirections { get; set; } = new ResizeDirection[] { ResizeDirection.All };
+    public AttributoRaggruppatoreDto ActiveItem { get; set; }
+    public bool IsDialogVisible { get; set; } = false;
+    public string? DialogHeather { get; set; } = "Dettagli attributo:";
+    public DialogEffect AnimationEffect { get; set; } = DialogEffect.FadeZoom;
+    public string? ContentType { get; set; } = ModelData.Model.BuiltInCodes.DefinizioneAttributo.Testo;
+
+    private bool _isGroupersLoaded = false;
+    private SfAccordion? _accordionLeft;
+    private SfAccordion? _accordionRight;
+    private ObservableCollection<AttributoRaggruppatoreDto> _filteredDataFromInputMemento = new ObservableCollection<AttributoRaggruppatoreDto>();
+    private ObservableCollection<AttributoRaggruppatoreDto> _filteredDataToOutputMemento = new ObservableCollection<AttributoRaggruppatoreDto>();
+    private List<string> _expandedNodes = new List<string>();
+    private ObservableCollection<AttributoRaggruppatoreDto> _dataFromInput = new();
+    private ObservableCollection<AttributoRaggruppatoreDto> _dataToOutput = new();
+    private string? _contentDialog = string.Empty;
+    private string _sSeparator = "~!@#$%^&*()_+";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // _dataToOutput = await DataStorageHelper.GetSessionState<ObservableCollection<AttributiRaggruppatoreDto>>(SessionStorage, $"progettoComputo_dataToOutput_{ProgettoId}") ?? new ObservableCollection<AttributiRaggruppatoreDto>();
+            _dataToOutput.CollectionChanged += FilteredTreeDataChanged!;
+            AccordionLeftExpandedIndexes[0] = 0;
+            AccordionRightExpandedIndexes[0] = 0;
+            // AccordionExpandedNodes = await DataStorageHelper.GetSessionState<string[]?>(SessionStorage, $"progettoGrouperAttributiAccordionState_{ProgettoId}") ?? new string[0];
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        base.OnParametersSet();
+        try
+        {
+            switch (RefreshData)
+            {
+                case var expression when (expression == true):
+                    {
+                        _dataFromInput = InputComputoData?.ObservableCopyTo() ?? new ObservableCollection<AttributoRaggruppatoreDto>();
+                        _dataToOutput.Clear();
+                        // _filteredDataToOutputMemento?.Clear();
+                        _filteredDataFromInputMemento?.Clear();
+                    }
+                    break;
+                case var expression when (expression == false && (_filteredDataFromInputMemento.Any() ||
+            _filteredDataToOutputMemento.Any())):
+                    {
+                        _dataFromInput = _filteredDataFromInputMemento.Any() ? _filteredDataFromInputMemento.ObservableCopyTo() : _dataFromInput;
+                        _dataToOutput = _filteredDataToOutputMemento.Any() ? _filteredDataToOutputMemento.ObservableCopyTo() : _dataToOutput;
+                    }
+                    break;
+                case var expression when expression == false && (!_filteredDataFromInputMemento.Any() || !_filteredDataToOutputMemento.Any()):
+                    {
+                        _dataFromInput = InputComputoData?.ObservableCopyTo() ?? new ObservableCollection<AttributoRaggruppatoreDto>();
+                        _dataToOutput.Clear();
+                        _filteredDataToOutputMemento?.Clear();
+                        _filteredDataFromInputMemento?.Clear();
+                    }
+                    break;
+            }
+
+            if (InputComputoData != null && InputComputoData.Count() > 0)
+            {
+                _isGroupersLoaded = true;
+            }
+            else
+            {
+                _isGroupersLoaded = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void OverlayClick(OverlayModalClickEventArgs args)
+    {
+        this.IsDialogVisible = false;
+    }
+
+    private async void FilteredTreeDataChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        try
+        {
+            // await DataStorageHelper.SetSessionState(SessionStorage, $"progettoComputo_dataToOutput_{ProgettoId}", _dataToOutput);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    public async void DialogHandleClick(AttributoRaggruppatoreDto attributo)
+    {
+        try
+        {
+            var tupleCorrispondente = AttributiConfig.ShowSettings.FirstOrDefault(t => t.Item1 == attributo.DefinizionAttributoCodice && t.Item2);
+            if (tupleCorrispondente != null)
+            {
+                await OpenDialogClicked(attributo);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            this.IsDialogVisible = false;
+        }
+    }
+
+    private async Task OpenDialogClicked(AttributoRaggruppatoreDto attributo)
+    {
+        try
+        {
+            ContentType = attributo?.DefinizionAttributoCodice == null ? ModelData.Model.BuiltInCodes.DefinizioneAttributo.Testo : attributo.DefinizionAttributoCodice;
+            string HtmlString = string.Empty;
+            switch (ContentType)
+            {
+                case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                    {
+                        _contentDialog = await Task.Run(() => GetHtmlData((attributo?.ValoriUnivociOrdered ?? new()).FirstOrDefault()));
+                    }
+                    break;
+                // per eventuali modifiche future nel caso in cui i reali e i contabilità si volesse rappresentarli diversi
+                case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Reale) ||
+                (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Contabilita):
+                    {
+                        _contentDialog = string.Join($", {_sSeparator}", (attributo?.ValoriUnivociOrdered ?? new List<string>()).Take(5)) + $", {_sSeparator}...";
+                        _contentDialog = _contentDialog.Equals($", {_sSeparator}...") ? "Nessun elemento disponibile da presentare come esempio." : _contentDialog;
+                    }
+                    break;
+                case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Testo && attributo != null && attributo.ValoriUnivociOrdered != null && attributo.ValoriUnivociOrdered.Any(x => x.Contains('¦')):
+                    {
+                        _contentDialog = string.Join($", {_sSeparator}", (attributo?.ValoriUnivociOrdered ?? new List<string>()).Take(50));
+                    }
+                    break;
+                default:
+                    {
+                        _contentDialog = string.Join($", {_sSeparator}", (attributo?.ValoriUnivociOrdered ?? new List<string>()).Take(5)) + $", {_sSeparator}...";
+                        _contentDialog = _contentDialog.Equals($", {_sSeparator}...") ? "Nessun elemento disponibile da presentare come esempio." : _contentDialog;
+                    }
+                    break;
+            }
+            DialogHeather = attributo?.ValoreEtichetta;
+            this.IsDialogVisible = true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            this.IsDialogVisible = false;
+        }
+    }
+
+    private async Task<string?> GetHtmlData(string? sValore)
+    {
+        string? sContentData = string.Empty;
+        try
+        {
+            foreach (string? element in (sValore != null ? sValore.Split(_sSeparator) : new string?[0]))
+            {
+                string sKey = Utilities.DataStorageHelper.GenerateKey(element ?? "");
+                if (await LocalStorage.ContainKeyAsync(sKey))
+                {
+                    DataPersistence dataPersistence = await LocalStorage.GetItemAsync<DataPersistence>(sKey) ?? new();
+                    sContentData = sContentData != string.Empty ? (sContentData += " \\ " + dataPersistence.HtmlData ?? "") : dataPersistence.HtmlData ?? "";
+                }
+                else
+                {
+                    sContentData = sContentData != string.Empty ? (sContentData += " \\ " + await ConvertRtfToHtml(element ?? "", sKey)) : await ConvertRtfToHtml(element ?? "", sKey) ?? "";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+        }
+        return sContentData;
+    }
+
+    private async Task<string> ConvertRtfToHtml(string rtfContent, string? key)
+    {
+        string sHtml = string.Empty;
+        try
+        {
+            System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(ppp);
+            sHtml = Rtf.ToHtml(rtfContent);
+
+            string plainText = string.Empty;
+            using (var w = new System.IO.StringWriter())
+            using (var md = new PlainTextWriter(w))
+            {
+                Rtf.ToHtml(rtfContent, md);
+                md.Flush();
+                plainText = w.ToString();
+            }
+
+            DataPersistence dataPersistence = new();
+            dataPersistence.HashCode = key;
+            dataPersistence.HtmlData = sHtml == string.Empty ? "" : sHtml;
+            dataPersistence.TextData = plainText == string.Empty ? "" : plainText;
+            dataPersistence.RtfData = rtfContent;
+
+            if (!string.IsNullOrEmpty(sHtml) && !string.IsNullOrEmpty(key))
+            {
+                await LocalStorage.SetItemAsync(key, dataPersistence);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return (string.IsNullOrEmpty(sHtml) ? string.Empty : sHtml);
+    }
+
+    public void MoveAllFromFirstToSecond()
+    {
+        try
+        {
+            InputComputoData?.ToList().ForEach(e => _dataToOutput.Add(e));
+            _dataFromInput.Clear();
+            _dataFromInput = new ObservableCollection<AttributoRaggruppatoreDto>(InputComputoData ?? new ObservableCollection<AttributoRaggruppatoreDto>());
+
+            _dataToOutput = new ObservableCollection<AttributoRaggruppatoreDto>((InputComputoData ?? new List<AttributoRaggruppatoreDto>())
+            .Where(item => item?.SottoGruppo != null && item.SottoGruppo.Count > 0)
+            .SelectMany(item => item?.SottoGruppo ?? new())
+            .ToList());
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    public void MoveSelectedFromFirstToSecond(AttributoRaggruppatoreDto attributo)
+    {
+        if (attributo != null)
+        {
+            _dataToOutput.Add(attributo);
+
+            _dataFromInput = new ObservableCollection<AttributoRaggruppatoreDto>(
+                _dataFromInput?.Select(group =>
+                {
+                    group.SottoGruppo = group.SottoGruppo?.Where(e => e.Codice != attributo.Codice).ToList();
+                    return group;
+                }).Where(e => e.Codice != attributo.Codice).ToList() ?? new List<AttributoRaggruppatoreDto>()
+            );
+
+            //_dataFromInput = new ObservableCollection<AttributiRaggruppatoreDto>(InputComputoData ?? new List<AttributiRaggruppatoreDto>());
+            StateHasChanged();
+        }
+    }
+
+    public void MoveSelectedFromSecondToFirst(AttributoRaggruppatoreDto attributo)
+    {
+        if (attributo != null)
+        {
+            _dataFromInput?.Add(attributo);
+            StateHasChanged();
+            _dataToOutput.RemoveAt(_dataToOutput.ObservableFindIndex(e => e.Codice == attributo.Codice));
+        }
+
+        _dataFromInput = new ObservableCollection<AttributoRaggruppatoreDto>(InputComputoData ?? new ObservableCollection<AttributoRaggruppatoreDto>());
+        StateHasChanged();
+    }
+
+    public void MoveAllFromSecondToFirst()
+    {
+        _dataToOutput.ObservableForEach(e => _dataFromInput?.Add(e));
+        _dataFromInput = new ObservableCollection<AttributoRaggruppatoreDto>(InputComputoData ?? new ObservableCollection<AttributoRaggruppatoreDto>());
+    }
+
+    private void RemoveAllItem()
+    {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void RemoveSelectedItem(AttributoRaggruppatoreDto selectedItem, MouseEventArgs e)
+    {
+        try
+        {
+            if (selectedItem != null)
+            {
+                _dataToOutput = new ObservableCollection<AttributoRaggruppatoreDto>(
+                    (_dataToOutput ?? Enumerable.Empty<AttributoRaggruppatoreDto>())
+                    .Where(node => node != null && node?.Codice != selectedItem?.Codice).ToList()
+                );
+
+                InsertBackToGroups(selectedItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void InsertBackToGroups(AttributoRaggruppatoreDto selectedItem)
+    {
+        try
+        {
+            if (selectedItem == null) return;
+
+            _dataFromInput = new ObservableCollection<AttributoRaggruppatoreDto>(
+                _dataFromInput?.Select(group =>
+                {
+                    if (group.SottoGruppo != null && group.SottoGruppo.Any(e => e.CodiceGruppo == selectedItem.CodiceGruppo) && !group.SottoGruppo.Contains(selectedItem))
+                    {
+                        if (group.SottoGruppo.Count >= selectedItem.SequenceNumber)
+                        {
+                            group.SottoGruppo.Insert(selectedItem.SequenceNumber ?? 0, selectedItem);
+                        }
+                        else
+                        {
+                            group.SottoGruppo.Add(selectedItem);
+                        }
+                    }
+                    else if (group.CodiceGruppo != null && $"{group.CodiceGruppo}_gruppo" == selectedItem.CodiceGruppo &&
+                    group.SottoGruppo != null && !group.SottoGruppo.Contains(selectedItem))
+                    {
+                        group.SottoGruppo = new List<AttributoRaggruppatoreDto>();
+                        group.SottoGruppo.Add(selectedItem);
+                    }
+                    return group;
+                }).ToList() ?? new List<AttributoRaggruppatoreDto>()
+            );
+            _dataFromInput.ToList().ForEach(item => item.SottoGruppo = item.SottoGruppo?.OrderBy(sg => sg.SequenceNumber).ToList());
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void MoveUpSelectedItem(AttributoRaggruppatoreDto selectedItem, MouseEventArgs e)
+    {
+        try
+        {
+            if (selectedItem != null && _dataToOutput != null)
+            {
+                int index = _dataToOutput.IndexOf(selectedItem);
+
+                if (index > 0)
+                {
+                    var temp = _dataToOutput[index - 1];
+                    _dataToOutput[index - 1] = _dataToOutput[index];
+                    _dataToOutput[index] = temp;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void MoveDownSelectedItem(AttributoRaggruppatoreDto selectedItem, MouseEventArgs e)
+    {
+        try
+        {
+            if (selectedItem != null && _dataToOutput != null)
+            {
+                int index = _dataToOutput.IndexOf(selectedItem);
+
+                if (index >= 0 && index < _dataToOutput.Count - 1)
+                {
+                    var temp = _dataToOutput[index + 1];
+                    _dataToOutput[index + 1] = _dataToOutput[index];
+                    _dataToOutput[index] = temp;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void HandleButtonUndoClick()
+    {
+        try
+        {
+            _dataToOutput = _filteredDataToOutputMemento.ObservableCopyTo();
+            _dataFromInput = _filteredDataFromInputMemento.Any() ? _filteredDataFromInputMemento.ObservableCopyTo() : _dataFromInput;
+            // OnInteractWithPaginaComputo?.Invoke(false, FilteredTreeData); // tramite gestore delegate standard .net (multicast, sincrono e senza statehaschanged automatico)
+            if (OnInteractWithPaginaComputo.HasDelegate) { _ = OnInteractWithPaginaComputo.InvokeAsync((false, null, false)); }
+            //InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void HandleButtonOkClick()
+    {
+        try
+        {
+            // OnInteractWithPaginaComputo?.Invoke(true, FilteredTreeData); // tramite gestore delegate standard .net (multicast, sincrono e senza statehaschanged automatico)
+            if (OnInteractWithPaginaComputo.HasDelegate) { _ = OnInteractWithPaginaComputo.InvokeAsync((true, (_dataToOutput.Any() ? _dataToOutput : null), true)); }
+            _filteredDataToOutputMemento = _dataToOutput.ObservableSaveSnapshot();
+            _filteredDataFromInputMemento = _dataFromInput.ObservableSaveSnapshot();
+            Log.Information("Attivazione filtro gruppi e salvataggio nodi selezionati.");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void OnAccordionExpandedCollapsed(int[] array)
+    {
+        if (array != null)
+        {
+            AccordionLeftExpandedIndexes = array;
+            // await DataStorageHelper.SetSessionState(SessionStorage, $"progettoComputoAccordionState_{ProgettoId}", array);
+        }
+    }
+}

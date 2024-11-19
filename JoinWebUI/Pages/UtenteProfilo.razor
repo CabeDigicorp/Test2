@@ -1,0 +1,495 @@
+﻿@page "/utenti/{UtenteId:guid}"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Buttons
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navMan
+@inject Syncfusion.Blazor.Popups.SfDialogService _dialogService
+@inject IAuthSyncService _authSync
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - profilo utente</PageTitle>
+
+<PageHeader Title="Profilo utente"
+            ObjectType="Utente"
+            ObjectName="@(JoinUser?.Email ?? string.Empty)"
+            Breadcrumbs="@_breadcrumbs"
+            RequestSuccess="@_requestSuccess"
+            RequestError="@_requestError"
+            RequestMessage="@_requestMessage" />
+
+
+@*<table class="mb-4" style="width=100%">
+    <tr>
+        <th style="min-width:200px"></th>
+        <th></th>
+    </tr>
+    <tr>
+        <td>
+            <span class="fw-bold">Nome:</span>
+        </td>
+        <td>
+            <span>@(JoinUser?.Nome ?? string.Empty)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="fw-bold">Cognome:</span>
+        </td>
+        <td>
+            <span>@(JoinUser?.Cognome ?? string.Empty)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="fw-bold">E-mail:</span>
+        </td>
+        <td>
+            <span>@(JoinUser?.Email ?? string.Empty)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="fw-bold">Abilitazione:</span>
+        </td>
+        <td>
+            @if (JoinUser != null)
+            {
+                if (JoinUser.Disabled)
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+                }
+                else
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" /></span>
+                }
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="fw-bold">Consenso privacy:</span>
+        </td>
+        <td>
+            @if (JoinUser != null)
+            {
+                if (JoinUser.PrivacyConsent)
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" /></span>
+                }
+                else
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+                }
+            }
+        </td>
+    </tr>
+</table>*@
+
+<div class="mt-4">
+    <SfTab ID="tab" HeaderPlacement="HeaderPosition.Top" CssClass="e-fill" Height="100%">
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Utente Join" />
+                </ChildContent>
+                <ContentTemplate>
+                    <div id="Join" class="control-section row" style="min-height:300px">
+                        <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                            <EditForm Model="_model" OnValidSubmit="OnValidSubmitAsync" Context="RegisterFormContext">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+                                <div class="mb-4">
+                                    <table class="mb-4" style="width:100%;max-width:1200px" >
+                                        <tr style="height:1.5rem">
+                                            <th class="me-4" style="min-width:80px"></th>
+                                            <th style="width:70%"></th>
+                                        </tr>
+                                        <tr style="height:3rem">
+                                            <td>
+                                                <span class="fw-bold">Nome:</span>
+                                            </td>
+                                            <td>
+                                                <SfTextBox @bind-Value="_model.Nome" Placeholder="Nome" ValidateOnInput="true" FloatLabelType="FloatLabelType.Never" />
+                                                <div class="text-danger">
+                                                    <ValidationMessage For="@(() => _model.Nome)" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr style="height:3rem">
+                                            <td>
+                                                <span class="fw-bold">Cognome:</span>
+                                            </td>
+                                            <td>
+                                                <SfTextBox @bind-Value="_model.Cognome" Placeholder="Cognome" ValidateOnInput="true" FloatLabelType="FloatLabelType.Never" />
+                                                <div class="text-danger">
+                                                    <ValidationMessage For="@(() => _model.Cognome)" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr style="height:3rem">
+                                            <td>
+                                                <span class="fw-bold">E-mail:</span>
+                                            </td>
+                                            <td>
+                                                <SfTextBox @bind-Value="_model.Email" Placeholder="E-mail" ValidateOnInput="true" FloatLabelType="FloatLabelType.Never" Enabled="false" />
+                                                <div class="text-danger">
+                                                    <ValidationMessage For="@(() => _model.Email)" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr style="height:3rem">
+                                            <td>
+                                                <span class="fw-bold">Abilitazione:</span>
+                                            </td>
+                                            <td>
+                                                @if (_model != null)
+                                                {
+                                                    if (ShowAdminInputs)
+                                                    {
+                                                        <SfCheckBox @bind-Checked="@(EnabledChecked)" CssClass="e-large"></SfCheckBox>
+                                                    }
+                                                    else if (_model.Disabled)
+                                                    {
+                                                        <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" /></span>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr style="height:3rem">
+                                            <td>
+                                                <span class="fw-bold">Consenso privacy:</span>
+                                            </td>
+                                            <td>
+                                                @if (_model != null)
+                                                {
+                                                    if (_model.PrivacyConsent)
+                                                    {
+                                                        <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" /></span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr style="height:3rem">
+                                            <td colspan="2">
+                                                <span class="fst-italic">
+                                                    L'uso di JoinWeb comporta l'accettazione dell'<a href="">informativa privacy</a>.<br>
+                                                    Per revocare il consenso al trattamento dei dati personali è necessario eliminare l'account.<br>
+                                                </span>
+                                                @if (ShowAdminInputs)
+                                                {
+                                                       <span class="fst-italic">
+                                                        Contatta Digi Corp per ulteriori informazioni.
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fst-italic">
+                                                        Contatta l'amministratore di sistema per ulteriori informazioni.<br><br>
+                                                        L'account è gestito dal Cliente '@(JoinUser!.DomainManagerInfo)'.
+                                                    </span>
+                                                }                                               
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </div>
+
+                                <div>
+                                    <SfButton Content="Salva" CssClass="e-btn-yellow me-2" IconCss="e-icons icon-salva" HtmlAttributes=@registerAttr Disabled=@(!_model?.PrivacyConsent ?? true)>
+                                    </SfButton>
+                                    @if (ShowAdminInputs)
+                                    {
+                                        <SfButton Content="Elimina utente" CssClass="e-btn-red me-2" IconCss="e-icons icon-elimina" HtmlAttributes=@deleteAttr Disabled=@(!ShowAdminInputs) OnClick=@DeleteAccount>
+                                        </SfButton>
+                                    }
+                                    <SfButton Content="Annulla" CssClass="e-btn-blue me-2" IconCss="e-icons icon-annulla-azione" HtmlAttributes=@cancelAttr OnClick=@(()=>_navMan.NavigateTo("/"))>
+                                    </SfButton>                                    
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Da provider" />
+                </ChildContent>
+                <ContentTemplate>
+                    <div id="Auth0" class="control-section row" style="min-height:300px">
+                        <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                            <DataGridCard DataSource=@_claims
+                                          DataType=@typeof(ClaimInfo)
+                                          ColumnInfo=@_claimsColumnsInfo
+                                          DisableNew=true
+                                          DisableEdit=true
+                                          DisableDelete=true
+                                          DisableDownload=true
+                                          OnClickRefresh=@GetClaims
+                                          MultiSelect=false
+                                          ShowCheckbox=false
+                                          NoRecordsString="Nessuna informazione trovata"
+                                          MinHeight="180px"
+                                          Title="Informazioni fornite dal provider di autenticazione">
+                            </DataGridCard>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+</div>
+
+@code {
+
+    [CascadingParameter] public Task<AuthenticationState> AuthState { get; set; }
+
+    [CascadingParameter(Name = "JoinUser")] UtenteModel? JoinUser { get; set; }
+
+
+
+    [Parameter] public Guid UtenteId { get; set; }
+
+    public UtenteModel _model;
+
+    private bool _editMode;
+
+    private ObservableCollection<object> _claims = new ObservableCollection<object>();
+
+    private IEnumerable<(string Type, string Value)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestSuccess = false;
+    private bool _requestError = false;
+    private string _requestMessage = "";
+
+    private bool ShowAdminInputs { get => string.IsNullOrWhiteSpace(JoinUser?.DomainManagerInfo); }
+
+    private bool EnabledChecked
+    {
+        get => !_model.Disabled;
+        set => _model.Disabled = !value;
+    }
+
+    private static DataGridCard.VisibleColumnsList _claimsColumnsInfo = new DataGridCard.VisibleColumnsList()
+                                                                 {   new DataGridCard.ColumnDefinition(nameof(ClaimInfo.Descrizione), "Descrizione", "30%"),
+                                                                    new DataGridCard.ColumnDefinition(nameof(ClaimInfo.Valore), "Valore", "70%")
+                                                                 };
+
+    private Dictionary<string, object> registerAttr = new Dictionary<string, object>()
+    {
+        {"title","Salva" },
+        {"type","submit" }
+    };
+
+    private Dictionary<string, object> cancelAttr = new Dictionary<string, object>()
+    {
+        {"title","Annulla" },
+        {"type","button" }
+    };
+
+    private Dictionary<string, object> deleteAttr = new Dictionary<string, object>()
+    {
+        {"title","Elimina account" },
+        {"type","button" }
+    };
+
+    //private Dictionary<string, object> disableAttr = new Dictionary<string, object>()
+    //{
+    //    {"title","Elimina account" },
+    //    {"type","button" }
+    //};
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestMessage = "";
+        _requestSuccess = false;
+
+        if (JoinUser != null && JoinUser.Id != Guid.Empty && JoinUser.Id == UtenteId)
+        {
+            _model = (UtenteModel)JoinUser.Clone();
+
+            _breadcrumbs = new List<(string, string)>()
+                                {
+                                    ("Gestione utente", "/utenti/" + JoinUser.IdString),
+                                };
+
+
+            await GetClaims();
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestMessage = "Errore #0 - Parametri utente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetClaims()
+    {
+        _claims.Clear();
+
+        var auth0User = (await AuthState).User;
+        var auth0mail = auth0User.Claims?.FirstOrDefault(c => c.Type == ApplicationClaimTypes.Email)?.Value ?? string.Empty;
+
+        if (_model != null && auth0User?.Identity != null && _model.Email == auth0mail)
+        {
+            string? authSrc = null;
+
+            if (auth0User.Claims != null)
+            {
+                foreach (Claim c in auth0User.Claims)
+                {
+                    if (c.Type == "sub")
+                    {
+                        string source = c.Value?.Split('|')[0]?.ToLower() ?? string.Empty;
+                        switch (source)
+                        {
+                            case "auth0":
+                                authSrc = "Digi Corp";
+                                break;
+                            case "google-oauth2":
+                                authSrc = "Google";
+                                break;
+                            case "microsoft-oauth2":
+                                //TODO
+                                authSrc = "Microsoft";
+                                break;
+                        }
+                    }
+
+                    string type = (c.Type == RuoliAuth0.ROLEKEY) ? "Ruolo assegnato da Auth0" : c.Type;
+                    var ci = new ClaimInfo(type, c.Value);
+                    _claims.Add(ci);
+                }
+            }
+
+            if (authSrc != null)
+            {
+                _claims.Insert(0, new ClaimInfo("Sorgente di autenticazione", authSrc));
+            }
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestMessage = "Errore #1 - Claims";
+            return;
+        }
+
+
+        StateHasChanged();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        await SaveToDB();
+    }
+
+    private async Task SaveToDB()
+    {
+        _requestSuccess = false;
+        _requestError = false;
+
+        @if (_model.Disabled && !JoinUser!.Disabled)
+        {
+            bool confirm = await _dialogService.ConfirmAsync("Confermi di voler disabilitare la tua utenza JoinWeb? L'utenza potrà essere ripristinata in seguito.", "Conferma disabilitazione");
+            if (!confirm) return;
+        }
+
+        bool result = await _authSync.SaveCurrentUserAsync(_model, true);
+
+        if (result)
+        {
+            _requestSuccess = true;
+            _requestMessage = "Salvataggio completato";
+        }
+        else
+        {
+            _requestError = true;
+            _requestMessage = "Salvataggio non riuscito";
+        }
+    }
+
+    private async Task DeleteAccount()
+    {
+        _requestSuccess = false;
+        _requestError = false;
+
+        if (_model == null)
+        {
+            _requestError = true;
+            _requestMessage = "Impossibile eliminare un account inesistente.";
+            return;
+        }
+
+        bool confirm = await _dialogService.ConfirmAsync("Eliminare l'utente? ATTENZIONE: Non sarà possibile annullare l'operazione!", "Conferma eliminazione");
+        if (confirm)
+        {
+            //Melius est abundare quam deficere...
+            confirm = await _dialogService.ConfirmAsync("Sei veramente sicuro di voler cancellare il tuo account?", "Conferma eliminazione / 2");
+        }
+
+        if (confirm)
+        {
+            var query= new Dictionary<string, string>();
+            if (_model.Id != Guid.Empty) query.Add("id", _model.IdString);
+            if (!string.IsNullOrWhiteSpace(_model.Email)) query.Add("email", _model.IdString);
+
+            var result = await _apiClient.JsonSendAsync("utenti", HttpMethod.Delete, query: query);
+            if (result.Success)
+            {
+                await _dialogService.AlertAsync("Eliminazione effettuata.", "Utente eliminato");
+                _navMan.NavigateTo("authentication/logout");
+            }
+            else
+            {
+                _requestError = true;
+                _requestMessage = "Eliminazione non riuscita";
+            }
+        }
+
+    }
+
+    public class ClaimInfo     {
+        public ClaimInfo(string descrizione, string? valore)
+        {
+            Descrizione = descrizione;
+            Valore = valore ?? string.Empty;
+        }
+
+        public string Descrizione { get; }
+        public string Valore { get; }
+    }
+
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+
+</style>

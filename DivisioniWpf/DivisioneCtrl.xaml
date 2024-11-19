@@ -1,0 +1,646 @@
+﻿<UserControl x:Class="DivisioniWpf.DivisioneCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+             xmlns:masterDetailView="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+             xmlns:dz="clr-namespace:DevZest.Windows.DataVirtualization;assembly=DigiCorp.DataVirtualization"
+             xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             lex:LocalizeDictionary.OutputMissingKeys="True"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             >
+    <!--DataContext="{StaticResource DivisioneViewKey}"-->
+    <UserControl.Resources>
+        <commons:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
+        <commons:StaticResourceConverter x:Key="StaticResourceConverter"/>
+        <commons:ColorConverter x:Key="ColorConverter"/>
+        <!--STILI-->
+        <Style TargetType="{x:Type Control}" x:Key="baseStyle">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <!-- Setting VirtualListItemBase.AutoLoad to true will load the item when it's set to ListViewItem.Content property -->
+        <Style TargetType="ListViewItem">
+            <Setter Property="dz:VirtualListItemBase.AutoLoad" Value="true" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" Padding="0" SnapsToDevicePixels="true">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="Gray"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="2,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--TEMPLATES VALORI-->
+        <DataTemplate x:Key="templateTesto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap" Grid.Column="0" KeyDown="TextBox_KeyDown" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"/>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                            Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="templateContabilita">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" InputScope="CurrencyAmount" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick"  BorderThickness="0,0,0,1"/>
+                <Button Name="HelpButton" Grid.Column="2" Content="&#xe057;" Command="{Binding HelpCommand}"
+                                    Width="Auto" HorizontalAlignment="Left" Style="{StaticResource detailListViewItemButtonStyle}"
+                                    ToolTip="{lex:Loc Funzioni e operatori utilizzabili}"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <DataTemplate x:Key="templateReale">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" BorderThickness="0,0,0,1"/>
+                <Button Name="HelpButton" Grid.Column="2" Content="&#xe057;" Command="{Binding HelpCommand}"
+                                    Width="Auto" HorizontalAlignment="Left" Style="{StaticResource detailListViewItemButtonStyle}"
+                                    ToolTip="{lex:Loc Funzioni e operatori utilizzabili}"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <!--<DataTemplate x:Key="templateDataOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <DatePicker SelectedDate="{Binding Data, Mode=TwoWay}" Grid.Column="0" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" BorderThickness="0,0,0,1"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="templateGuidOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </DataTemplate>-->
+        <masterDetailView:ValoreAttributoTemplateSelector x:Key="ValoreAttributoTemplateSelector" />
+        <masterDetailView:RightSplitPaneTemplateSelector x:Key="RightSplitPaneTemplateSelector" />
+    </UserControl.Resources>
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Name="MainGrid" Grid.Row="0" Style="{StaticResource mainGridStyle}" Margin="0" PreviewMouseWheel="Grid_PreviewMouseWheel" PreviewMouseDown="Grid_PreviewMouseDown">
+            <Grid.LayoutTransform>
+                <ScaleTransform x:Name="DivisioneScale" CenterX="0" CenterY="0" ScaleX="1" ScaleY="1"/>
+            </Grid.LayoutTransform>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="400" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <Grid Name="MasterGrid" Grid.Column="0" IsEnabled="{Binding IsEntityTypeValid}">
+                <Grid.InputBindings>
+                    <KeyBinding Key="Escape" Command="{Binding DivisioneItemsView.EscapeCommand}"/>
+                </Grid.InputBindings>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <commonResources:ButtonsBar Grid.Column="0" Style="{StaticResource menuStackPanelStyle}">
+                        <commonResources:ButtonsBarButton x:Name="AddEntity" Command="{Binding DivisioneItemsView.AddEntityCommand}" ToolTipService.ToolTip="{Binding DivisioneItemsView.AddEntityToolTip}"
+                                                Style="{StaticResource menuButtonStyle}" Content="&#xe02d;"
+                                                DesideredVisibility="{Binding DivisioneItemsView.IsAddEntityEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                OtherText="{Binding DivisioneItemsView.AddEntityToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="AddEntityParent" Command="{Binding DivisioneItemsView.AddEntityParentCommand}"
+                                                    ToolTipService.ToolTip="{Binding DivisioneItemsView.AddEntityParentToolTip}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe02f;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsAddParentEnabled, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{Binding DivisioneItemsView.AddEntityParentToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="AddEntityChild" Command="{Binding DivisioneItemsView.AddEntityChildCommand}"
+                                                    ToolTipService.ToolTip="{Binding DivisioneItemsView.AddEntityChildToolTip}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe02e;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsAddChildEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{Binding DivisioneItemsView.AddEntityChildToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="MoveEntities" Command="{Binding DivisioneItemsView.MoveEntitiesCommand}" Background="Transparent"
+                                                    ToolTipService.ToolTip="{lex:Loc Sposta}"
+                                                    Style="{StaticResource menuButtonStyle}"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsMoveEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{lex:Loc Sposta}">
+                            <Grid>
+                                <TextBlock Text="&#xe032;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding DivisioneItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding DivisioneItemsView.IsMoveEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarButton>
+                        <dxe:FlyoutControl IsOpen="{Binding ItemsView.IsMoveEntitiesWaitingForTarget, Mode=OneWay}" 
+				                                PlacementTarget="{Binding ElementName=MoveEntities}"
+				                                Style="{StaticResource flyoutControlStyle}">
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <TextBlock Text="{lex:Loc SelezionareDestinazione}"/>
+                        </dxe:FlyoutControl>
+                        <commonResources:ButtonsBarButton x:Name="CopyEntities" Command="{Binding DivisioneItemsView.CopyEntitiesCommand}"
+                                                    ToolTipService.ToolTip="{lex:Loc Copia2}" VerticalAlignment="Stretch"
+                                                    Style="{StaticResource menuButtonStyle}"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsCopyEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{lex:Loc Copia2}">
+                            <Grid>
+                                <TextBlock Text="&#xe03d;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding DivisioneItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding DivisioneItemsView.IsCopyEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarButton>
+                        <commonResources:ButtonsBarButton x:Name="MoveEntitiesAfter" Command="{Binding DivisioneItemsView.PasteEntitiesCommand}"
+                                                    ToolTipService.ToolTip="{Binding DivisioneItemsView.PasteEntitiesToolTip, Mode=TwoWay}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe030;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsMoveEntitiesAfterEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{Binding DivisioneItemsView.PasteEntitiesToolTip, Mode=TwoWay}"/>
+                        <commonResources:ButtonsBarButton x:Name="MoveEntityChildOf" Command="{Binding DivisioneItemsView.PasteEntitiesChildOfCommand}"
+                                                    ToolTipService.ToolTip="{Binding DivisioneItemsView.PasteEntitiesChildOfToolTip, Mode=TwoWay}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe031;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsMoveEntitiesChildOfEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{Binding DivisioneItemsView.PasteEntitiesChildOfToolTip, Mode=TwoWay}"/>
+                        <commonResources:ButtonsBarButton x:Name="Escape" Command="{Binding DivisioneItemsView.EscapeCommand}"
+                                                    ToolTipService.ToolTip="{lex:Loc Annulla}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe037;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsEscapeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{lex:Loc Annulla}"/>
+                        <commonResources:ButtonsBarButton x:Name="DeleteEntities" Command="{Binding DivisioneItemsView.DeleteCheckedCommand}"
+                                                    ToolTipService.ToolTip="{lex:Loc Elimina}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe03a;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsDeleteEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="Elimina"/>
+                        <commonResources:ButtonsBarButton x:Name="ExpandCheckedEntities" Command="{Binding DivisioneItemsView.ExpandCheckedEntitiesCommand}" Background="Transparent"
+                                                    ToolTipService.ToolTip="{lex:Loc Espandi selezione}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe051;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsExpandAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="Espandi selezione"/>
+                        <commonResources:ButtonsBarButton x:Name="CollapseAll" Command="{Binding DivisioneItemsView.CollapseAllCommand}" Background="Transparent"
+                                                    ToolTipService.ToolTip="{lex:Loc Collassa tutto}"
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xe052;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsCollapseAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="Collassa tutto"/>
+                        <commonResources:ButtonsBarButton x:Name="CheckAll" Command="{Binding DivisioneItemsView.CheckAllCommand}" ToolTipService.ToolTip="{lex:Loc Seleziona tutto}" 
+                                                    Style="{StaticResource menuButtonStyle}" Content="&#xE09A;"
+                                                    DesideredVisibility="{Binding DivisioneItemsView.IsCollapseAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="Seleziona tutto"/>
+                        <commonResources:ButtonsBarToggleButton x:Name="MultiModify" IsChecked="{Binding DivisioneItemsView.IsMultipleModify, Mode=TwoWay}"
+                                                        ToolTipService.ToolTip="{lex:Loc Modifica Multipla}"
+                                                        Style="{StaticResource menuToggleButtonStyle}"
+                                                        DesideredVisibility="{Binding DivisioneItemsView.IsMultipleModifyEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                        OtherText="Modifica Multipla">
+                            <Grid>
+                                <TextBlock Text="&#xe041;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding DivisioneItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding DivisioneItemsView.IsMultipleModifyNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarToggleButton>
+                        <commonResources:ButtonsBarDropDownButton x:Name="ImportItems" Content="&#xE0BA;" Style="{StaticResource dropDownButtonStyle}"
+                                                          ToolTip="{lex:Loc ImportaArticoli}" FontSize="20"
+                                                          DesideredVisibility="{Binding DivisioneItemsView.IsImportItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                          OtherText="{lex:Loc Importa}">
+                            <commonResources:ButtonsBarDropDownButton.DropDownContent>
+                                <StackPanel Orientation="Vertical" Width="40">
+                                    <commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaDaFileJoin}"
+                                                Command="{Binding DivisioneItemsView.ImportItemsCommand}"
+                                                Content="&#xE0C3;" Style="{StaticResource dropDownContentButtonStyle}"
+                                                OtherText="{lex:Loc ImportaDaFileJoin}"/>
+                                    <commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaDaFileXlsx}"
+                                                Command="{Binding DivisioneItemsView.ImportXlsxCommand}"
+                                                Content="&#xE134;" Style="{StaticResource dropDownContentButtonStyle}"
+                                                OtherText="{lex:Loc ImportaDaFileXlsx}"/>
+                                </StackPanel>
+                            </commonResources:ButtonsBarDropDownButton.DropDownContent>
+                        </commonResources:ButtonsBarDropDownButton>
+                        <commonResources:ButtonsBarButton x:Name="CodingItems" Command="{Binding ItemsView.CodingItemsCommand}" 
+                                                                Style="{StaticResource menuButtonStyle}"
+                                                    ToolTipService.ToolTip="{Binding ItemsView.CodingItemsToolTip}" Content="&#xe0ed;"
+                                                    DesideredVisibility="{Binding ItemsView.IsCodingItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{Binding ItemsView.CodingItemsToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="EntityHighlighters" Command="{Binding ItemsView.EntityHighlightersCommand}" 
+                                                    Style="{StaticResource menuButtonStyle}"
+                                                    ToolTipService.ToolTip="{lex:Loc Evidenziatori}" Content="&#xe113;"
+                                                    DesideredVisibility="{Binding ItemsView.IsEntityHighlightersEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                    OtherText="{lex:Loc Evidenziatori}"/>
+                        <Button Name="OtherButton" Style="{StaticResource menuButtonStyle}" Content="&#xe07e;" ContextMenuService.IsEnabled="False"/>
+                    </commonResources:ButtonsBar>
+                    <StackPanel Grid.Column="1" Style="{StaticResource menuStackPanelStyle}">
+                        <TextBlock Text="{Binding DivisioneItemsView.CheckedEntitiesCount, Mode=OneWay}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                        <Button Name="AlertButton" Content="!" Visibility="{Binding DivisioneItemsView.IsAlertVisible, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Center"
+                                        FontSize="40" FontWeight="Bold" Foreground="{StaticResource AlertColor}" Style="{StaticResource menuButtonStyle}"
+                                    Command="{Binding DivisioneItemsView.ShowAlertCommand}" Width="20">
+                        </Button>
+                        <dxe:FlyoutControl IsOpen="{Binding DivisioneItemsView.IsAlertOpen}"
+										        PlacementTarget="{Binding ElementName=AlertButton}"
+                                                Style="{StaticResource flyoutControlStyle}" Background="{StaticResource AlertColor}"
+                                                >
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Closing" Command="{Binding DivisioneItemsView.AlertCloseCommand}" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <ListView ItemsSource="{Binding DivisioneItemsView.AlertItems}" BorderThickness="0" Background="Transparent">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Focusable" Value="false"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Background="{StaticResource AlertColor}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="50"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding AlertText}"/>
+                                            <Button Grid.Column="1" Command="{Binding AlertSelectEntitiesCommand}" 
+                                                    Visibility="{Binding AnyEntities, Converter={StaticResource VisibilityConverter}}" 
+                                                    Margin="5,0,5,0" Padding="2"
+                                                    Style="{StaticResource smallButtonStyle}" Content="&#xe07f;"
+                                                    ToolTip="{lex:Loc SelezionaVoci}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </dxe:FlyoutControl>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1" Height="20" Background="WhiteSmoke" Visibility="{Binding IsItemsSummarized, Converter={StaticResource VisibilityConverter}}" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="{Binding DivisioneItemsView.WidthAttributo4}"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="{Binding DivisioneItemsView.WidthAttributo3}"/>
+                            </Grid.ColumnDefinitions>
+                            <GridSplitter Name="MasterHeaderAttributo3Splitter" Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" DragCompleted="MasterHeaderAttributo3Splitter_DragCompleted"/>
+                            <Button Name="MasterHeaderAttributo3Btn" Grid.Column="2" Content="{Binding DivisioneItemsView.HeaderAttributo3}" Click="MasterHeaderAttributo3Btn_Click" HorizontalContentAlignment="Right" BorderThickness="0"/>
+                        </Grid>
+                        <GridSplitter Name="MasterHeaderAttributo4Splitter" Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" DragCompleted="MasterHeaderAttributo4Splitter_DragCompleted"/>
+                        <Button Name="MasterHeaderAttributo4Btn" Grid.Column="2" Content="{Binding DivisioneItemsView.HeaderAttributo4}" Click="MasterHeaderAttributo4Btn_Click" HorizontalContentAlignment="Right" BorderThickness="0"/>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <ToggleButton IsChecked="{Binding DivisioneItemsView.IsNoSelectionChecked, Mode=TwoWay}" Visibility="{Binding DivisioneItemsView.AllowNoSelection, Converter={StaticResource VisibilityConverter}}" FontSize="12" Height="40" VerticalAlignment="Center" HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                            <ToggleButton.Style>
+                                <Style TargetType="{x:Type ToggleButton}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border x:Name="border" BorderThickness="0" Padding="0,0,0,0" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="true">
+                                                        <Setter Property="Background" TargetName="border" Value="LightGray"/>
+                                                        <Setter Property="BorderThickness" TargetName="border" Value="2,0,0,0"/>
+                                                        <Setter Property="BorderBrush" TargetName="border" Value="Gray"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="{Binding DivisioneItemsView.WidthAttributo3}"/>
+                                    <ColumnDefinition Width="{Binding DivisioneItemsView.WidthAttributo4}"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{lex:Loc _Nessuno}" Margin="20,0,0,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding DivisioneItemsView.NessunoAttributo3}" HorizontalAlignment="Right" Visibility="{Binding IsItemsSummarized, Converter={StaticResource VisibilityConverter}}"/>
+                                <TextBlock Grid.Column="2" Text="{Binding DivisioneItemsView.NessunoAttributo4}" HorizontalAlignment="Right" Visibility="{Binding IsItemsSummarized, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </ToggleButton>
+                    </Grid>
+                    <ListView x:Name="DivisioneItemTree" ItemsSource="{Binding DivisioneItemsView.VirtualEntities}" Margin="0,10,0,10" Foreground="#193C3A3A" Background="White"  Grid.Row="1" HorizontalAlignment="Stretch"
+                                SelectionMode="Single" AllowDrop="True" SelectedIndex="{Binding DivisioneItemsView.SelectedIndex, Mode=TwoWay}"
+                                BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
+                                ScrollViewer.IsDeferredScrollingEnabled="True" dz:GridViewSort.AutoSort="False" dz:VirtualListLoadingIndicator.IsAttached="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                HorizontalContentAlignment="Stretch"
+                                >
+                        <ListView.InputBindings>
+                            <KeyBinding Gesture="Ctrl+A" Command="{Binding DivisioneItemsView.CtrlACheckedCommand}"/>
+                        </ListView.InputBindings>
+                        <!--<ListView.ContextMenu>
+                                <ContextMenu >
+                                    <MenuItem x:Name="Paste" Header="Incolla" Command="{Binding DivisioneItemsView.PasteClipboardCommand}" IsEnabled="{Binding DivisioneItemsView.IsPasteClipboardEnabled}"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>-->
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Name="TreeViewItem" MouseLeftButtonDown="TreeViewItem_MouseLeftButtonDown">
+                                    <Grid.Resources>
+                                        <ContextMenu x:Key="ItemContextMenu">
+                                            <MenuItem x:Name="ExpandBranch" Header="{lex:Loc Espandi Ramo}" Command="{Binding Data.ExpandBranchCommand}"  IsEnabled="{Binding Data.ExpandBranchEnabled}" Background="WhiteSmoke">
+                                                <MenuItem.Icon>
+                                                    <TextBlock Text="&#xe050;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <!--<MenuItem x:Name="Copy" Header="{lex:Loc Copia2}" Command="{Binding Data.CopyToClipboardCommand}" IsEnabled="{Binding Data.IsCopyToClipboardEnabled}"/>
+                                                <MenuItem x:Name="CopyWithHeaders" Header="{lex:Loc Copia con intestazioni}" Command="{Binding Data.CopyWithHeadersToClipboardCommand}" IsEnabled="{Binding Data.IsCopyWithHeadersToClipboardEnabled}"/>
+                                                <MenuItem x:Name="Paste" Header="{lex:Loc Incolla}" Command="{Binding Data.PasteClipboardCommand}" IsEnabled="{Binding Data.IsPasteClipboardEnabled}"/>-->
+                                            <MenuItem x:Name="Copy" Command="{Binding Data.CopyToClipboardCommand}" Header="{lex:Loc Copia2}" IsEnabled="{Binding Data.IsAnyChecked}">
+                                                <MenuItem.Icon>
+                                                    <TextBlock Text="&#xe03d;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem x:Name="Paste" Command="{Binding Data.PasteClipboardCommand}"  Header="{lex:Loc Incolla}" IsEnabled="{Binding Data.IsPasteClipboardEnabled}">
+                                                <MenuItem.Icon>
+                                                    <TextBlock Text="&#xe03f;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem x:Name="CopyText" Command="{Binding Data.CopyTextToClipboardCommand}" Header="{lex:Loc CopiaNegliAppunti}" IsEnabled="{Binding Data.IsAnyChecked}">
+                                                <MenuItem.Icon>
+                                                    <TextBlock Text="&#xe03e;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Grid.Resources>
+                                    <Grid.Style>
+                                        <Style TargetType="{x:Type Grid}" >
+                                            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid  Grid.Column="0" Background="{Binding Data.Background}">
+                                        <Grid.InputBindings>
+                                            <MouseBinding Gesture="Shift+LeftClick" Command="{Binding Data.ShiftCheckedCommand}"/>
+                                            <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding Data.CtrlCheckedCommand}"/>
+                                            <MouseBinding Gesture="Ctrl+Shift+LeftClick" Command="{Binding Data.ShiftCtrlCheckedCommand}"/>
+                                        </Grid.InputBindings>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition x:Name="IconsColumn" Width="20"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Margin="{Binding Data.Depth, Converter={StaticResource IntToIndConverter}}" Grid.Column="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition x:Name="ExpandButtonColumn" Width="20"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="ExpandButton" Command="{Binding Data.ExpandCommand}" Visibility="{Binding Data.HasChildren, Converter={StaticResource VisibilityConverter}}" Grid.Column="0" Content="{Binding Path=Data.IsExpanded, Mode=TwoWay, Converter={StaticResource expandCollapseVerticalGlyphConverter}}" IsTabStop="False" VerticalAlignment="Stretch" Style="{StaticResource smallButtonStyle}" Foreground="Gray"/>
+                                            <TextBlock Text="_" Visibility="{Binding Data.HasChildren, Converter={StaticResource InverseVisibilityConverter}}" Grid.Column="0" Width="20" Foreground="Gray"/>
+                                            <Grid Grid.Column="1" >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0" Visibility="{Binding IsItemsSummarized, Converter={StaticResource VisibilityConverter}}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="{Binding Data.WidthAttributo3}"/>
+                                                        <ColumnDefinition Width="{Binding Data.WidthAttributo4}"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Data.Attributo1}" Grid.Column="0" Foreground="Black" Height="18"/>
+                                                    <TextBlock Text="{Binding Data.SumAttributo3}" Grid.Column="1" Foreground="Black" HorizontalAlignment="Right" Height="18" />
+                                                    <TextBlock Text="{Binding Data.SumAttributo4}" Grid.Column="2" Foreground="Black" HorizontalAlignment="Right" Height="18" />
+                                                </Grid>
+                                                <TextBlock Text="{Binding Data.Attributo1}" Grid.Row="0" Foreground="Black" Height="18" Visibility="{Binding IsItemsSummarized, Converter={StaticResource InverseVisibilityConverter}}"/>
+                                                <TextBlock Text="{Binding Data.Attributo2}" Grid.Row="1" Foreground="Black" Height="18"/>
+                                                <!--DESCRIZIONE-->
+                                            </Grid>
+                                        </Grid>
+                                        <StackPanel Name="Icone" Orientation="Vertical" Grid.Column="3" Background="{Binding Data.HighlighterColor}">
+                                            <TextBlock Name="FindIcon" Visibility="{Binding Data.IsSearched, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="3" Style="{StaticResource smallTextBlockStyle}" Text="&#xe067;"/>
+                                            <TextBlock Name="MoveIcon" Visibility="{Binding Data.IsReadyToMove, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="3" Style="{StaticResource smallTextBlockStyle}" Text="&#xe032;"/>
+                                            <TextBlock Name="CopyIcon" Visibility="{Binding Data.IsCopied, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="3" Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;"/>
+                                            <TextBlock Name="MultiModifyIcon" Visibility="{Binding Data.IsReadyToMultiModify, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="3" Style="{StaticResource smallTextBlockStyle}" Text="&#xe041;"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <!--</Border>-->
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Grid>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+            <Grid Name="DetailGrid" Grid.Column="2" HorizontalAlignment="Stretch" MinWidth="200" IsEnabled="{Binding IsEntityTypeValid}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Style="{StaticResource menuStackPanelStyle}">
+                    <Button Name="ScrollToCurrentEntity" Command="{Binding DivisioneItemsView.ScrollToCurrentEntityCommand}" ToolTip="{lex:Loc Vai a...}" Visibility="{Binding DivisioneItemsView.IsScrollToCurrentEntityEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe06a;"/>
+                    <Button Name="SetAttributi" ToolTip="{lex:Loc Imposta attributi}" Click="SetAttributi_Click"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe069;" IsEnabled="True"/>
+                </StackPanel>
+                <ListView x:Name="DetailListView" ItemsSource="{Binding DivisioneItemsView.AttributiEntities.AttributiValoriComuniView}" Margin="10" Background="White" RenderTransformOrigin="0.5,0.5" Grid.Row="1"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="0" KeyboardNavigation.TabNavigation="Cycle" PreviewMouseLeftButtonDown="listViewDetail_PreviewMouseLeftButtonDown" PreviewMouseMove="listViewDetail_PreviewMouseMove" DragEnter="listViewDetail_DragEnter" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False"
+                            SelectedItem="{Binding DivisioneItemsView.AttributiEntities.SelectedItem}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Name="DetailListViewItem" Background="Transparent">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxMenuItemHeader}"
+							                            Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxCommand}">
+                                            <MenuItem.Icon>
+                                                <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" FontSize="13"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Name="DragRectangle" Text="{Binding Etichetta}" VerticalAlignment="Top" Grid.Column="0" HorizontalAlignment="Stretch" Width="{Binding EtichettaWidth}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <!--IsHilighted-->
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="true">
+                                                        <Setter Property="Background" Value="{StaticResource SelectedColor}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="false">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </DataTrigger>
+                                                    <!--IsGuid-->
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="true">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="false">
+                                                        <Setter Property="FontWeight" Value="Normal"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+
+                                    </TextBlock>
+                                    <!--<Popup Style="{StaticResource popupStyle}"
+											    IsOpen="{Binding IsHilighted}" 
+											    PlacementTarget="{Binding ElementName=DragRectangle}">
+                                            <Border Style="{StaticResource popupBorderStyle}">
+                                                <TextBlock Text="{lex:Loc Attributi}"/>
+                                            </Border>
+                                        </Popup>-->
+                                    <!--<dxe:FlyoutControl IsOpen="{Binding IsHilighted, Mode=TwoWay}" 
+										    PlacementTarget="{Binding ElementName=DragRectangle}"
+                                            Style="{StaticResource flyoutControlStyle}">
+                                        <dxe:FlyoutControl.Settings>
+                                            <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                            </dxe:FlyoutSettings>
+                                        </dxe:FlyoutControl.Settings>
+                                        -->
+                                    <!--<commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                                        LoadedBehavior="Play" UnloadedBehavior="Manual" MaxWidth="200" MaxHeight="200"/>-->
+                                    <!--
+                                    </dxe:FlyoutControl>-->
+                                    <Button x:Name="ExpandButton" Command="{Binding ExpandCommand}" Visibility="{Binding IsExpandable, Converter={StaticResource VisibilityConverter}}" Grid.Column="1" Content="{Binding Path=IsExpanded, Mode=TwoWay, Converter={StaticResource expandCollapseVerticalGlyphConverter}}" IsTabStop="False" VerticalAlignment="Top" Style="{StaticResource smallButtonStyle}" Foreground="Gray"/>
+                                </Grid>
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" Background="Transparent" DragCompleted="GridSplitter_DragCompleted" IsTabStop="False"/>
+                                <ContentControl Name="ValoreControl" Content="{Binding ValoreView, Mode=OneWay}" Grid.Column="2" ContentTemplateSelector="{StaticResource ValoreAttributoTemplateSelector}"  Visibility="{Binding IsValoreViewVisible, Mode=TwoWay, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" TabIndex="{Binding TabIndex}" IsTabStop="False" Height="{Binding Height}" Padding="0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <Expander IsExpanded="{Binding Items[0].IsGroupExpanded}" Style="{StaticResource expanderStyle}">
+                                                    <Expander.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="16" />
+                                                        </StackPanel>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter />
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </Grid>
+        </Grid>
+        <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1">
+            <Grid Name="RightSplitGrid" HorizontalAlignment="Stretch">
+                <Grid Style="{StaticResource rightSplitGridStyle}" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Name="RightSplitPaneControl" Content="{Binding RightPanesView.CurrentControlView, Mode=TwoWay}" 
+                                    Visibility="{Binding RightPanesView.IsPaneOpen, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" 
+                                    ContentTemplateSelector="{StaticResource RightSplitPaneTemplateSelector}" VerticalContentAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch" Grid.Column="0"  AllowDrop="True"
+                                    DragOver="RightSplitPaneControl_DragOver"  Drop="RightSplitPaneControl_Drop"
+                                    Width="150" BorderThickness="0"/>
+                    <Grid Grid.Column="1" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ToggleButton x:Name="OpenPanel" IsChecked="{Binding RightPanesView.IsPaneOpen, Mode=TwoWay}" Width="50" VerticalAlignment="Stretch" ToolTipService.ToolTip="{lex:Loc EspandiCollassa}" AllowDrop="True" Grid.Row="0" Margin="0"
+                                  Style="{StaticResource menuToggleButtonStyle}" Content="{Binding Path=RightPanesView.IsPaneOpen, Mode=TwoWay, Converter={StaticResource expandCollapseHorizontalGlyphConverter}}"/>
+                        <Grid Grid.Row="1" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ToggleButton x:Name="FilterToggleButton" IsChecked="{Binding RightPanesView.IsFilterPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc TrovaFiltra}" AllowDrop="True" Grid.Row="0"
+                                          Margin="0" Style="{StaticResource filterToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="FilterToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe07f;" FontSize="20"  HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.FilterView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.FilterView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}"/>
+                                </StackPanel>
+                            </ToggleButton>
+                            <ToggleButton x:Name="SortToggleButton" IsChecked="{Binding RightPanesView.IsSortPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc Ordina}" Grid.Row="1" AllowDrop="True"
+                                          Margin="0" Style="{StaticResource sortToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="SortToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe066;" FontSize="20" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.SortView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.SortView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}"/>
+                                </StackPanel>
+                            </ToggleButton>
+                            <Rectangle HorizontalAlignment="Right" Width="50" VerticalAlignment="Stretch" Grid.Row="3"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

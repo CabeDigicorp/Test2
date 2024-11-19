@@ -1,0 +1,735 @@
+﻿@using Blazored.LocalStorage
+@using BracketPipe
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using System.Collections.ObjectModel
+@using RtfPipe
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Popups
+@using System.Text
+@using Syncfusion.Blazor.Spinner
+@using System.Collections.Specialized
+
+@inject JoinWebApiClient _apiClient
+@inject NavigationManager _navigation
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject ILocalStorageService LocalStorage
+@inject Log Log
+
+<div class="@(_isDataLoading ? "spinnercontainer" : "d-none")">
+    <SfSpinner Size="30"
+               Type="SpinnerType.Material"
+               @bind-Visible="@_isDataLoading"
+               Label="Attendere il caricamento dei dati..." />
+</div>
+
+<div class="@((_isNoDataLoaded & !_isDataLoading) ? "spinnercontainer" : "d-none")">
+    <SfSpinner Size="30"
+               Type="SpinnerType.Material"
+               @bind-Visible="@_computoLoadingStopSpinner"
+               Label="Nessun dato da visualizzare per le informazioni di questo progetto." />
+</div>
+<div class="@((_isDataLoading || _isNoDataLoaded) ? "modulo-completo-vuoto" : "modulo-completo")">
+    @if (!_isDataLoading)
+    {
+        <SfAccordion ID="progettoAccordion"
+                     Height="100%"
+                     Width="100%"
+                     class="e-main-info-accordion"
+                     ExpandMode="ExpandMode.Multiple"
+                     ExpandedIndices=AccordionExpandedIndexes
+                     ExpandedIndicesChanged="OnAccordionExpandedCollapsed"
+                     EnablePersistence=false
+                     LoadOnDemand=false>
+            <AccordionItems>
+                @foreach (var gruppo in InfoProgetto.GroupBy(item => item.GroupName))
+                {
+                    <AccordionItem Visible=@gruppo.Any(item => item.IsVisible)>
+                        <HeaderTemplate>
+                            <div>@(gruppo.Key)</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            @foreach (var elemento in gruppo.Where(x => x.Codice != null))
+                            {
+                                if (!elemento.IsVisible) { continue; }
+                                <div class="e-custom-button-accordion"
+                                     @onclick="() => HandleClick(elemento.Codice, elemento.DefinizioneAttributoCodice)">
+                                    @switch (elemento.DefinizioneAttributoCodice)
+                                    {
+                                        case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                                            {
+                                                <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                       Data=@elemento.Valore
+                                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.SimplePreview"
+                                                                       @key="elemento.GetHashCode()">
+                                                </DataToMarkupComponent>
+                                            }
+                                            break;
+                                        case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Booleano:
+                                            {
+                                                <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                       Data=@elemento.Descrizione
+                                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.WingdingsBoolean"
+                                                                       @key="elemento.GetHashCode()">
+                                                </DataToMarkupComponent>
+                                            }
+                                            break;
+                                        case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection) &&
+                                        (elemento.GuidReferenceEntityTypeKey == ModelData.Model.BuiltInCodes.EntityType.Allegati):
+                                            {
+                                                <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                       Data=@elemento.Descrizione
+                                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.Attachments"
+                                                                       @key="elemento.GetHashCode()">
+                                                </DataToMarkupComponent>
+                                            }
+                                            break;
+                                        case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection):
+                                            {
+                                                <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                       Data=@elemento.Descrizione
+                                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.ElementSequence"
+                                                                       @key="elemento.GetHashCode()">
+                                                </DataToMarkupComponent>
+                                            }
+                                            break;
+                                        case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoCollection):
+                                            {
+                                                <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                       Data=@elemento.Descrizione
+                                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.ElementSequence"
+                                                                       @key="elemento.GetHashCode()">
+                                                </DataToMarkupComponent>
+                                            }
+                                            break;
+                                        default:
+                                            {
+                                                <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                       Data=@elemento.Descrizione
+                                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                                       @key="elemento.GetHashCode()">
+                                                </DataToMarkupComponent>
+                                            }
+                                            break;
+                                    }
+                                </div>
+                            }
+                        </ContentTemplate>
+                    </AccordionItem>
+                }
+            </AccordionItems>
+        </SfAccordion>
+
+        <SfDialog EnableResize="true"
+                  Target="e-custommodal"
+                  EnablePersistence="true"
+                  Height="90%"
+                  Width="80%"
+                  ShowCloseIcon="true"
+                  CssClass="e-custommodal"
+                  IsModal="true"
+                  CloseOnEscape="true"
+                  AllowDragging="true"
+                  AllowPrerender="true"
+                  FooterTemplate="@($"Informazioni generali del progetto: {ProgettoId}, type: {ContentType}.")"
+                  ResizeHandles="@DialogResizeDirections"
+                  @bind-Visible="@IsDialogVisible"
+                  @key="DialogHeather?.GetHashCode()">
+            <DialogTemplates>
+                <Header><b>Dettagli di "@DialogHeather"</b></Header>
+                <Content>
+                    <div class="dialogcontainer">
+
+                    @switch (ContentType)
+                    {
+                        case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                            {
+                                @((RenderFragment)((builder) => builder.AddMarkupContent(0, (string?)_contentDialog ?? "")))
+                            }
+                            break;
+                        case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Testo:
+                            {
+                                <DataToMarkupComponent Data="_contentDialog"
+                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                       @key="_contentDialog?.GetHashCode()">
+                                </DataToMarkupComponent>
+                            }
+                            break;
+                        case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Riferimento:
+                            {
+                                <DataToMarkupComponent Data="_contentDialog"
+                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.BoldColonNewLineTextList"
+                                                       @key="_contentDialog?.GetHashCode()">
+                                </DataToMarkupComponent>
+                            }
+                            break;
+                        case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoCollection) ||
+                        (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection):
+                            {
+                                <DataToMarkupComponent Data="_contentDialog"
+                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.BoldColonNewLineTextList"
+                                                       @key="_contentDialog?.GetHashCode()">
+                                </DataToMarkupComponent>
+                            }
+                            break;
+                        case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Booleano:
+                            {
+                                <DataToMarkupComponent Data="_contentDialog"
+                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.WingdingsBoolean"
+                                                       @key="_contentDialog?.GetHashCode()">
+                                </DataToMarkupComponent>
+                            }
+                            break;
+                        case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Reale) ||
+                        (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Contabilita):
+                            {
+                                <DataToMarkupComponent Data="_contentDialog"
+                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.RealValue"
+                                                       @key="_contentDialog?.GetHashCode()">
+                                </DataToMarkupComponent>
+                            }
+                            break;
+                        default:
+                            {
+                                <DataToMarkupComponent Data="_contentDialog"
+                                                       FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                       @key="_contentDialog?.GetHashCode()">
+                                </DataToMarkupComponent>
+                            }
+                            break;
+                    }
+                    </div>
+                </Content>
+            </DialogTemplates>
+            <DialogAnimationSettings Effect="@AnimationEffect"
+                                     Duration=300 />
+            <DialogEvents OnOverlayModalClick="OverlayClick">
+            </DialogEvents>
+            <span id="message">@ClickStatus</span>
+        </SfDialog>
+    }
+</div>
+
+<style>
+
+
+
+    /* Impaginazione blocco interno dell'accordion */
+    .e-accordion .e-acrdn-item .e-acrdn-panel {
+        font-size: 14px;
+        margin-bottom: -12px;
+        /*         margin-left: -2px;
+                                                                        margin-right: -2px; */
+    }
+
+    .e-main-info-accordion {
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+
+    .spinnercontainer {
+        width: 25rem;
+        height: 10rem;
+        z-index: 20;
+        border-radius: 1px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .modulo-completo-vuoto {
+        display: none;
+    }
+
+    .e-accordion .e-acrdn-item.e-selected.e-select.e-select:last-child {
+        border-bottom: inherit;
+    }
+
+    .modulo-completo {
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        border-radius: 1px;
+    }
+
+    .dialogcontainer {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public Guid ProgettoId { get; set; }
+
+    //[CascadingParameter(Name = "InteractWithProjectDetails")]
+    //public List<Func<bool, Task<bool>>> InteractWithProjectDetails { get; set; }
+
+    [CascadingParameter(Name = "OnInteractWithProjectDetails")]
+    public List<Func<bool, Task<bool>>> OnInteractWithProjectDetails { get; set; }
+
+    public bool IsDialogVisible { get; set; } = false;
+    public string ClickStatus { get; set; } = string.Empty;
+    public string? ContentType { get; set; } = "plainText";
+    private string? _contentDialog { get; set; }
+    public string? DialogHeather { get; set; } = "Dettagli attributo:";
+    public ResizeDirection[] DialogResizeDirections { get; set; } = new ResizeDirection[] { ResizeDirection.All };
+    public DialogEffect AnimationEffect { get; set; } = DialogEffect.FadeZoom;
+    public ObservableCollection<InfoProgettoDto> InfoProgetto { get; set; } = new();
+    public int[] AccordionExpandedIndexes { get; set; } = new int[0];
+
+    private bool _isDataLoading = true;
+    private bool _isNoDataLoaded = false;
+    private bool _computoLoadingStopSpinner = false;
+    private List<string> _lstGruppiAccordionExpandend = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            InfoProgetto.CollectionChanged += InfoProgettoChanged!;
+            Log.Information($"Invocazione controller info {DateTime.Now.ToString()}!");
+            OnInteractWithProjectDetails.Clear(); // Attenzione, è importante che questo componente sia il primo nella catena di invocazione.
+            if (!OnInteractWithProjectDetails.Contains(AggiornaInfoProgetto))
+            {
+                OnInteractWithProjectDetails.Add(AggiornaInfoProgetto);
+            }
+            await GetInfoProgetto();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (!firstRender)
+            {
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private async Task GetInfoProgetto()
+    {
+        try
+        {
+            var infoProgettoResult = await _apiClient.JsonGetAsync<List<InfoProgettoDto>>($"infoprogetto/get-info-progetto-totale/{ProgettoId}");
+            if (!infoProgettoResult.Success)
+            {
+                _isDataLoading = false;
+                _isNoDataLoaded = true;
+            }
+            else
+            {
+                _isNoDataLoaded = false;
+                InfoProgetto = new ObservableCollection<InfoProgettoDto>(infoProgettoResult.ResponseContentData ?? new List<InfoProgettoDto>());
+                await Task.Run(() => LoadInfoProgettiData(InfoProgetto));
+
+                ExpandGroupContainingCodice(InfoProgetto ?? new(), AccordionExpandedIndexes, _lstGruppiAccordionExpandend, ModelData.Model.BuiltInCodes.Attributo.Importo);
+                ExpandGroupContainingCodice(InfoProgetto ?? new(), AccordionExpandedIndexes, _lstGruppiAccordionExpandend, ModelData.Model.BuiltInCodes.Attributo.OggettoLavori);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+        }
+    }
+
+    private async Task<bool> AggiornaInfoProgetto(bool data)
+    {
+        try
+        {
+            Log.Information("Aggiorna Informazioni Progetti clicked");
+
+            var isProgettoUpdated = await _apiClient.JsonGetAsync<bool>($"infoprogetto/get-info-clear/{ProgettoId}");
+            if (isProgettoUpdated.Success && isProgettoUpdated.ResponseContentData)
+            {
+                await GetInfoProgetto();
+                //StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return true;
+    }
+
+    private void InfoProgettoChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+    }
+
+    private async Task LoadInfoProgettiData(ObservableCollection<InfoProgettoDto> InfoProgetto)
+    {
+        try
+        {
+            // calcolo preventivo dei testi rtf
+            List<string?> valoriTestoRTF = InfoProgetto
+            .Where(dto => dto.DefinizioneAttributoCodice == "TestoRTF")
+            .Select(dto => dto.Valore)
+            .ToList();
+
+            await Task.WhenAll(valoriTestoRTF?.SelectMany(item =>
+                (item?.Split("~!@#$%^&*()_+") ?? Enumerable.Empty<string>())
+                    .Select(async element =>
+                    {
+                        string trimmedElement = (element ?? "").Trim();
+                        string sKey = Utilities.DataStorageHelper.GenerateKey(trimmedElement);
+
+                        if (!await LocalStorage.ContainKeyAsync(sKey))
+                        {
+                            await ConvertRtfToHtml(trimmedElement, sKey);
+                        }
+                    })) ?? Enumerable.Empty<Task>());
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+            _isDataLoading = false;
+        }
+    }
+
+    private void OverlayClick(OverlayModalClickEventArgs args)
+    {
+        this.IsDialogVisible = false;
+    }
+
+    private async Task HandleClick(string? sCodice, string? sAttributoCodice)
+    {
+        try
+        {
+            var tupleCorrispondente = AttributiConfig.ShowSettings.FirstOrDefault(t => t.Item1 == sAttributoCodice && t.Item2);
+            if (tupleCorrispondente != null)
+            {
+                await Task.Run(() => OpenDialogClicked(sCodice, sAttributoCodice));
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Funzione di preparazione del dato al fine di adattarlo al componente DataToMarkupComponent
+    /// </summary>
+    /// <param name="sCodice"></param>
+    /// <param name="sAttributoCodice"></param>
+    /// <returns></returns>
+    private async Task OpenDialogClicked(string? sCodice, string? sAttributoCodice)
+    {
+        try
+        {
+            ContentType = sAttributoCodice;
+            InfoProgettoDto objSelectedItem = InfoProgetto.Where(x => x.Codice == sCodice).ToList().FirstOrDefault() ?? new();
+            _contentDialog = string.Empty;
+            if (objSelectedItem != null)
+            {
+                switch (objSelectedItem.DefinizioneAttributoCodice)
+                {
+                    case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                        {
+                            _contentDialog = await Task.Run(() => GetHtmlData(objSelectedItem.Valore));
+                        }
+                        break;
+                    case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Reale) ||
+                    (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Contabilita):
+                        {
+                            if (!string.IsNullOrEmpty(objSelectedItem.Descrizione) && string.IsNullOrEmpty(objSelectedItem.ValoreDescrizione))
+                            {
+                                _contentDialog = $"{objSelectedItem.Descrizione}\n";
+                            }
+                            else
+                            {
+                                _contentDialog =
+                                $"{(string.IsNullOrEmpty(objSelectedItem.ValoreFormula) ? string.Empty : objSelectedItem.ValoreFormula + "\t")}" +
+                                $"{(string.IsNullOrEmpty(objSelectedItem.ValoreDescrizione) ? string.Empty : objSelectedItem.ValoreDescrizione + "\t")}" +
+                                $"{(string.IsNullOrEmpty(objSelectedItem.Descrizione) ? string.Empty : objSelectedItem.Descrizione + "\n")}";
+                            }
+                        }
+                        break;
+                    default:
+                        {
+                            _contentDialog = objSelectedItem.Descrizione;
+                        }
+                        break;
+                }
+                DialogHeather = objSelectedItem.Etichetta;
+            }
+
+            this.IsDialogVisible = true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            this.IsDialogVisible = false;
+        }
+    }
+
+    private async Task<string?> GetHtmlData(string? sValore)
+    {
+        string? sContentData = string.Empty;
+        try
+        {
+            foreach (string? element in (sValore != null ? sValore.Split("~!@#$%^&*()_+") : new string?[0]))
+            {
+                string sKey = Utilities.DataStorageHelper.GenerateKey(element ?? "");
+                if (await LocalStorage.ContainKeyAsync(sKey))
+                {
+                    DataPersistence dataPersistence = await LocalStorage.GetItemAsync<DataPersistence>(sKey) ?? new();
+                    sContentData = sContentData != string.Empty ? (sContentData += " \\ " + dataPersistence.HtmlData ?? "") : dataPersistence.HtmlData ?? "";
+                }
+                else
+                {
+                    sContentData = sContentData != string.Empty ? (sContentData += " \\ " + await ConvertRtfToHtml(element ?? "", sKey)) : await ConvertRtfToHtml(element ?? "", sKey) ?? "";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+        }
+        return sContentData;
+    }
+
+    private async Task<string> ConvertRtfToHtml(string rtfContent, string? key)
+    {
+        string sHtml = string.Empty;
+        try
+        {
+            System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(ppp);
+            sHtml = Rtf.ToHtml(rtfContent);
+
+            string plainText = string.Empty;
+            using (var w = new System.IO.StringWriter())
+            using (var md = new PlainTextWriter(w))
+            {
+                Rtf.ToHtml(rtfContent, md);
+                md.Flush();
+                plainText = w.ToString();
+            }
+
+            DataPersistence dataPersistence = new();
+            dataPersistence.HashCode = key;
+            dataPersistence.HtmlData = sHtml == string.Empty ? "" : sHtml;
+            dataPersistence.TextData = plainText == string.Empty ? "" : plainText;
+            dataPersistence.RtfData = rtfContent;
+
+            if (!string.IsNullOrEmpty(sHtml) && !string.IsNullOrEmpty(key))
+            {
+                await LocalStorage.SetItemAsync(key, dataPersistence);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return (string.IsNullOrEmpty(sHtml) ? string.Empty : sHtml);
+    }
+
+    /// <summary>
+    /// Salvataggio stato espansione degli accordion dentro gli oggetti Datasource, salvataggio in struttura dati esterna per sopperire alla mancanza di un evento specifico
+    /// </summary>
+    /// <param name="expandedIndices"></param>
+    private async void OnAccordionExpandedCollapsed(int[] expandedIndices)
+    {
+        try
+        {
+            List<string> lstGruppiAccordionExpandend = GetExpandedGroupNames(expandedIndices, _lstGruppiAccordionExpandend);
+
+            // Usa lstGruppiAccordionExpandend come desideri
+            foreach (var groupName in lstGruppiAccordionExpandend)
+            {
+                Console.WriteLine($"NomeGruppo espanso: {groupName}");
+            }
+
+            // Se devi aggiornare lo stato interno, puoi farlo qui
+            AccordionExpandedIndexes = expandedIndices;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Funzione per mantenere aggiornato lo stato degli accordion al combio di computo
+    /// </summary>
+    /// <param name="oldInfoComputo"></param>
+    /// <param name="newInfoComputo"></param>
+    private void PreserveAccordionExpandedState(List<ComputoDto> newInfoComputo, List<string> lstLocalIndexes)
+    {
+        try
+        {
+            // Lista per memorizzare i nuovi indici degli elementi espansi
+            List<int> newExpandedIndices = new();
+
+            if (lstLocalIndexes == null || !lstLocalIndexes.Any())
+                return;
+
+            // Mappa dei NomeGruppo espansi (da vecchia lista)
+            HashSet<string> expandedGroupNames = new HashSet<string>(lstLocalIndexes);
+
+            // Raggruppa la nuova lista per NomeGruppo
+            var groupedNewInfoComputo = newInfoComputo
+                .GroupBy(c => c.NomeGruppo)
+                .ToList();
+
+            // Itera sui gruppi nella nuova lista
+            for (int i = 0; i < groupedNewInfoComputo.Count; i++)
+            {
+                var groupName = groupedNewInfoComputo[i].Key;
+
+                // Se il groupName era espanso nella vecchia lista, aggiungilo ai nuovi indici
+                if (!string.IsNullOrEmpty(groupName) && expandedGroupNames.Contains(groupName))
+                {
+                    newExpandedIndices.Add(i);
+                }
+            }
+
+            // Aggiorna l'array di indici espansi
+            AccordionExpandedIndexes = newExpandedIndices.ToArray();
+
+            // Puoi aggiornare lstGruppiAccordionExpandend se necessario
+            // lstGruppiAccordionExpandend = newExpandedIndices.Select(i => groupedNewInfoComputo[i].Key).ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Funzione per estrarre i nomi dei titoli degli accordion (gruppi), in base agli indici
+    /// </summary>
+    /// <param name="expandedIndices"></param>
+    /// <param name="lstLocalIndexes"></param>
+    /// <returns></returns>
+    public List<string> GetExpandedGroupNames(int[] expandedIndices, List<string> lstLocalIndexes)
+    {
+        try
+        {
+            lstLocalIndexes.Clear();
+            if (InfoProgetto == null || !InfoProgetto.Any())
+                return lstLocalIndexes;
+
+            // Raggruppa gli elementi di InfoProgetto per NomeGruppo
+            var groupedComputo = InfoProgetto
+                .GroupBy(c => c.GroupName)
+                .ToList();
+
+            // Usa un HashSet per evitare duplicati
+            HashSet<string> uniqueGroupNames = new();
+
+            // Itera sugli indici forniti
+            foreach (var index in expandedIndices)
+            {
+                // Verifica che l'indice non superi i limiti della lista raggruppata
+                if (index >= 0 && index < groupedComputo.Count)
+                {
+                    // Estrai il NomeGruppo corrispondente all'indice
+                    var groupName = groupedComputo[index].Key;
+
+                    if (!string.IsNullOrEmpty(groupName) && !uniqueGroupNames.Contains(groupName))
+                    {
+                        // Aggiungi il NomeGruppo alla lista finale e al HashSet per evitare duplicati
+                        uniqueGroupNames.Add(groupName);
+                        lstLocalIndexes.Add(groupName);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return lstLocalIndexes;
+    }
+
+    /// <summary>
+    /// Funzione che espande l'accordion in base '
+    /// </summary>
+    /// <param name="groupName"></param>
+    /// <param name="codice"></param>
+    private void ExpandGroupContainingCodice(ObservableCollection<InfoProgettoDto> newInfoComputo, int[] arrayIndexes, List<string> lstStringGroupNames, string codice)
+    {
+        try
+        {
+            if (newInfoComputo == null || !newInfoComputo.Any())
+                return;
+
+            // Raggruppa la lista per NomeGruppo
+            var groupedComputo = newInfoComputo
+                .GroupBy(c => c.GroupName)
+                .ToList();
+
+            // Lista temporanea per aggiornare gli indici espansi
+            List<int> newExpandedIndices = arrayIndexes.ToList();
+            bool foundMatch = false;
+
+            // Itera su ciascun gruppo nella lista raggruppata
+            for (int i = 0; i < groupedComputo.Count; i++)
+            {
+                var group = groupedComputo[i];
+
+                // Cerca all'interno del gruppo se almeno un elemento ha il Codice specificato
+                if (group.Any(c => c.Codice == codice))
+                {
+                    foundMatch = true;
+
+                    // Aggiungi l'indice del gruppo all'array espanso se non è già presente
+                    if (!newExpandedIndices.Contains(i))
+                    {
+                        newExpandedIndices.Add(i);
+                    }
+
+                    // Aggiorna lstGruppiAccordionExpandend con il nome del gruppo, se non già presente
+                    if (!lstStringGroupNames.Contains(group?.Key))
+                    {
+                        lstStringGroupNames.Add(group.Key);
+                    }
+                }
+            }
+
+            if (foundMatch)
+            {
+                // Aggiorna AccordionExpandedIndexes con i nuovi indici espansi
+                AccordionExpandedIndexes = newExpandedIndices.ToArray();
+
+                // Invoca il metodo per aggiornare lo stato dell'accordion
+                OnAccordionExpandedCollapsed(AccordionExpandedIndexes);
+            }
+            else
+            {
+                Console.WriteLine("Nessun Codice trovato in nessun gruppo.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+}

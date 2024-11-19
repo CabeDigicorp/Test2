@@ -1,0 +1,84 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.TreeGrid
+@using System.Collections.ObjectModel
+@using JoinWebUI.Utilities
+
+@inject IJSRuntime _jsRuntime
+
+<div style="height:100%; overflow-y:auto">
+    @if (DataSource == null)
+    {
+        <p class="italicsCentered">Informazione non disponibile</p>
+    }
+    else
+    {
+        if (DataSource.Count == 0)
+        {
+            <p class="italicsCentered">Nessun valore trovato</p>
+        }
+        else
+        {
+            <ul style="list-style-type: none !important; padding-left: 0px !important;">
+                @foreach (var node in DataSource)
+                {
+                    @* <ModelNavTreeItem IdPrefix=@IdPrefix Node=@node FragmentsHelper=@FragmentsHelper OnSelection=@OnSelection OnSubTreeSelection=@OnSubTreeSelection OnDeselection=@OnDeselection /> *@
+                    <ModelNavTreeItem IdPrefix=@IdPrefix Node=@node FragmentsHelper=@FragmentsHelper OnSelection=@OnSelection OnDeselection=@OnDeselection />
+                }
+            </ul>
+        }
+    }    
+</div>
+
+<style>
+
+    .italicsCentered {
+        text-align: center;
+        font-style: italic;
+        padding-top: 1rem;
+    }
+
+</style>
+
+
+@code {
+    [Parameter]
+    public string IdPrefix { get; set; } = string.Empty;
+
+    [Parameter]
+    public List<Utilities.ModelNavTreeNode> DataSource { get; set; } = new List<global::JoinWebUI.Utilities.ModelNavTreeNode>();
+
+    [Parameter]
+    public FragmentsHelper FragmentsHelper { get; set; }
+
+    [Parameter]
+    public EventCallback<(ModelNavTreeNode Node, bool RemovePrevious)> OnSelection { get; set; }
+
+    [Parameter]
+    public EventCallback<ModelNavTreeNode> OnDeselection { get; set; }
+
+    // [Parameter]
+    // public EventCallback<(ModelNavTreeNode Node, bool RemovePrevious)> OnSubTreeSelection { get; set; }
+
+    public void CollapseAll()
+    {
+        foreach (var item in DataSource)
+        {
+            item.CollapseAll();
+        }
+        StateHasChanged();
+    }
+    public void ExpandAll()
+    {
+        foreach (var item in DataSource)
+        {
+            item.ExpandAll();
+        }
+        StateHasChanged();
+    }
+    
+    public void ForceUpdate()
+    {
+        StateHasChanged();
+    }
+}

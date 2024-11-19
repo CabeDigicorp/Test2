@@ -1,0 +1,250 @@
+﻿@using AutoMapper;
+@using System.Text.RegularExpressions;
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+<SfDialog Width="400px" CloseOnEscape="true" IsModal="true" @bind-Visible="@IsVisible">
+    <DialogTemplates>
+        <Header>Ricerca utente</Header>
+        <Content>
+            <div class="my-4 d-flex justify-content-between align-items-center" id="mainDiv">
+                <SfIcon IconCss="e-inherit e-icons e-normal-icon pe-sm-3 icon-cerca-filtra" />
+                <SfTextBox ID="SearchBox" Placeholder="Cerca utente..." Input="@OnSearchInput" FloatLabelType="FloatLabelType.Never" ShowClearButton="true" />
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-trova" IconPosition="IconPosition.Left" Disabled="@_filterIsNotEmail" OnClick="@FindUnknownUsers">Cerca</SfButton>
+            </div>
+            <div style="min-height:300px;width:100%">
+            <SfListBox TValue="string[]" TItem="UtenteWithCliente"
+                       Height="100%"
+                       style="min-height:100%"
+                       DataSource="@_filteredUsers"
+                       @ref="_list">
+                <ListBoxFieldSettings GroupBy="Cliente" Value="Utente.IdString" Text="Utente.Info"/>
+                <ListBoxSelectionSettings Mode="SelectionMode.Single" ShowCheckbox="false" />
+                <ListBoxTemplates TItem="UtenteWithCliente">
+                    <NoRecordsTemplate><span class="text">Nessun utente trovato</span></NoRecordsTemplate>
+                    <ItemTemplate>
+                        @if ((context as UtenteWithCliente).Utente.MultiLine)
+                        {
+                            <div class="list-wrapper e-list-multi-line">
+                                <span class="text">@((context as UtenteWithCliente).Utente.TextLine1)</span><span class="description">@((context as UtenteWithCliente).Utente.TextLine2)</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="list-wrapper">
+                                <span class="text">@((context as UtenteWithCliente).Utente.TextLine1)</span>
+                            </div>
+                        }
+                    </ItemTemplate>
+                </ListBoxTemplates>
+                <ListBoxEvents TValue="string[]" TItem="UtenteWithCliente" ValueChange="@OnValueChanged" />
+            </SfListBox>
+            </div>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" Content="OK" IsPrimary="true" OnClick="@OkClick" Disabled="@DisableOKButton" />
+        <DialogButton CssClass="e-btn-blue" Content="Annulla" OnClick="@CancelClick" />
+    </DialogButtons>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<UtenteModel> OkCallback { get; set; }
+    [Parameter] public EventCallback CancelCallback { get; set; }
+    [Parameter] public bool IsVisible { get; set; } = false;
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private List<UtenteWithCliente> _knownUsers = new List<UtenteWithCliente>();
+    private List<UtenteWithCliente> _filteredUsers = new List<UtenteWithCliente>();
+    private UtenteModel? _chosenFoundUser;
+    private string _filter = "";
+
+    private SfListBox<string[], UtenteWithCliente>? _list;
+    //private string[] _selectedValues;
+
+    private bool DisableOKButton { get { return _chosenFoundUser == null; } }
+
+    private bool _filterIsNotEmail = true;
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private async Task OnSearchInput(InputEventArgs? e)
+    {
+        _filter = e?.Value ?? String.Empty;
+
+        _filterIsNotEmail = !Regex.IsMatch(_filter, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase);
+
+        if (_filterIsNotEmail) //ricerca generica
+        {
+            string[] filters = _filter.Split(" ,;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            if (filters == null || filters.Count() == 0)
+            {
+                _filteredUsers = _knownUsers.OrderBy(uc => uc.Utente.NomeCompleto).ToList();
+            }
+            else
+            {
+                List<string> mailFilter = filters.Where(f => f.Contains("email:", StringComparison.CurrentCultureIgnoreCase) || !f.Contains(":"))
+                                               .Select(f => f.Replace("email:", "", StringComparison.CurrentCultureIgnoreCase))
+                                               .ToList();
+
+                List<string> nameFilter = filters.Where(f => f.Contains("nome:", StringComparison.CurrentCultureIgnoreCase) || !f.Contains(":"))
+                                                .Select(f4 => f4.Replace("nome:", "", StringComparison.CurrentCultureIgnoreCase))
+                                                .ToList();
+
+
+                var filteredByName = (from uc in _knownUsers
+                                      from nf in nameFilter
+                                      where (uc.Utente.Nome!.Contains(nf, StringComparison.CurrentCultureIgnoreCase))
+                                      select uc);
+
+                var filteredByEmail = (from uc in _knownUsers
+                                       from tf in mailFilter
+                                       where (uc.Utente.Email!.Contains(tf, StringComparison.CurrentCultureIgnoreCase))
+                                       select uc);
+
+
+                _filteredUsers = filteredByName.Union(filteredByEmail)
+                                 .Distinct().OrderBy(uc => uc.Utente.Nome).ToList();
+            }
+        }
+        else //solo email
+        {
+            _filteredUsers = _knownUsers.Where(uc => uc.Utente.Email!.Equals(_filter.Trim(), StringComparison.CurrentCultureIgnoreCase)).ToList();
+        }
+
+        StateHasChanged();
+
+    }
+
+
+    protected void OnValueChanged(ListBoxChangeEventArgs<string[], UtenteWithCliente> e)
+    {
+        if (e?.Value != null && e.Value.Length > 0)
+        {
+            _chosenFoundUser = _knownUsers.Where(u => u.Utente.Id.ToString() == e.Value[0]).FirstOrDefault()?.Utente;
+        }
+        else
+        {
+            _chosenFoundUser = null;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FindUnknownUsers()
+    {
+        if (!_filterIsNotEmail)
+        {
+            var result = await _apiClient.JsonGetAsync<UtenteDto>("utenti/get-utente-by-email/" + _filter.Trim());
+            if (result.Success)
+            {
+                var user = _mapper.Map<UtenteModel>(result.ResponseContentData);
+                if (!_knownUsers.Any(uc => uc.Utente.IdString == user.Id.ToString()))
+                {
+                    UtenteWithCliente uc = new UtenteWithCliente(user, "[Altri utenti conosciuti]");
+
+                    _knownUsers.Add(uc);
+                    _filteredUsers.Add(uc);
+                    StateHasChanged();
+                }
+                else
+                {
+                    //TODO errore
+                }
+            }
+            else
+            {
+                //TODO errore
+            }
+        }
+
+    }
+
+    protected async override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (IsVisible)
+        {
+            _filter = string.Empty;
+            _filterIsNotEmail = true;
+            _chosenFoundUser = null;
+            _filteredUsers = new List<UtenteWithCliente>();
+            _knownUsers = new List<UtenteWithCliente>();
+
+            var result = await _apiClient.JsonGetAsync<List<UtenteInfoWithClienteDto>>("utenti/get-utenti-noti");
+            if (result.Success)
+            {
+                foreach (UtenteInfoWithClienteDto dto in result.ResponseContentData!)
+                {
+                    UtenteModel u = _mapper.Map<UtenteModel>(dto);
+                    _knownUsers.Add(new UtenteWithCliente(u, dto.Cliente));
+                }
+            }
+            else
+            {
+                //TODO errore
+            }
+
+            await OnSearchInput(null);
+        }
+    }
+
+
+    private void OkClick()
+    {
+        if(_chosenFoundUser == null)
+        {
+            Console.Error.WriteLine("FindUserPopup - Errore - codice 2");
+            return;
+        }
+        if (OkCallback.HasDelegate)
+        {
+            OkCallback.InvokeAsync(_chosenFoundUser);
+            IsVisible = false;
+        }
+    } 
+
+    private void CancelClick()
+    {
+        if (CancelCallback.HasDelegate)
+        {
+            CancelCallback.InvokeAsync();
+        }
+        IsVisible = false;
+    }
+
+
+
+    protected class UtenteWithCliente : IEquatable<UtenteWithCliente>
+    {
+        public UtenteModel Utente { get; }
+        //public string UtenteIdString { get; }
+        //public string UtenteInfo { get; }
+        public string Cliente { get; }
+
+        public UtenteWithCliente(UtenteModel utente, string cliente)
+        {
+            Utente = utente;
+            //UtenteIdString = utente.IdString;
+            //UtenteInfo = utente.Info;
+            Cliente = cliente;
+        }
+
+        public bool Equals(UtenteWithCliente other)
+        {
+            return this.Utente.Id.Equals(other.Utente.Id) && this.Cliente == other.Cliente;
+        }
+    }
+
+}

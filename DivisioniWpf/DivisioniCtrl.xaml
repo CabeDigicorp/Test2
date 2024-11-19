@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="DivisioniWpf.DivisioniCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DivisioniWpf"
+             mc:Ignorable="d" 
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.OutputMissingKeys="True"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+             d:DesignHeight="300" d:DesignWidth="300"
+             DataContext="{StaticResource DivisioniViewKey}"
+             >
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" MaxWidth="400"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Style="{StaticResource menuStackPanelStyle}">
+                <Button x:Name="AddDivisione" Command="{Binding AddDivisioneCommand}" Visibility="{Binding IsAddDivisioneEnabled, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource menuButtonStyle}" Content="&#xe02d;" ToolTip="{lex:Loc Aggiungi divisione}"/>
+                <Button x:Name="DeleteDivisione" Command="{Binding DeleteDivisioneCommand}" Visibility="{Binding IsDeleteDivisioneEnabled, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource menuButtonStyle}" Content="&#xe03a;" ToolTip="{lex:Loc Elimina divisione}"/>
+                <Button x:Name="MoveDivisione" Command="{Binding MoveDivisioneCommand}" ToolTipService.ToolTip="{lex:Loc Sposta}" 
+                                Style="{StaticResource menuButtonStyle}"
+                                Visibility="{Binding IsMoveDivisioneEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                    <Grid>
+                        <TextBlock Text="&#xe032;" Style="{StaticResource menuTextBlockStyle}"/>
+                        <commons:NotificationCtrl Text="{Binding ReadyToPasteDivisioneCount}" Visibility="{Binding IsMoveDivisioneNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                    </Grid>
+                </Button>
+                <dxe:FlyoutControl IsOpen="{Binding IsMoveDivisioneWaitingForTarget, Mode=OneWay}" 
+				                           PlacementTarget="{Binding ElementName=MoveDivisione}"
+				                           Style="{StaticResource flyoutControlStyle}">
+                    <dxe:FlyoutControl.Settings>
+                        <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                        </dxe:FlyoutSettings>
+                    </dxe:FlyoutControl.Settings>
+                    <TextBlock Text="{lex:Loc SelezionareDestinazione}" FontSize="12"/>
+                </dxe:FlyoutControl>
+                <Button x:Name="MoveDivisioneAfter" Command="{Binding PasteDivisioneCommand}"  ToolTipService.ToolTip="{Binding PasteDivisioneToolTip, Mode=TwoWay}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe030;"
+                                Visibility="{Binding IsMoveDivisioneAfterEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                <Button x:Name="Escape" Command="{Binding EscapeCommand}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe037;"
+                                ToolTipService.ToolTip="{lex:Loc Annulla}"
+                                Visibility="{Binding IsEscapeEnabled, Converter={StaticResource VisibilityConverter}}"/>
+            </StackPanel>
+            <ListView Name="DivisioniNameCtrl" ItemsSource="{Binding DivisioniItems}" SelectionMode="Single" Grid.Row="1" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                      BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="- "/>
+                            <TextBox Grid.Column="1" Text="{Binding Name}" IsReadOnly="True"  BorderThickness="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" MouseDoubleClick="TextBox_MouseDoubleClick" Background="Transparent"/>
+                            <TextBlock Name="MoveIcon" Visibility="{Binding IsReadyToPaste, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                        HorizontalAlignment="Right" Grid.Column="2" 
+                                        Padding="3" Style="{StaticResource smallTextBlockStyle}" Text="&#xe032;"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Codice}" FontSize="10" Background="{StaticResource AdvancedModeColor}" 
+                                     Visibility="{Binding IsAdvancedMode, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+        <local:DivisioneCtrl x:Name="currentDivisioneCtrl" Grid.Column="2" DataContext="{StaticResource DivisioneViewKey}"/>
+    </Grid>
+</UserControl>

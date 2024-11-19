@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.ValoreTestoView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.25" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAgACgAACYAAAAAAAAAQCAAAAAAAAgEAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreDataView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.75" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAgACgAACQAAAAAAAAEQAAADAAAAAgAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreCollectionView" Collapsed="true">
+    <Position X="4.5" Y="5.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIQAAAAoACgAACSAACAAQBFAQAAAAAAAIAABAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Valori" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreCollectionItemView" Collapsed="true">
+    <Position X="11" Y="5.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACgAAAQACAVESAAAAABAABAwAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreTestoCollectionView" Collapsed="true">
+    <Position X="2.75" Y="7" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreTestoCollectionItemView" Collapsed="true">
+    <Position X="9" Y="7" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAQAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreGuidCollectionView" Collapsed="true">
+    <Position X="5.75" Y="7" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreGuidCollectionItemView" Collapsed="true">
+    <Position X="12.5" Y="7" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAQAAAIAAAAAAAAAAAAAQAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreTestoSuggestView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AACQAEAAgICgAgCYgAAAACAAgQAACABAAAAAAoICAAU=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreTestoRtfView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.75" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAASBEAEgACgAACYAAAAAAAAAQAAAAAAAEAgEAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreRealeView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.25" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AgAQAAAAgACgAACQAAAAAAAAAQgABAAAAAAgAAABAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreContabilitaView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.25" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AgAQAAAAgACgAACQAAAAAAAAAQgABAAAAAAgAAABAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreGuidView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAgACgAACQAAAAAAAAAQAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="MasterDetailView.ValoreView">
+    <Position X="0.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAgAAAQAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,930 @@
+@font-face {
+  font-family: 'digicorp';
+  src:  url('fonts/digicorp.eot?ayr4l0');
+  src:  url('fonts/digicorp.eot?ayr4l0#iefix') format('embedded-opentype'),
+    url('fonts/digicorp.ttf?ayr4l0') format('truetype'),
+    url('fonts/digicorp.woff?ayr4l0') format('woff'),
+    url('fonts/digicorp.svg?ayr4l0#digicorp') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'digicorp' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-progetto:before {
+  content: "\e021";
+}
+.icon-menu:before {
+  content: "\e022";
+}
+.icon-archivio:before {
+  content: "\e023";
+}
+.icon-vista-elenco:before {
+  content: "\e024";
+}
+.icon-vista-griglia:before {
+  content: "\e025";
+}
+.icon-sostituisci-file-ifc:before {
+  content: "\e026";
+}
+.icon-modello-ifc:before {
+  content: "\e027";
+}
+.icon-carica-modello-ifc:before {
+  content: "\e028";
+}
+.icon-elenco-prezzi:before {
+  content: "\e029";
+}
+.icon-aggiorna-articoli:before {
+  content: "\e02a";
+}
+.icon-aggiungi-articolo:before {
+  content: "\e02b";
+}
+.icon-prezzari:before {
+  content: "\e02c";
+}
+.icon-aggiungi:before {
+  content: "\e02d";
+}
+.icon-aggiungi-inferiore:before {
+  content: "\e02e";
+}
+.icon-aggiungi-superiore:before {
+  content: "\e02f";
+}
+.icon-sposta-dopo-selezionato:before {
+  content: "\e030";
+}
+.icon-sposta-subordinato-al-selezionato:before {
+  content: "\e031";
+}
+.icon-sposta:before {
+  content: "\e032";
+}
+.icon-filtri:before {
+  content: "\e033";
+}
+.icon-aggiungi-filtro:before {
+  content: "\e034";
+}
+.icon-modifica-filtro:before {
+  content: "\e035";
+}
+.icon-nascondi-elementi-nascosti:before {
+  content: "\e036";
+}
+.icon-chiudi:before {
+  content: "\e037";
+}
+.icon-salva:before {
+  content: "\e038";
+}
+.icon-salva-come:before {
+  content: "\e039";
+}
+.icon-elimina:before {
+  content: "\e03a";
+}
+.icon-apri:before {
+  content: "\e03b";
+}
+.icon-nuovo:before {
+  content: "\e03c";
+}
+.icon-copia:before {
+  content: "\e03d";
+}
+.icon-copia-con-intestazioni:before {
+  content: "\e03e";
+}
+.icon-incolla:before {
+  content: "\e03f";
+}
+.icon-edita:before {
+  content: "\e040";
+}
+.icon-modifica-multipla:before {
+  content: "\e041";
+}
+.icon-Stampe:before {
+  content: "\e042";
+}
+.icon-selezione:before {
+  content: "\e043";
+}
+.icon-calcola:before {
+  content: "\e044";
+}
+.icon-colora-tutto:before {
+  content: "\e045";
+}
+.icon-colore-modificato:before {
+  content: "\e046";
+}
+.icon-colore-standard:before {
+  content: "\e047";
+}
+.icon-computo:before {
+  content: "\e048";
+}
+.icon-genera-computo:before {
+  content: "\e049";
+}
+.icon-dati-generali:before {
+  content: "\e04a";
+}
+.icon-divisioni:before {
+  content: "\e04b";
+}
+.icon-aggiungi-nella-sezione-elementi:before {
+  content: "\e04c";
+}
+.icon-elementi:before {
+  content: "\e04d";
+}
+.icon-element-type:before {
+  content: "\e04e";
+}
+.icon-evidenzia:before {
+  content: "\e04f";
+}
+.icon-espandi-ramo:before {
+  content: "\e050";
+}
+.icon-espandi-tutto:before {
+  content: "\e051";
+}
+.icon-collassa-tutto:before {
+  content: "\e052";
+}
+.icon-contatti:before {
+  content: "\e053";
+}
+.icon-teleassistenza:before {
+  content: "\e054";
+}
+.icon-impostazioni:before {
+  content: "\e055";
+}
+.icon-info:before {
+  content: "\e056";
+}
+.icon-guida:before {
+  content: "\e057";
+}
+.icon-ripristina-tutto:before {
+  content: "\e058";
+}
+.icon-impostazioni-scena:before {
+  content: "\e059";
+}
+.icon-help-scena:before {
+  content: "\e05a";
+}
+.icon-copia-scena:before {
+  content: "\e05b";
+}
+.icon-ifc-file:before {
+  content: "\e05c";
+}
+.icon-imposta-colonne:before {
+  content: "\e05d";
+}
+.icon-isola:before {
+  content: "\e05e";
+}
+.icon-mostra-griglia:before {
+  content: "\e05f";
+}
+.icon-vista-prospettica:before {
+  content: "\e060";
+}
+.icon-visualizza-elemento:before {
+  content: "\e061";
+}
+.icon-visualizza-elemento1:before {
+  content: "\e062";
+}
+.icon-nascondi:before {
+  content: "\e063";
+}
+.icon-nascondi-elemento:before {
+  content: "\e064";
+}
+.icon-inverti-visualizza-nascondi:before {
+  content: "\e065";
+}
+.icon-ordina:before {
+  content: "\e066";
+}
+.icon-trova:before {
+  content: "\e067";
+}
+.icon-raggruppa:before {
+  content: "\e068";
+}
+.icon-gestione-attributi:before {
+  content: "\e069";
+}
+.icon-vai-a:before {
+  content: "\e06a";
+}
+.icon-regole-computo:before {
+  content: "\e06b";
+}
+.icon-seleziona-elementi-visibili:before {
+  content: "\e06c";
+}
+.icon-seleziona-entit-aggregate:before {
+  content: "\e06d";
+}
+.icon-trasparenza-off:before {
+  content: "\e06e";
+}
+.icon-trasparenza-on:before {
+  content: "\e06f";
+}
+.icon-opaco:before {
+  content: "\e070";
+}
+.icon-zoom-esteso:before {
+  content: "\e071";
+}
+.icon-building-storey:before {
+  content: "\e072";
+}
+.icon-vista-bottom:before {
+  content: "\e073";
+}
+.icon-vista-up:before {
+  content: "\e074";
+}
+.icon-vista-front:before {
+  content: "\e075";
+}
+.icon-vista-rear:before {
+  content: "\e076";
+}
+.icon-vista-right:before {
+  content: "\e077";
+}
+.icon-vista-left:before {
+  content: "\e078";
+}
+.icon-lista-elementi-visibili:before {
+  content: "\e079";
+}
+.icon-dashboard:before {
+  content: "\e07a";
+}
+.icon-ingrandisci:before {
+  content: "\e07b";
+}
+.icon-ripristina-giu:before {
+  content: "\e07c";
+}
+.icon-riduci-a-icona:before {
+  content: "\e07d";
+}
+.icon-puntini:before {
+  content: "\e07e";
+}
+.icon-cerca-filtra:before {
+  content: "\e07f";
+}
+.icon-visualizza-struttura:before {
+  content: "\e080";
+}
+.icon-precedente:before {
+  content: "\e081";
+}
+.icon-successivo:before {
+  content: "\e082";
+}
+.icon-primo:before {
+  content: "\e083";
+}
+.icon-ultimo:before {
+  content: "\e084";
+}
+.icon-proprieta:before {
+  content: "\e085";
+}
+.icon-conferma:before {
+  content: "\e086";
+}
+.icon-espandi-verticale:before {
+  content: "\e087";
+}
+.icon-collassa-verticale:before {
+  content: "\e088";
+}
+.icon-espandi-orizzontale:before {
+  content: "\e089";
+}
+.icon-collassa-orizzontale:before {
+  content: "\e08a";
+}
+.icon-visualizza-struttura-off:before {
+  content: "\e08b";
+}
+.icon-sposta-su:before {
+  content: "\e08c";
+}
+.icon-sposta-giu:before {
+  content: "\e08d";
+}
+.icon-lock-on:before {
+  content: "\e08e";
+}
+.icon-lock-off:before {
+  content: "\e08f";
+}
+.icon-nascosti-default:before {
+  content: "\e090";
+}
+.icon-importa-attributi:before {
+  content: "\e091";
+}
+.icon-esporta-attributi:before {
+  content: "\e092";
+}
+.icon-controllo-regole:before {
+  content: "\e093";
+}
+.icon-filtra-la-selezione:before {
+  content: "\e094";
+}
+.icon-evidenzia-su-modello-IFC:before {
+  content: "\e095";
+}
+.icon-trova-su-finestra-principale:before {
+  content: "\e096";
+}
+.icon-annulla-azione:before {
+  content: "\e097";
+}
+.icon-visualizza-modello-ifc:before {
+  content: "\e098";
+}
+.icon-finestra-principale:before {
+  content: "\e099";
+}
+.icon-seleziona-tutto:before {
+  content: "\e09a";
+}
+.icon-insieme-vuoto:before {
+  content: "\e09b";
+}
+.icon-togli-filtro-elementi-visibili:before {
+  content: "\e09c";
+}
+.icon-selezione-su-selezione:before {
+  content: "\e09d";
+}
+.icon-selezione-box:before {
+  content: "\e09e";
+}
+.icon-visualizza-finestra-filtri:before {
+  content: "\e09f";
+}
+.icon-imposta-classe:before {
+  content: "\e0a0";
+}
+.icon-join:before {
+  content: "\e0a1";
+}
+.icon-aggiungi-plus:before {
+  content: "\e0a2";
+}
+.icon-export-excel:before {
+  content: "\e0a3";
+}
+.icon-misura:before {
+  content: "\e0a4";
+}
+.icon-NO-regole-computo:before {
+  content: "\e0a5";
+}
+.icon-isola-ortogonale:before {
+  content: "\e0a6";
+}
+.icon-informazioni-progetto:before {
+  content: "\e0a7";
+}
+.icon-unita-misura:before {
+  content: "\e0a8";
+}
+.icon-tag:before {
+  content: "\e0a9";
+}
+.icon-tag-assegna:before {
+  content: "\e0aa";
+}
+.icon-tag-rimuovi:before {
+  content: "\e0ab";
+}
+.icon-aggiungi-a-selezione:before {
+  content: "\e0ac";
+}
+.icon-download-prezzari:before {
+  content: "\e0ad";
+}
+.icon-aggiorna-elenco-prezzi:before {
+  content: "\e0ae";
+}
+.icon-deseleziona-tutto:before {
+  content: "\e0af";
+}
+.icon-mantieni:before {
+  content: "\e0b0";
+}
+.icon-sostituisci:before {
+  content: "\e0b1";
+}
+.icon-element-type-multi:before {
+  content: "\e0b2";
+}
+.icon-controllo-elementi:before {
+  content: "\e0b3";
+}
+.icon-controllo-filtri:before {
+  content: "\e0b4";
+}
+.icon-mantieni-sezione:before {
+  content: "\e0b5";
+}
+.icon-mantieni-sezioni:before {
+  content: "\e0b6";
+}
+.icon-sostituisci-sezione:before {
+  content: "\e0b7";
+}
+.icon-sostituisci-sezioni:before {
+  content: "\e0b8";
+}
+.icon-NO-elementi-computo:before {
+  content: "\e0b9";
+}
+.icon-importa:before {
+  content: "\e0ba";
+}
+.icon-importa-modello-da-file:before {
+  content: "\e0bb";
+}
+.icon-anteprima-stampa:before {
+  content: "\e0bc";
+}
+.icon-scene-precedenti:before {
+  content: "\e0bd";
+}
+.icon-stili:before {
+  content: "\e0be";
+}
+.icon-download-modelli:before {
+  content: "\e0bf";
+}
+.icon-classi-non-visibili:before {
+  content: "\e0c0";
+}
+.icon-articoli:before {
+  content: "\e0c1";
+}
+.icon-capitoli:before {
+  content: "\e0c2";
+}
+.icon-importa-da-file:before {
+  content: "\e0c3";
+}
+.icon-importa-da-prezzario:before {
+  content: "\e0c4";
+}
+.icon-viste:before {
+  content: "\e0c5";
+}
+.icon-report:before {
+  content: "\e0c6";
+}
+.icon-documenti:before {
+  content: "\e0c7";
+}
+.icon-RTF:before {
+  content: "\e0c8";
+}
+.icon-NO-internet:before {
+  content: "\e0c9";
+}
+.icon-aggiorna:before {
+  content: "\e0ca";
+}
+.icon-esporta-IFC:before {
+  content: "\e0cb";
+}
+.icon-copia-campo:before {
+  content: "\e0cc";
+}
+.icon-relating:before {
+  content: "\e0cd";
+}
+.icon-related:before {
+  content: "\e0ce";
+}
+.icon-sfera:before {
+  content: "\e0cf";
+}
+.icon-aggiungi-sopra:before {
+  content: "\e0d0";
+}
+.icon-connessioni:before {
+  content: "\e0d1";
+}
+.icon-ordina-AZ:before {
+  content: "\e0d2";
+}
+.icon-trasla:before {
+  content: "\e0d3";
+}
+.icon-ordina-ZA:before {
+  content: "\e0d4";
+}
+.icon-pianoZ:before {
+  content: "\e0d5";
+}
+.icon-piano-Z:before {
+  content: "\e0d6";
+}
+.icon-pianoX:before {
+  content: "\e0d7";
+}
+.icon-piano-X:before {
+  content: "\e0d8";
+}
+.icon-pianoY:before {
+  content: "\e0d9";
+}
+.icon-piano-Y:before {
+  content: "\e0da";
+}
+.icon-piano-superficie:before {
+  content: "\e0db";
+}
+.icon-piano-3-punti:before {
+  content: "\e0dc";
+}
+.icon-piani-mostra-nascondi:before {
+  content: "\e0dd";
+}
+.icon-piani-di-taglio:before {
+  content: "\e0de";
+}
+.icon-visualizza-con-preferenze:before {
+  content: "\e0df";
+}
+.icon-cancella-piani-di-taglio:before {
+  content: "\e0e0";
+}
+.icon-annotazione:before {
+  content: "\e0e1";
+}
+.icon-edit-annotazione:before {
+  content: "\e0e2";
+}
+.icon-elimina-annotazione:before {
+  content: "\e0e3";
+}
+.icon-elimina-annotazioni:before {
+  content: "\e0e4";
+}
+.icon-bordi-tabella-copia:before {
+  content: "\e0e5";
+}
+.icon-WBS:before {
+  content: "\e0e6";
+}
+.icon-Gantt:before {
+  content: "\e0e7";
+}
+.icon-elenco-attivita:before {
+  content: "\e0e8";
+}
+.icon-attivita:before {
+  content: "\e0e9";
+}
+.icon-seleziona-voci-computo:before {
+  content: "\e0ea";
+}
+.icon-seleziona-elementi-non-utilizzati:before {
+  content: "\e0eb";
+}
+.icon-aggiungi-colonna:before {
+  content: "\e0ec";
+}
+.icon-codifica-selezione:before {
+  content: "\e0ed";
+}
+.icon-origine-progetto:before {
+  content: "\e0ee";
+}
+.icon-Wizard-WBS:before {
+  content: "\e0ef";
+}
+.icon-separa-piani:before {
+  content: "\e0f0";
+}
+.icon-ripristina-piani:before {
+  content: "\e0f1";
+}
+.icon-calendari:before {
+  content: "\e0f2";
+}
+.icon-misura-area:before {
+  content: "\e0f3";
+}
+.icon-crea-filtro-per-ogni-valore:before {
+  content: "\e0f4";
+}
+.icon-zoom1:before {
+  content: "\e0f5";
+}
+.icon-date:before {
+  content: "\e0f6";
+}
+.icon-data-inizio:before {
+  content: "\e0f7";
+}
+.icon-Nascondi-date:before {
+  content: "\e0f8";
+}
+.icon-Scala-cronologica:before {
+  content: "\e0f9";
+}
+.icon-export:before {
+  content: "\e0fa";
+}
+.icon-export-project:before {
+  content: "\e0fb";
+}
+.icon-impostazioni-barre:before {
+  content: "\e0fc";
+}
+.icon-scollega:before {
+  content: "\e0fd";
+}
+.icon-impostazioni-griglia:before {
+  content: "\e0fe";
+}
+.icon-ifc:before {
+  content: "\e0ff";
+}
+.icon-esporta-vista-IFC:before {
+  content: "\e100";
+}
+.icon-esporta-vista-IFC-attributi:before {
+  content: "\e101";
+}
+.icon-impostazioni-Gantt:before {
+  content: "\e102";
+}
+.icon-collega:before {
+  content: "\e103";
+}
+.icon-genera-computo-costo:before {
+  content: "\e104";
+}
+.icon-sommario-articoli:before {
+  content: "\e105";
+}
+.icon-seleziona-filtri:before {
+  content: "\e106";
+}
+.icon-groups:before {
+  content: "\e107";
+}
+.icon-feriale:before {
+  content: "\e108";
+}
+.icon-barre-riepilogo:before {
+  content: "\e109";
+}
+.icon-zoom:before {
+  content: "\e10a";
+}
+.icon-zoom-:before {
+  content: "\e10b";
+}
+.icon-zoom-100:before {
+  content: "\e10c";
+}
+.icon-inizio-inizio:before {
+  content: "\e10d";
+}
+.icon-inizio-fine:before {
+  content: "\e10e";
+}
+.icon-fine-inizio:before {
+  content: "\e10f";
+}
+.icon-fine-fine:before {
+  content: "\e110";
+}
+.icon-attivita-selezionate:before {
+  content: "\e111";
+}
+.icon-percorso-critico:before {
+  content: "\e112";
+}
+.icon-evidenzia-voci:before {
+  content: "\e113";
+}
+.icon-applica-ritardo-min:before {
+  content: "\e114";
+}
+.icon-variabili:before {
+  content: "\e115";
+}
+.icon-scala:before {
+  content: "\e116";
+}
+.icon-naviga:before {
+  content: "\e117";
+}
+.icon-foglio-di-calcolo:before {
+  content: "\e118";
+}
+.icon-allegati:before {
+  content: "\e119";
+}
+.icon-salva-web:before {
+  content: "\e11a";
+}
+.icon-apri-web:before {
+  content: "\e11b";
+}
+.icon-visualizza-pwd:before {
+  content: "\e11c";
+}
+.icon-vai-a-data:before {
+  content: "\e11d";
+}
+.icon-pausa:before {
+  content: "\e11e";
+}
+.icon-programmazione-sal:before {
+  content: "\e11f";
+}
+.icon-visualizza-sal:before {
+  content: "\e120";
+}
+.icon-opera:before {
+  content: "\e121";
+}
+.icon-dots-v:before {
+  content: "\e122";
+}
+.icon-utente:before {
+  content: "\e123";
+}
+.icon-upload-file:before {
+  content: "\e124";
+}
+.icon-download-file:before {
+  content: "\e125";
+}
+.icon-dots-h:before {
+  content: "\e126";
+}
+.icon-informazioni-opera:before {
+  content: "\e127";
+}
+.icon-log-in:before {
+  content: "\e128";
+}
+.icon-loggato:before {
+  content: "\e129";
+}
+.icon-log-out:before {
+  content: "\e12a";
+}
+.icon-settore:before {
+  content: "\e12b";
+}
+.icon-condividi:before {
+  content: "\e12c";
+}
+.icon-domini:before {
+  content: "\e12d";
+}
+.icon-licenze:before {
+  content: "\e12e";
+}
+.icon-permessi:before {
+  content: "\e12f";
+}
+.icon-amministrazione:before {
+  content: "\e130";
+}
+.icon-offerta:before {
+  content: "\e131";
+}
+.icon-contabilita:before {
+  content: "\e132";
+}
+.icon-consultazione:before {
+  content: "\e133";
+}
+.icon-import-excel:before {
+  content: "\e134";
+}
+.icon-internet:before {
+  content: "\e135";
+}
+.icon-undo:before {
+  content: "\e136";
+}
+.icon-cancella-tutti-piani-taglio:before {
+  content: "\e137";
+}
+.icon-sposta-destra:before {
+  content: "\e138";
+}
+.icon-sposta-sinistra:before {
+  content: "\e139";
+}
+.icon-visualizza-nascondi-ifcspace:before {
+  content: "\e13a";
+}
+.icon-vista-assonometrica:before {
+  content: "\e13b";
+}
+.icon-elimina-lunghezza:before {
+  content: "\e13c";
+}
+.icon-elimina-lunghezze:before {
+  content: "\e13d";
+}
+.icon-elimina-area:before {
+  content: "\e13e";
+}
+.icon-elimina-aree:before {
+  content: "\e13f";
+}
+.icon-revit:before {
+  content: "\e140";
+}
+.icon-visualizza-rvt:before {
+  content: "\e141";
+}
+.icon-modello-3d:before {
+  content: "\e142";
+}
+.icon-misura_angolo:before {
+  content: "\e143";
+}
+.icon-elimina-misura_angolo:before {
+  content: "\e144";
+}
+.icon-elimina-misure_angoli:before {
+  content: "\e145";
+}
+.icon-togli-a-selezione:before {
+  content: "\e146";
+}
+.icon-ripristina-nascondi-isola:before {
+  content: "\e147";
+}
+.icon-Seleziona-albero:before {
+  content: "\e148";
+}
+.icon-filtro-on:before {
+  content: "\e149";
+}
+.icon-filtro-off:before {
+  content: "\e14a";
+}
+.icon-elimina-filtro-elementi:before {
+  content: "\e14b";
+}
+.icon-tipo-istanze:before {
+  content: "\e14c";
+}
+.icon-nascondi-vuoto:before {
+  content: "\e14d";
+}

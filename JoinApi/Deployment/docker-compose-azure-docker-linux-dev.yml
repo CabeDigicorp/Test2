@@ -1,0 +1,74 @@
+version: '3.4'
+
+services:
+  joinapi:
+    container_name: joinapi
+    image: digicorpregistry.azurecr.io/joinapi:net8
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=https://0.0.0.0:5100;http://0.0.0.0:5000
+      - MONGODB_URL=mongodb://mongodb:27017/join
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=pierantonella
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/root/.dotnet/corefx/cryptography/x509stores/my/joinwebkestrel.pfx
+      - AuthServer__RequireHttpsMetadata=false
+      - DOCKER_TLS_VERIFY=0
+    ports:
+      - "5000:5000"
+      - "5100:5100"
+      - "5080:80"
+      - "58080:8080"
+    depends_on:
+      - mongodb
+    hostname: joinapi
+    volumes:
+      - joinlogs:/logs
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - node-network
+    restart: always
+    # network_mode: "host"
+
+  joinwebui:
+    container_name: joinwebui
+    image: digicorpregistry.azurecr.io/joinwebui:net8
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - DOCKER_TLS_VERIFY=0
+    depends_on:
+      - joinapi
+    hostname: joinwebui
+    ports:
+      - "5101:5101"
+      - "5001:5001"
+      - "5002:80"
+      - "5003:443"
+    volumes:
+      - joinlogs:/logs
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    # network_mode: "host"
+    networks:
+      - node-network
+    restart: always
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+      - "27019:27017"
+    hostname: mongodb
+    # network_mode: "host"
+    networks:
+      - node-network
+    restart: always
+
+volumes:
+    mongodata:
+    joinlogs:
+
+networks:
+  node-network:
+    driver: bridge

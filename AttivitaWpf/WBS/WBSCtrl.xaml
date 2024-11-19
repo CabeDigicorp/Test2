@@ -1,0 +1,1280 @@
+﻿<UserControl x:Class="AttivitaWpf.WBSCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dz="clr-namespace:DevZest.Windows.DataVirtualization;assembly=DigiCorp.DataVirtualization"
+             xmlns:local="clr-namespace:AttivitaWpf" 
+             xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+             xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons" 
+             xmlns:masterDetailView="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView" 
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxgn="http://schemas.devexpress.com/winfx/2008/xaml/gantt"
+             xmlns:dxgnn="http://schemas.devexpress.com/winfx/2008/xaml/gantt/internal"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
+             xmlns:controls="clr-namespace:CommonResources.Controls;assembly=DigiCorp.CommonResources" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <commons:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
+        <commons:StaticResourceConverter x:Key="StaticResourceConverter"/>
+        <commons:ColorConverter x:Key="ColorConverter"/>
+
+        <Style TargetType="{x:Type Control}" x:Key="baseStyle">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <!--<Style TargetType="{x:Type Button}" BasedOn="{StaticResource baseStyle}"></Style>-->
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <!-- Setting VirtualListItemBase.AutoLoad to true will load the item when it's set to ListViewItem.Content property -->
+        <Style TargetType="ListViewItem">
+            <Setter Property="dz:VirtualListItemBase.AutoLoad" Value="true" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" Padding="0" SnapsToDevicePixels="true">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="Gray"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="2,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="templateTesto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap" Grid.Column="0" KeyDown="TextBox_KeyDown" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"/>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                        Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <!--<DataTemplate x:Key="templateTestoRtfOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <ContentControl x:Name="RichTextContent" Grid.Column="0" IsTabStop="False" VerticalAlignment="Top" MinHeight="20" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick">
+                    <ExtendedWPFToolkit:RichTextBox x:Name="ShortRichTextBox" Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" ScrollViewer.VerticalScrollBarVisibility="Auto"  AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1" />
+                </ContentControl>
+                <Grid Grid.Column="1" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="EditRtfButton" Grid.Column="0" Command="{Binding EditRtfCommand}" Style="{StaticResource detailListViewItemButtonStyle}" Content="&#xe040;" IsTabStop="False" Height="20" Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityHiddenConverter}}"/>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                        Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>-->
+        <DataTemplate x:Key="templateContabilita">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" InputScope="CurrencyAmount" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick"  BorderThickness="0,0,0,1"/>
+                <Button Name="HelpButton" Grid.Column="2" Content="&#xe057;" Command="{Binding HelpCommand}"
+                                    Width="Auto" HorizontalAlignment="Left" Style="{StaticResource detailListViewItemButtonStyle}"
+                                    ToolTip="{lex:Loc Funzioni e operatori utilizzabili}"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <DataTemplate x:Key="templateReale">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top"
+                         IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" BorderThickness="0,0,0,1"
+                         MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick"
+                         KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                <Grid Grid.Column="2" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Name="HelpButton" Content="&#xe057;" Command="{Binding HelpCommand}"
+                            Width="Auto" HorizontalAlignment="Center" Style="{StaticResource detailListViewItemButtonStyle}"
+                            ToolTip="{lex:Loc Funzioni e operatori utilizzabili}">
+                    </Button>
+                    <dxe:FlyoutControl IsOpen="{Binding IsLavoroHelpPopupOpen}" 
+										   PlacementTarget="{Binding ElementName=HelpButton}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                        <dxe:FlyoutControl.Settings>
+                            <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                            </dxe:FlyoutSettings>
+                        </dxe:FlyoutControl.Settings>
+                        <TextBlock>
+                            <Run Text="{lex:Loc EPossibileUtilizzareLaFunzioneRoundup_}"/><LineBreak/>
+                            <Run Text="{lex:Loc roundup_arg_div}" FontStyle="Italic"/><LineBreak/>
+                            <LineBreak/>
+                            <Run Text="{lex:Loc Esempio}" FontWeight="Bold"/><LineBreak/>
+                            <Run Text="roundup(63,4;8)=64"/>
+                            <Button Name="ApplyRoundUp" Content="{lex:Loc Applica}" Command="{Binding ApplyRoundUpCommand}" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" Margin="40,0,0,0" BorderThickness="0"/><LineBreak/>
+                            <Run Text="rounddown(63,4;8)=56"/>
+                            <Button Name="ApplyRoundDown" Content="{lex:Loc Applica}" Command="{Binding ApplyRoundDownCommand}" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" Margin="24,0,0,0" BorderThickness="0"/><LineBreak/>
+                            <LineBreak/>
+                            <Hyperlink NavigateUri="https://join.digicorp.it/guide/#t=Funzioni_e_operatori.htm" RequestNavigate="ParserFunctionsHelp_RequestNavigate">
+                                <Run Text="{lex:Loc Vedi funzioni e operatori}"/>
+                            </Hyperlink>
+                        </TextBlock>
+                    </dxe:FlyoutControl>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="templateDataOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <DatePicker SelectedDate="{Binding Data, Mode=TwoWay}" Grid.Column="0" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" BorderThickness="0,0,0,1"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="templateGuidOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </DataTemplate>
+        <masterDetailView:ValoreAttributoTemplateSelector x:Key="ValoreAttributoTemplateSelector" />
+        <masterDetailView:RightSplitPaneTemplateSelector x:Key="RightSplitPaneTemplateSelector" />
+
+    </UserControl.Resources>
+
+
+    <Grid PreviewMouseWheel="Grid_PreviewMouseWheel" PreviewMouseDown="Grid_PreviewMouseDown">
+        <Grid.LayoutTransform>
+            <ScaleTransform x:Name="MasterDetailScale" CenterX="0" CenterY="0" ScaleX="1" ScaleY="1"/>
+        </Grid.LayoutTransform>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <!--<ColumnDefinition Width="5"/>-->
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Name="MainGrid" Grid.Row="0" Style="{StaticResource mainGridStyle}" Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <!--DA RISTABILIRE CON LA TERZA RIGA-->
+                <!--<RowDefinition Height="5"/>-->
+                <!--<RowDefinition/>-->
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" MinWidth="200"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*" MinWidth="10"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="400" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <Grid Name="MasterGrid" Grid.Column="0">
+                <Grid.InputBindings>
+                    <KeyBinding Key="Escape" Command="{Binding ItemsView.EscapeCommand}"/>
+                </Grid.InputBindings>
+                <!--BorderThickness="3,0,3,0" BorderBrush="WhiteSmoke"-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!--<RowDefinition Height="Auto"/>-->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <commonResources:ButtonsBar Grid.Column="0" Style="{StaticResource menuStackPanelStyle}">
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc AggiornaVociWBS}" 
+                                            Command="{Binding ItemsView.UpdateWBSItemsCommand}"
+                                            DesideredVisibility="{Binding ItemsView.IsUpdateWBSItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            Content="&#xE0CA;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc AggiornaVociWBS}"/>
+                        <commonResources:ButtonsBarButton x:Name="AddEntity" Command="{Binding ItemsView.AddEntityCommand}" ToolTipService.ToolTip="{Binding ItemsView.AddEntityToolTip}"
+                                                  Style="{StaticResource menuButtonStyle}" Content="&#xe02d;"
+                                                  DesideredVisibility="{Binding ItemsView.IsAddEntityEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                  OtherText="{Binding ItemsView.AddEntityToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="AddEntityParent" Command="{Binding ItemsView.AddEntityParentCommand}"
+                                             ToolTipService.ToolTip="{Binding ItemsView.AddEntityParentToolTip}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe02f;"
+                                             DesideredVisibility="{Binding ItemsView.IsAddParentEnabled, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{Binding ItemsView.AddEntityParentToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="AddEntityChild" Command="{Binding ItemsView.AddEntityChildCommand}"
+                                             ToolTipService.ToolTip="{Binding ItemsView.AddEntityChildToolTip}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe02e;"
+                                             DesideredVisibility="{Binding ItemsView.IsAddChildEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{Binding ItemsView.AddEntityChildToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="MoveEntities" Command="{Binding ItemsView.MoveEntitiesCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Sposta}"
+                                             Style="{StaticResource menuButtonStyle}"
+                                             DesideredVisibility="{Binding ItemsView.IsMoveEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Sposta}"
+                                             >
+                            <Grid>
+                                <TextBlock Text="&#xe032;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding ItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding ItemsView.IsMoveEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarButton>
+
+                        <dxe:FlyoutControl IsOpen="{Binding ItemsView.IsMoveEntitiesWaitingForTarget, Mode=OneWay}" 
+										   PlacementTarget="{Binding ElementName=MoveEntities}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <TextBlock Text="{lex:Loc SelezionareDestinazione}"/>
+                        </dxe:FlyoutControl>
+                        <commonResources:ButtonsBarButton x:Name="CopyEntities" Command="{Binding ItemsView.CopyEntitiesCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Copia2}"
+                                             Style="{StaticResource menuButtonStyle}"
+                                             DesideredVisibility="{Binding ItemsView.IsCopyEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Copia2}">
+                            <Grid>
+                                <TextBlock Text="&#xe03d;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding ItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding ItemsView.IsCopyEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarButton>
+                        <commonResources:ButtonsBarButton x:Name="MoveEntitiesAfter" Command="{Binding ItemsView.PasteEntitiesCommand}"
+                                             ToolTipService.ToolTip="{Binding ItemsView.PasteEntitiesToolTip, Mode=TwoWay}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe030;"
+                                             DesideredVisibility="{Binding ItemsView.IsMoveEntitiesAfterEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{Binding ItemsView.PasteEntitiesToolTip, Mode=TwoWay}"/>
+                        <commonResources:ButtonsBarButton x:Name="MoveEntitiesChildOf" Command="{Binding ItemsView.PasteEntitiesChildOfCommand}"
+                                             ToolTipService.ToolTip="{Binding ItemsView.PasteEntitiesChildOfToolTip, Mode=TwoWay}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe031;"
+                                             DesideredVisibility="{Binding ItemsView.IsMoveEntitiesChildOfEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{Binding ItemsView.PasteEntitiesChildOfToolTip, Mode=TwoWay}"/>
+                        <commonResources:ButtonsBarButton x:Name="Escape" Command="{Binding ItemsView.EscapeCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Annulla}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe037;"
+                                             DesideredVisibility="{Binding ItemsView.IsEscapeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Annulla}"/>
+                        <commonResources:ButtonsBarButton x:Name="DeleteEntities" Command="{Binding ItemsView.DeleteCheckedCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Elimina}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe03a;"
+                                             DesideredVisibility="{Binding ItemsView.IsDeleteEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="Elimina"/>
+                        <commonResources:ButtonsBarButton x:Name="ExpandCheckedEntities" Command="{Binding ItemsView.ExpandCheckedEntitiesCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Espandi selezione}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe051;"
+                                             DesideredVisibility="{Binding ItemsView.IsExpandAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="Espandi selezione"/>
+                        <commonResources:ButtonsBarButton x:Name="CollapseAll" Command="{Binding ItemsView.CollapseAllCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Collassa tutto}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe052;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollapseAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="Collassa tutto"/>
+                        <commonResources:ButtonsBarButton x:Name="CheckAll" Command="{Binding ItemsView.CheckAllCommand}" ToolTipService.ToolTip="{lex:Loc Seleziona tutto}" 
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xE09A;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollapseAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="Seleziona tutto"/>
+                        <commonResources:ButtonsBarButton x:Name="SelectInModel3d" Command="{Binding SelectInModel3dCommand}" ToolTipService.ToolTip="{lex:Loc SelezionaSuModello3d}" 
+                                            Style="{StaticResource menuButtonStyle}" Content="&#xe095;"
+                                            DesideredVisibility="{Binding ItemsView.IsSelectInModel3dEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            OtherText="{lex:Loc SelezionaSuModello3d}"              />
+                        <commonResources:ButtonsBarToggleButton x:Name="MultiModify" IsChecked="{Binding ItemsView.IsMultipleModify, Mode=TwoWay}"
+                                                   ToolTipService.ToolTip="{lex:Loc Modifica Multipla}" Width="32"
+                                                   Style="{StaticResource menuToggleButtonStyle}"
+                                                   DesideredVisibility="{Binding ItemsView.IsMultipleModifyEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                   OtherText="{lex:Loc Modifica Multipla}">
+                            <Grid>
+                                <TextBlock Text="&#xe041;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding ItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding ItemsView.IsMultipleModifyNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarToggleButton>
+                        <!--<commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaWBS}" 
+                                            Command="{Binding ItemsView.ImportItemsCommand}"
+                                            Content="&#xE0BA;" Style="{StaticResource menuButtonStyle}"
+                                            DesideredVisibility="{Binding ItemsView.IsImportItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            OtherText="{lex:Loc ImportaWBS}"/>-->
+                        <commonResources:ButtonsBarDropDownButton x:Name="ImportItems" Content="&#xE0BA;" Style="{StaticResource dropDownButtonStyle}"
+                                                          ToolTip="{lex:Loc ImportaArticoli}" FontSize="20"
+                                                          DesideredVisibility="{Binding ItemsView.IsImportItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                          OtherText="{lex:Loc Importa}">
+                            <commonResources:ButtonsBarDropDownButton.DropDownContent>
+                                <StackPanel Orientation="Vertical" Width="40">
+                                    <commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaDaFileJoin}" Visibility="Collapsed"
+                                                Command="{Binding ItemsView.ImportItemsCommand}"
+                                                Content="&#xE0C3;" Style="{StaticResource dropDownContentButtonStyle}"
+                                                OtherText="{lex:Loc ImportaDaFileJoin}"/>
+                                    <commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaDaFileXlsx}"
+                                                Command="{Binding ItemsView.ImportXlsxCommand}"
+                                                Content="&#xE134;" Style="{StaticResource dropDownContentButtonStyle}"
+                                                OtherText="{lex:Loc ImportaDaFileXlsx}" />
+                                </StackPanel>
+                            </commonResources:ButtonsBarDropDownButton.DropDownContent>
+                        </commonResources:ButtonsBarDropDownButton>
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc AggiungiVociAttivita}" 
+                                            Command="{Binding ItemsView.AddAttivitaItemsCommand}"
+                                            Content="&#xe0e9;" Style="{StaticResource menuButtonStyle}"
+                                            DesideredVisibility="{Binding ItemsView.IsAddAttivitaEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            OtherText="{lex:Loc AggiungiVociAttivita}"/>
+                        <commonResources:ButtonsBarButton Name="CreateWBSItemsBtn" ToolTip="{lex:Loc CreaVociWBS}" 
+                                            Click="CreateWBSItemsBtn_Click"
+                                            DesideredVisibility="{Binding ItemsView.IsCreateWBSItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            Content="&#xe0ef;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc CreaVociWBS}"/>
+                        <commonResources:ButtonsBarButton x:Name="CodingItems" Command="{Binding ItemsView.CodingItemsCommand}" 
+                                             Style="{StaticResource menuButtonStyle}"
+                                             ToolTipService.ToolTip="{Binding ItemsView.CodingItemsToolTip}" Content="&#xe0ed;"
+                                             DesideredVisibility="{Binding ItemsView.IsCodingItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{Binding ItemsView.CodingItemsToolTip}"/>
+                        <commonResources:ButtonsBarButton x:Name="EntityHighlighters" Command="{Binding ItemsView.EntityHighlightersCommand}" 
+                                             Style="{StaticResource menuButtonStyle}"
+                                             ToolTipService.ToolTip="{lex:Loc Evidenziatori}" Content="&#xe113;"
+                                             DesideredVisibility="{Binding ItemsView.IsEntityHighlightersEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Evidenziatori}"/>
+
+                        <Button Name="OtherButton" Style="{StaticResource menuButtonStyle}" Content="&#xe07e;" ContextMenuService.IsEnabled="False"/>
+                    </commonResources:ButtonsBar>
+                    <StackPanel Grid.Column="1" Style="{StaticResource menuStackPanelStyle}">
+                        <TextBlock Text="{Binding ItemsView.CheckedEntitiesCount, Mode=OneWay}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                        <!--<TextBlock x:Name="AlertBlock" Text="!" Visibility="{Binding ItemsView.IsAlertVisible, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Center"
+                                   FontSize="40" FontWeight="Bold" Foreground="{StaticResource AlertColor}"
+                                   ToolTipService.ShowDuration="20000"
+                                   >
+                            <TextBlock.ToolTip>
+                                <ToolTip Placement="Top" Width="Auto" HorizontalOffset="-100"
+                                         Background="Transparent" BorderThickness="0" Height="Auto">
+                                    <Border Style="{StaticResource popupBorderStyle}">
+                                        <TextBlock Text="{Binding ItemsView.AlertText}"/>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>-->
+                        <Button Name="AlertButton" Content="!" Visibility="{Binding ItemsView.IsAlertVisible, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Center"
+                                   FontSize="40" FontWeight="Bold" Foreground="{StaticResource AlertColor}" Style="{StaticResource menuButtonStyle}"
+                                Command="{Binding ItemsView.ShowAlertCommand}" Width="20">
+                        </Button>
+                        <dxe:FlyoutControl IsOpen="{Binding ItemsView.IsAlertOpen}"
+										   PlacementTarget="{Binding ElementName=AlertButton}"
+                                           Style="{StaticResource flyoutControlStyle}" Background="{StaticResource AlertColor}"
+                                           >
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Closing" Command="{Binding ItemsView.AlertCloseCommand}" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <ListView ItemsSource="{Binding ItemsView.AlertItems}" BorderThickness="0" Background="Transparent">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Focusable" Value="false"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Background="{StaticResource AlertColor}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="50"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding AlertText}"/>
+                                            <Button Grid.Column="1" Command="{Binding AlertSelectEntitiesCommand}" 
+                                                    Visibility="{Binding AnyEntities, Converter={StaticResource VisibilityConverter}}" 
+                                                    Margin="5,0,5,0" Padding="2"
+                                                    Style="{StaticResource smallButtonStyle}" Content="&#xe07f;"
+                                                    ToolTip="{lex:Loc SelezionaVoci}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </dxe:FlyoutControl>
+                    </StackPanel>
+                </Grid>
+
+                <!--<StackPanel Orientation="Horizontal" Height="50" Background="White" FlowDirection="LeftToRight" Grid.Row="1" Grid.Column="0" Margin="10,0,0,0">
+                <CheckBox IsThreeState="{Binding ItemsView.Is3State, Mode=TwoWay}" IsChecked="{Binding ItemsView.IsAllChecked, Mode=TwoWay}" MinWidth="15" VerticalAlignment="Center"/>
+                <TextBlock Text="Tutti" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding ItemsView.EntitiesCount}" VerticalAlignment="Center"/>
+            </StackPanel>-->
+                <Grid x:Name="GridStrutturaWBS" Grid.Row="1">
+                    <Label x:Name="TextStrutturaWBS" Content="{lex:Loc StrutturaWBS}" Background="WhiteSmoke"
+                           FontWeight="Bold" Foreground="Gray" FontSize="16"
+                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                           VerticalContentAlignment="Center"
+                           BorderThickness="1" BorderBrush="DarkGray"
+                           Height="41.6"/>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <ToggleButton Name="NothingToggleButton" Content="{lex:Loc _Nessuno}" ToolTip="{lex:Loc Nessuno}" IsChecked="{Binding ItemsView.IsNoSelectionChecked, Mode=TwoWay}" Visibility="{Binding ItemsView.AllowNoSelection, Converter={StaticResource VisibilityConverter}}" FontSize="12" Height="40" VerticalAlignment="Center" HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                            <ToggleButton.Style>
+                                <Style TargetType="{x:Type ToggleButton}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border x:Name="border" BorderThickness="0" Padding="20,0,0,0" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="true">
+                                                        <Setter Property="Background" TargetName="border" Value="{StaticResource EntitySelectionColor}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <!--Margin="0,0,0,10"-->
+                        <ListView x:Name="WBSItemTree" ItemsSource="{Binding ItemsView.VirtualEntities}" Foreground="#193C3A3A" HorizontalAlignment="Stretch" 
+                          SelectionMode="Single" AllowDrop="True" SelectedIndex="{Binding ItemsView.SelectedIndex, Mode=TwoWay}"
+                          BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.IsDeferredScrollingEnabled="True" dz:GridViewSort.AutoSort="False" dz:VirtualListLoadingIndicator.IsAttached="False" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          HorizontalContentAlignment="Stretch"
+                            ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                            ScrollViewer.CanContentScroll="True"
+                            Margin="0,0,0,0"
+                            VirtualizingStackPanel.ScrollUnit="Pixel"          
+                          >
+                            <!--
+                            VirtualizingStackPanel.ScrollUnit="Pixel" con questa impostazione si disallinea la selezione della listView con la selezione del gantt quando si apre un ramo
+                            -->
+                            <ListView.InputBindings>
+                                <KeyBinding Gesture="Ctrl+A" Command="{Binding ItemsView.CtrlACheckedCommand}"/>
+                            </ListView.InputBindings>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Name="TreeViewItem" MouseLeftButtonDown="TreeViewItem_MouseLeftButtonDown" Height="34">
+                                        <Grid.Resources>
+                                            <ContextMenu x:Key="ItemContextMenu">
+                                                <MenuItem x:Name="ExpandBranch" Header="{lex:Loc Espandi Ramo}" Command="{Binding Data.ExpandBranchCommand}"  IsEnabled="{Binding Data.ExpandBranchEnabled}" Background="WhiteSmoke">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock Text="&#xe050;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <Separator />
+                                                <MenuItem x:Name="Copy" Command="{Binding Data.CopyToClipboardCommand}" Header="{lex:Loc Copia2}" IsEnabled="{Binding Data.IsAnyChecked}">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock Text="&#xe03d;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem x:Name="Paste" Command="{Binding Data.PasteClipboardCommand}"  Header="{lex:Loc Incolla}" IsEnabled="{Binding Data.IsPasteClipboardEnabled}">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock Text="&#xe03f;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem x:Name="CopyText" Command="{Binding Data.CopyTextToClipboardCommand}" Header="{lex:Loc CopiaNegliAppunti}" IsEnabled="{Binding Data.IsAnyChecked}">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock Text="&#xe03e;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </Grid.Resources>
+                                        <Grid.Style>
+                                            <Style TargetType="{x:Type Grid}" >
+                                                <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid  Grid.Column="0" Background="{Binding Data.Background}">
+                                            <Grid.InputBindings>
+                                                <MouseBinding Gesture="Shift+LeftClick" Command="{Binding Data.ShiftCheckedCommand}"/>
+                                                <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding Data.CtrlCheckedCommand}"/>
+                                                <MouseBinding Gesture="Ctrl+Shift+LeftClick" Command="{Binding Data.ShiftCtrlCheckedCommand}"/>
+                                            </Grid.InputBindings>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid  Margin="{Binding Data.Depth, Converter={StaticResource IntToIndConverter}}" Grid.Column="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition x:Name="ExpandButtonColumn" Width="20"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button x:Name="ExpandButton" Command="{Binding Data.ExpandCommand}" Visibility="{Binding Data.HasChildren, Converter={StaticResource VisibilityConverter}}" Grid.Column="0" Content="{Binding Path=Data.IsExpanded, Mode=TwoWay, Converter={StaticResource expandCollapseVerticalGlyphConverter}}" IsTabStop="False" VerticalAlignment="Stretch" Style="{StaticResource smallButtonStyle}"
+                                                    Foreground="Gray"/>
+                                                <TextBlock Text="  _" Visibility="{Binding Data.HasChildren, Converter={StaticResource InverseVisibilityConverter}}" Grid.Column="0" Width="20"
+                                                        Foreground="Gray"/>
+                                                <Grid Grid.Column="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition x:Name="IconsColumn" Width="20"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid Grid.Column="0" >
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition/>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid Grid.Row="0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding Data.Attributo1}" Grid.Column="0" Foreground="Black"/>
+                                                        </Grid>
+                                                        <TextBlock Text="{Binding Data.Attributo2}" Grid.Row="1" Foreground="Black" Height="18"/>
+                                                    </Grid>
+                                                    <StackPanel Name="Icone" Orientation="Vertical" Grid.Column="1"
+                                                                Background="{Binding Data.HighlighterColor}">
+                                                        <TextBlock Name="FindIcon" Visibility="{Binding Data.IsSearched, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="1" Style="{StaticResource smallTextBlockStyle}" Text="&#xe067;"/>
+                                                        <TextBlock Name="MoveIcon" Visibility="{Binding Data.IsReadyToMove, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="1" Style="{StaticResource smallTextBlockStyle}" Text="&#xe032;"/>
+                                                        <TextBlock Name="CopyIcon" Visibility="{Binding Data.IsCopied, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="1" Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;"/>
+                                                        <TextBlock Name="MultiModifyIcon" Visibility="{Binding Data.IsReadyToMultiModify, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="1" Style="{StaticResource smallTextBlockStyle}" Text="&#xe041;"/>
+                                                        <TextBlock Name="CollegaIcon" Visibility="{Binding Data.IsCollega, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Padding="1" Style="{StaticResource smallTextBlockStyle}" Text="&#xe103;"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}"  Grid.RowSpan="3"/>
+            <!--DA RISTABILIRE CON LA TERZA RIGA-->
+            <!--<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" Grid.ColumnSpan="3"/>-->
+            <Grid Name="MasterGridSecond" Grid.Column="2">
+                <Grid.InputBindings>
+                    <KeyBinding Key="Escape" Command="{Binding ItemsView.EscapeCommand}"/>
+                </Grid.InputBindings>
+                <!--BorderThickness="3,0,3,0" BorderBrush="WhiteSmoke"-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!--<RowDefinition Height="Auto"/>-->
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <commonResources:ButtonsBar Grid.Column="0" Style="{StaticResource menuStackPanelStyle}">
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc Zoom100}"
+                                            Click="ButtonsZoom100_Click"              
+                                            Content="&#xe10c;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Zoom100}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc Zoom indietro}"
+                                            Click="ButtonsZoomIndietro_Click"
+                                            Content="&#xe10b;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Zoom indietro}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc ZoomAvanti}"
+                                            Click="ButtonsZoomAvanti_Click"
+                                            Content="&#xe10a;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Zoom avanti}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarButton Name="AttivitaSelezionateBtn" ToolTip="{lex:Loc Attivita selezionate}" 
+                                           Click="AttivitaSelezionateBtn_Click"
+                                            DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            Content="&#xe111;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Attivita selezionate}"/>
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc Gestione date progetto}"
+                                            Click="ButtonsBarButtonGestioneDateProgetto_Click"
+                                            Content="&#xe0f7;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Gestione date progetto}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarDropDownButton x:Name="DateGantt" Content="{Binding GanttView.DateIcon}" Style="{StaticResource dropDownButtonStyle}"
+                                                      ToolTip="{lex:Loc Date Gantt}" FontSize="20"
+                                                      OtherText="{lex:Loc Date Gant}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                            <commonResources:ButtonsBarDropDownButton.DropDownContent>
+                                <StackPanel Orientation="Vertical" Width="40">
+                                    <commonResources:ButtonsBarToggleButton x:Name="ChangeScheduleCalendario" ToolTip="{lex:Loc Calendario2}"  
+                                            Click="ButtonsChangeSchedule_Click"
+                                            Content="&#xe0f6;" Style="{StaticResource dropDownToggleContentButtonStyle}"
+                                            OtherText="{lex:Loc Calendario2}"
+                                            IsChecked="{Binding GanttView.IsActiveCalendario}"/>
+                                    <commonResources:ButtonsBarToggleButton x:Name="ChangeScheduleProgressiva" ToolTip="{lex:Loc Progressiva2}"  
+                                            Click="ButtonsChangeSchedule_Click"
+                                            Content="&#xe0f8;" Style="{StaticResource dropDownToggleContentButtonStyle}"
+                                            OtherText="{lex:Loc Progressiva2}"
+                                            IsChecked="{Binding GanttView.IsActiveProgressiva}"/>
+                                    <commonResources:ButtonsBarToggleButton x:Name="ChangeScheduleFeriale" ToolTip="{lex:Loc Feriale2}"  
+                                            Click="ButtonsChangeSchedule_Click"
+                                            Content="&#xe108;" Style="{StaticResource dropDownToggleContentButtonStyle}"
+                                            OtherText="{lex:Loc Feriale2}"
+                                            Visibility="{Binding GanttView.IsNascondiDateVisible}"
+                                            IsChecked="{Binding GanttView.IsActiveNascondiDate}"/>
+                                </StackPanel>
+                            </commonResources:ButtonsBarDropDownButton.DropDownContent>
+                        </commonResources:ButtonsBarDropDownButton>
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc Scala cronologica}"  
+                                            Click="ButtonsBarButtonScalaCronolgica_Click"
+                                            Content="&#xe0f9;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Scala cronologica}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarDropDownButton x:Name="EsportaGantt" Content="&#xe0fa;" Style="{StaticResource dropDownButtonStyle}"
+                                                      ToolTip="{lex:Loc EsportaGantt}" FontSize="20"
+                                                      OtherText="{lex:Loc EsportaGantt}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                            <commonResources:ButtonsBarDropDownButton.DropDownContent>
+                                <StackPanel Orientation="Vertical" Width="40">
+                                    
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc EsportaInProject}"
+                                            Click="ButtonsBarButtonExportProject_Click"
+                                            Content="&#xe0fb;" Style="{StaticResource dropDownContentButtonStyle}"
+                                            OtherText="{lex:Loc EsportaInProject}"/>
+                        <!--<commonResources:ButtonsBarButton ToolTip="{lex:Loc EsportaInExcel}"  
+                                            Command="{Binding GanttView.ExportToExcelCommand}"
+                                            Content="&#xE0C4;" Style="{StaticResource dropDownContentButtonStyle}"
+                                            OtherText="{lex:Loc ImportaDaPrezzario}"/>-->
+                        
+                                </StackPanel>
+                            </commonResources:ButtonsBarDropDownButton.DropDownContent>
+                        </commonResources:ButtonsBarDropDownButton>
+                        <commonResources:ButtonsBarToggleButton x:Name="BarreDiRiepilogo" Content="&#xe109;" IsChecked="{Binding GanttView.IsBarreDiRiepilogoChecked}"
+                                                   ToolTipService.ToolTip="{lex:Loc BarreDiRiepilogo}" Width="32"
+                                                   Style="{StaticResource menuToggleButtonStyle}"
+                                                   OtherText="{lex:Loc BarreDiRiepilogo}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarToggleButton x:Name="PercorsoCritico" Content="&#xE112;" IsChecked="{Binding GanttView.IsActiveCriticalPath}"
+                                                   ToolTipService.ToolTip="{lex:Loc Percorso critico}" Width="32"
+                                                   Style="{StaticResource menuToggleButtonStyle}"
+                                                   OtherText="{lex:Loc Percorso critico}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarButton x:Name="CollegaEntities" Command="{Binding ItemsView.CollegaEntitiesCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Collega}"
+                                             Style="{StaticResource menuButtonStyle}"
+                                             DesideredVisibility="{Binding ItemsView.IsCollegaEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Collega}">
+                            <Grid>
+                                <TextBlock Text="&#xe103;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding ItemsView.ReadyToCollegaEntitiesCount}" Visibility="{Binding ItemsView.IsCollegaEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </commonResources:ButtonsBarButton>
+                        <dxe:FlyoutControl IsOpen="{Binding ItemsView.IsCollegaEntitiesWaitingForTarget, Mode=OneWay}" 
+										   PlacementTarget="{Binding ElementName=CollegaEntities}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <TextBlock Text="{lex:Loc SelezionareAttivitaDestinazione}"/>
+                        </dxe:FlyoutControl>
+                        <commonResources:ButtonsBarButton x:Name="CollegaFineInizio" Command="{Binding ItemsView.CollegaCommand}" CommandParameter="0"
+                                             ToolTipService.ToolTip="{lex:Loc Fine inizio}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe10f;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollegaModeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Fine inizio}"/>
+                        <commonResources:ButtonsBarButton x:Name="CollegaInizioInizio" Command="{Binding ItemsView.CollegaCommand}" CommandParameter="1"
+                                             ToolTipService.ToolTip="{lex:Loc Inizio inizio}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe10d;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollegaModeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Inizio inizio}"/>
+                        <commonResources:ButtonsBarButton x:Name="CollegaInizioFine" Command="{Binding ItemsView.CollegaCommand}" CommandParameter="2"
+                                             ToolTipService.ToolTip="{lex:Loc Inizio fine}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe10e;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollegaModeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Inizio fine}"/>
+                        <commonResources:ButtonsBarButton x:Name="CollegaFineFine" Command="{Binding ItemsView.CollegaCommand}" CommandParameter="3"
+                                             ToolTipService.ToolTip="{lex:Loc Fine fine}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe110;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollegaModeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             OtherText="{lex:Loc Fine fine}"/>
+                        <commonResources:ButtonsBarButton x:Name="CollegaEscape" Command="{Binding ItemsView.CollegaEscapeCommand}"
+                                             ToolTipService.ToolTip="{lex:Loc Annulla}"
+                                             Style="{StaticResource menuButtonStyle}" Content="&#xe037;"
+                                             DesideredVisibility="{Binding ItemsView.IsCollegaModeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarButton Name="ScollegaBtn" ToolTip="{lex:Loc Scollega}" 
+                                            Command="{Binding GanttView.ScollegaCommand}"
+                                            DesideredVisibility="{Binding ItemsView.IsScollegaEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                            Content="&#xe0fd;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Scollega}"/>
+                        <commonResources:ButtonsBarButton ToolTip="{lex:Loc Impostazioni Gantt}"
+                                            Click="ButtonsBarButtonSettingGantt_Click"
+                                            Content="&#xe102;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Impostazioni Gantt}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarToggleButton x:Name="SynGanttModelTglBtn" ToolTip="{lex:Loc SynGanttModel}"  
+                                            Content="&#xe11d;" Style="{StaticResource menuToggleButtonStyle}"
+                                            OtherText="{lex:Loc SynGanttModel}"
+                                            IsEnabled="{Binding ElementName=ToggledPopup, Path=IsOpen, Converter={StaticResource InverseConverter}}"
+                                            Checked="SynGanttModelTglBtn_Checked"/>
+                        <Popup x:Name="Model3DPopUpCommandSetting" StaysOpen="False" IsOpen="{Binding IsChecked, ElementName=SynGanttModelTglBtn, Mode=TwoWay}" Placement="Top" PlacementTarget="{Binding ElementName=SynGanttModelTglBtn}" MinHeight="60" Width="200">
+                            <Grid Background="WhiteSmoke">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <commonResources:ButtonsBarButton ToolTip="{lex:Loc Inizio}"
+                                            Command="{Binding GanttView.GotoFirstDateCommand}"
+                                            Content="&#xe083;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Inizio}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                                <dxe:TrackBarEdit TickItemDisplayMode="TickAndText" TickPlacement="None" dx:ThemeManager.Theme="Office2019Colorful" Minimum="0" TickFrequency="1" Maximum="{Binding GanttView.MaximunSlider3DModelValue}" 
+                                                  Value="{Binding GanttView.TrackBarValue}"  EditValueChanged="TrackBarEdit_EditValueChanged" Grid.ColumnSpan="3" Grid.Column="1">
+                                    <dxe:TrackBarEdit.StyleSettings>
+                                        <dxe:TrackBarZoomStyleSettings/>
+                                    </dxe:TrackBarEdit.StyleSettings>
+                                </dxe:TrackBarEdit>
+                                <commonResources:ButtonsBarButton
+                                            Click="PlayPauseButton_Click"
+                                            Content="{Binding GanttView.PlayPauseButtonFont}" Style="{StaticResource menuButtonStyle}"
+                                            DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Grid.Column="4"/>
+                                <TextBlock Text="{lex:Loc Data}" VerticalAlignment="Center" Margin="5,0,5,0" Grid.Column="0" Grid.Row="2"/>
+                                <dxe:DateEdit DateTime="{Binding GanttView.Data, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{lex:Loc Seleziona data}"
+                                               Background="Transparent" FontSize="12" DisplayFormatString="dd/MM/yyyy HH:mm" Mask="g"
+                                               BorderThickness="0" HorizontalAlignment="Center" ShowClearButton="False"
+                                               BorderBrush="Transparent" dx:ThemeManager.Theme="Office2019Colorful" VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="2">
+                                    <dxe:DateEdit.StyleSettings>
+                                        <dxe:DateEditNavigatorWithTimePickerStyleSettings GlyphKind="Arrow" />
+                                    </dxe:DateEdit.StyleSettings>
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="EditValueChanged" Command="{Binding GanttView.DateChangedCommand}" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxe:DateEdit>
+                                <!--<commonResources:ButtonsBarButton 
+                                            Command="{Binding GanttView.Set3DModelByDateCommand}"
+                                            Content="&#xe086;" Style="{StaticResource acceptButtonStyle}"
+                                            OtherText="{lex:Loc Conferma}" Grid.Column="4" Grid.Row="2"/>-->
+                            </Grid>
+                        </Popup>
+                        <commonResources:ButtonsBarButton x:Name="SettingGanttSALBtn" ToolTip="{lex:Loc Programmazione SAL}"
+                                            Click="SettingGanttSALBtn_Click"
+                                            Content="&#xe11f;" Style="{StaticResource menuButtonStyle}"
+                                            OtherText="{lex:Loc Programmazione SAL}" DesideredVisibility="{Binding ItemsView.IsOtherNuttonEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <commonResources:ButtonsBarToggleButton x:Name="SynGanttSALBtn" ToolTip="{lex:Loc Visualizza SAL}"  
+                                            Content="&#xe120;" Style="{StaticResource menuToggleButtonStyle}"
+                                            IsChecked="{Binding GanttView.ShowSALTglBtn_Checked}"
+                                            OtherText="{lex:Loc Visualizza SAL}"
+                                            IsEnabled="{Binding ElementName=ToggledPopup, Path=IsOpen, Converter={StaticResource InverseConverter}}"/>
+                        <Button Name="OtherButtonSecondGrid" Style="{StaticResource menuButtonStyle}" Content="&#xe07e;" ContextMenuService.IsEnabled="False"/>
+                    </commonResources:ButtonsBar>
+                    <StackPanel Grid.Column="1" Style="{StaticResource menuStackPanelStyle}">
+                        <TextBlock Text="{Binding GanttView.TimeScaleDescription, Mode=OneWay}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <dxgn:GanttControl x:Name="Gantt" dx:ThemeManager.Theme="Office2019Colorful" ItemsSource="{Binding GanttView.Tasks}" SelectionMode="Row" SelectedItems="{Binding GanttView.SelectedItems}" SelectionChanged="Gantt_SelectionChanged"
+                                       VirtualizingStackPanel.ScrollUnit="Pixel"
+                                       ScrollViewer.CanContentScroll="True">
+                        <!---->
+                        <dxgn:GanttControl.Resources>
+                            <DataTemplate x:Key="StripLineTemplate">
+                                <ContentControl>
+                                    <dxgn:StripLine StartDate="{Binding StartDateTime}" 
+                                                    Duration ="{Binding StripLineDuration}"
+                                                    Background="{Binding Background}"/>
+                                </ContentControl>
+                            </DataTemplate>
+                            <ContextMenu x:Key="contextMenu">
+                                <ContextMenu.Items>
+                                    <!--<MenuItem x:Name="cmiScollega" Header="{lex:Loc Scollega}" Click="ContextMenuScollega_Click" FontSize="12" />-->
+                                    <MenuItem x:Name="cmiScollega" Click="ContextMenuScollega_Click" FontSize="12">
+                                        <MenuItem.Header>
+                                            <StackPanel Orientation="Horizontal" Margin="-30,0,0,0">
+                                                <TextBlock Text="&#xe0fd;" Style="{StaticResource smallTextBlockStyle}" Margin="0,0,0,0"/>
+                                                <TextBlock Text="{lex:Loc Scollega}" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                    <MenuItem x:Name="cmiDeselect" Click="ContextMenuDeselect_Click" FontSize="12">
+                                        <MenuItem.Header>
+                                            <StackPanel Orientation="Horizontal" Margin="-30,0,0,0">
+                                                <TextBlock Text="&#xe0af;" Style="{StaticResource smallTextBlockStyle}" Margin="0,0,0,0"/>
+                                                <TextBlock Text="{lex:Loc Deseleziona}" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                            <Style TargetType="{x:Type dxgn:GanttTaskControl}">
+                                <Setter Property="Background" Value="{Binding Row.TaskColor}" />
+                                <Setter Property="Height" Value="20" />
+                            </Style>
+                            <Style TargetType="{x:Type dxgn:GanttSummaryTaskControl}">
+                                <Setter Property="Visibility" Value="{Binding GanttView.HeaderNodeVisibility, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <Setter Property="Background" Value="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <Setter Property="BracketBrush" Value="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                            </Style>
+                            <Style TargetType="{x:Type dxgn:GanttConnector}">
+                                <Setter Property="Stroke" Value="{Binding GanttView.ConnectorStrokeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                            </Style>
+                            <Style TargetType="{x:Type dxgn:MarkedTimeControl}">
+                                <Setter Property="Background" Value="{Binding GanttView.NonWorkingHoursBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                            </Style>
+                            <Style x:Key="CustomGanttTaskControlStyle" TargetType="{x:Type dxgn:GanttTaskControl}">
+                                <Setter Property="Background" Value="{Binding Row.TaskColor}" />
+                                <Setter Property="Height" Value="20" />
+                            </Style>
+                            <Style x:Key="CustomGanttSummaryTaskControlStyle" TargetType="{x:Type dxgn:GanttSummaryTaskControl}">
+                                <Setter Property="Background" Value="{Binding Path=View.DataContext.GanttView.HeaderTaskNodeBackground}"/>
+                            </Style>
+                            <Style x:Key="CustomGanttConnectorStyle" TargetType="{x:Type dxgn:GanttConnector}">
+                                <Setter Property="Stroke" Value="{Binding Path=(dxg:DataControlBase.ActiveView).DataContext.GanttView.ConnectorStrokeBackground, RelativeSource={RelativeSource Mode=Self}}"/>
+                            </Style>
+                            <Style x:Key="CustomMarkedTimeControlStyle" TargetType="{x:Type dxgn:MarkedTimeControl}">
+                                <Setter Property="Background" Value="{Binding Path=Content.View.DataContext.GanttView.NonWorkingHoursBackground}"/>
+                            </Style>
+                            <Style TargetType="dxgn:GanttRowControl">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectionState}" Value="Focused">
+                                        <Setter Property="Background" Value="LightGray" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectionState}" Value="Selected">
+                                        <Setter Property="Background" Value="LightGray" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Height" Value="34"/>
+                                <Setter Property="ContextMenu" Value="{StaticResource contextMenu}"/>
+                            </Style>
+                            <Style TargetType="dxgn:TimescaleControl">
+                                <!--<Setter Property="HorizontalAlignment" Value="{Binding Path=GanttView.ScalaCronologicaViewLocal.AllineamentoTrigger, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                                <Setter Property="FontSize" Value="{Binding GanttView.ScalaCronologicaView.FontSize, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <Setter Property="FontFamily" Value="{Binding GanttView.ScalaCronologicaView.FontFamily, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <Setter Property="Foreground" Value="{Binding GanttView.ScalaCronologicaView.ColorCharacther, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <!--<Setter Property="Background" Value="{Binding GanttView.ScalaCronologicaView.ColorBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                                <!--<Setter Property="TextDecorations" Value="{Binding GanttView.ScalaCronologicaView.TextDecorations, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                                <Setter Property="FontWeight" Value="{Binding GanttView.ScalaCronologicaView.FontWeight, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <Setter Property="FontStyle" Value="{Binding GanttView.ScalaCronologicaView.FontStyle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                            </Style>
+                            <!--<Style TargetType="{x:Type dxgnn:TimescaleRulerControl}">
+                                <Setter Property="Background" Value="{Binding GanttView.ScalaCronologicaView.ColorBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                            </Style>-->
+                            <Style TargetType="Thumb">
+                                <Setter Property="IsHitTestVisible" Value="False" />
+                            </Style>
+                            <Style TargetType="{x:Type dxgnn:GanttConnectorEditFlyoutControl}">
+                                <Setter Property="IsOpen" Value="False" />
+                            </Style>
+
+                        </dxgn:GanttControl.Resources>
+                        <dxgn:GanttControl.Columns>
+                            <!--<dxgn:GanttColumn BindTo="Name" />-->
+                            <dxgn:GanttColumn FieldName="Description" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Descrizione}" Width="300"/>
+                            <dxgn:GanttColumn FieldName="Durata" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Dur}" Width="70">
+                                <dxgn:GanttColumn.EditSettings>
+                                    <dxe:TextEditSettings x:Name="valueColumnEditSetttingsDurata" HorizontalContentAlignment="Right" DisplayFormat="0"/>
+                                </dxgn:GanttColumn.EditSettings>
+                            </dxgn:GanttColumn>
+                            <dxgn:GanttColumn FieldName="DurataCalendario" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Dur cal}" Width="70">
+                                <dxgn:GanttColumn.EditSettings>
+                                    <dxe:TextEditSettings x:Name="valueColumnEditSetttingsDurataCalendario" HorizontalContentAlignment="Right" DisplayFormat="0"/>
+                                </dxgn:GanttColumn.EditSettings>
+                            </dxgn:GanttColumn>
+                            <dxgn:GanttColumn BindTo="StartDate" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Inizio}" Width="70">
+                                <dxgn:GanttColumn.EditSettings>
+                                    <dxe:DateEditSettings x:Name="valueColumnEditSetttingsStartDate" HorizontalContentAlignment="Right" />
+                                </dxgn:GanttColumn.EditSettings>
+                            </dxgn:GanttColumn>
+                            <dxgn:GanttColumn BindTo="FinishDate" HorizontalHeaderContentAlignment="Center" Header="{lex:Loc Fine}" Width="70">
+                                <dxgn:GanttColumn.EditSettings>
+                                    <dxe:DateEditSettings x:Name="valueColumnEditSetttingsFinishDate" HorizontalContentAlignment="Right" />
+                                </dxgn:GanttColumn.EditSettings>
+                            </dxgn:GanttColumn>
+                        </dxgn:GanttControl.Columns>
+                        <dxgn:GanttControl.View>
+                            <dxgn:GanttView 
+                            TreeListWidth="0"
+                            SplitterWidth="0"
+                            PrintArea="EntireControl"
+                            PrintTaskStyle="{StaticResource CustomGanttTaskControlStyle}"
+                            PrintSummaryTaskStyle="{StaticResource CustomGanttSummaryTaskControlStyle}"
+                            PrintConnectorStyle="{StaticResource CustomGanttConnectorStyle}"
+                            PrintMarkedTimeIntervalsStyle="{StaticResource CustomMarkedTimeControlStyle}"
+                            AddingNewPredecessorLink="GanttView_AddingNewPredecessorLink"
+                            PredecessorLinkEdited="GanttView_PredecessorLinkEdited"
+                            TaskFinishDateMoved="GanttView_TaskFinishDateMoved"
+                            TaskMoved="GanttView_TaskMoved"
+                            ProgressMoved="GanttView_ProgressMoved"
+                            TaskContentPosition="Left"
+                            PreviewMouseDown="GanttView_PreviewMouseDown"
+                            RequestTimescaleRulers="GanttView_RequestTimescaleRulers"
+                            StripLinesSource="{Binding GanttView.StripLines}"
+                            StripLineTemplate="{StaticResource StripLineTemplate}"
+                            TimescaleRulerCount="{Binding GanttView.TimescaleRulerCount}"
+                            WorkdayRulesSource="{Binding GanttView.WorkdayRulesSource}"
+                            WorkingTimeRulesSource="{Binding GanttView.WorkingTimeRulesSource}"   
+                            QueryAllowedTaskEditAction ="GanttView_QueryAllowedTaskEditAction"
+                            QueryAllowPredecessorEdit ="GanttView_QueryAllowPredecessorEdit"
+                            AllowSchedulingOnEditing="False"
+                            AllowTaskRemove="False"
+                            EnableDynamicLoading ="False"
+                            KeyFieldName="Id"
+                            ChildNodesPath="Children"
+                            StartDateMapping="StartDate"
+                            FinishDateMapping="FinishDate"                            
+                            NameMapping="Name"
+                            ProgressMapping="Progress"
+                            TreeDerivationMode="ChildNodesSelector"
+                                PredecessorLinksPath="DependencyLinks"
+                                >
+                                <dxgn:GanttView.PredecessorLinkMappings>
+                                    <dxgn:GanttPredecessorLinkMappings
+                                        PredecessorTask="PredecessorId"
+                                        LinkType="Type"/>
+                                </dxgn:GanttView.PredecessorLinkMappings>
+                                <dxgn:GanttView.TaskMoveToolTipContentTemplate>
+                                    <DataTemplate DataType="{x:Type dxgnn:GanttTaskEditToolTipInfo}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Node.Content.Name}" Grid.Row="0" FontSize="12" Grid.ColumnSpan="3"/>
+                                            <TextBlock Text= "{lex:Loc StartDate}" Grid.Row="1" Grid.Column="0" FontSize="12" />
+                                            <TextBlock Text= " " Grid.Row="1" Grid.Column="1" FontSize="12" />
+                                            <TextBlock Text="{Binding Content.Start}" Grid.Row="1" Grid.Column="2" FontSize="12" />
+                                            <TextBlock Text= "{lex:Loc EndDate}" Grid.Row="2" Grid.Column="0" FontSize="12" />
+                                            <TextBlock Text= " " Grid.Row="1" Grid.Column="1" FontSize="12" />
+                                            <TextBlock Text="{Binding Content.End}" Grid.Row="2" Grid.Column="2" FontSize="12" />
+                                            <TextBlock Text="{Binding Node.Content.Code}" Grid.Row="3" FontSize="12" Grid.ColumnSpan="3" HorizontalAlignment="Left" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </dxgn:GanttView.TaskMoveToolTipContentTemplate>
+                                <dxgn:GanttView.TaskProgressMoveToolTipContentTemplate>
+                                    <DataTemplate DataType="{x:Type dxgn:GanttTaskProgressEditPreviewControl}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Node.Name}" Grid.Row="0" FontSize="12" Grid.ColumnSpan="3"/>
+                                            <TextBlock Text= "{lex:Loc Progresso}" Grid.Row="1" Grid.Column="0" FontSize="12" />
+                                            <TextBlock Text= " " Grid.Row="1" Grid.Column="1" FontSize="12" />
+                                            <TextBlock Text="{Binding Content}" Grid.Row="1" Grid.Column="2" FontSize="12" />
+                                            <TextBlock Text="{Binding Node.Content.Code}" Grid.Row="2" FontSize="12" Grid.ColumnSpan="3" HorizontalAlignment="Left" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </dxgn:GanttView.TaskProgressMoveToolTipContentTemplate>
+                            </dxgn:GanttView>
+                        </dxgn:GanttControl.View>
+                    </dxgn:GanttControl>
+                    <!--<local:MyGanttControl x:Name="Gantt" Grid.Column="0" GridWidth="0"
+                                                    ScheduleType="CustomDateTime" 
+                                                    CustomScheduleSource="{Binding GanttView.CustomSchedule}" 
+                                                    ItemsSource="{Binding GanttView.ListaAttivita}"
+                                                    ShowStripLines="True"
+                                                    StripLines="{Binding GanttView.StripLineInfo}"
+                                                    Holidays="{Binding GanttView.Holidays}"
+                                                    Weekends="{Binding GanttView.NoWorkingDays}"
+                                                    VisualStyle="Metro" UseAutoUpdateHierarchy ="False"
+                                                    UseOnDemandSchedule="True" HorizontalAlignment="Stretch" 
+                                                    ZoomFactor ="{Binding GanttView.ZoomValue}"
+                                                    ZoomChanged="Gantt_ZoomChanged"
+                                                    RowHeight="34"
+                                                    ValidationMode="Manual"
+
+                                                    RelationshipEstablished="Gantt_RelationshipEstablished"
+                                                    MouseRightButtonDown="Gantt_MouseRightButtonDown"
+                                                    ScheduleRangePadding="366"  
+                                                    ConnectorStroke="{Binding GanttView.ConnectorStrokeBackground}"
+                                                    NonWorkingHoursBackground="{Binding GanttView.NonWorkingHoursBackground}"
+                                                    >
+                        <local:MyGanttControl.TaskAttributeMapping>
+                            <syncfusion:TaskAttributeMapping ChildMapping="Child"
+                                                       DurationMapping="Duration"
+                                                       StartDateMapping="StartDate"
+                                                       FinishDateMapping="FinishDate"
+                                                       MileStoneMapping="IsMileStone"
+                                                       StartPointMapping="StartNumber"
+                                                       FinishPointMapping="FinishNumber"
+                                                       BaselineStartMapping="BaselineStart"
+                                                       BaselineFinishMapping="BaselineFinish"
+                                                       ProgressMapping="Progress"
+                                                       PredecessorMapping="Predecessor"
+                                                       ResourceInfoMapping="Resources"
+                                                       TaskIdMapping="TaskId"
+                                                       TaskNameMapping="TaskName">
+                            </syncfusion:TaskAttributeMapping>
+                        </local:MyGanttControl.TaskAttributeMapping>
+                        <local:MyGanttControl.Resources>
+                            <Style TargetType="chart:HeaderNode">
+                                <Setter Property="Visibility" Value="{Binding Path=GanttView.HeaderNodeVisibility, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                                <Setter Property="MaxHeight" Value="24"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="chart:HeaderNode">
+                                            <Border Background="{TemplateBinding Background}" Name="PART_HeaderBorder" 
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0">
+                                                <Grid Width="{TemplateBinding Width}" VerticalAlignment="Center">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="10" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="10" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Rectangle HorizontalAlignment="Left" Grid.Column="1" Height="6.4"  VerticalAlignment="Top" Width="{TemplateBinding Width}" Stroke="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}" Fill="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}">
+                                                    </Rectangle>
+                                                    <Path Data="M0.3,0.3 L9.834909,0.30036073 9.8351226,5.9832297 5.0695471,10.734966 0.32096295,5.9863821 z"
+                                  HorizontalAlignment="Left" Grid.Column="0" Height="11.435" Stretch="Fill" Stroke="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}" VerticalAlignment="Top" Width="10.135" Fill="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}">
+                                                    </Path>
+                                                    <Path Data="M0.3,0.3 L9.834909,0.30036073 9.8351226,5.9832297 5.0695471,10.734966 0.32096295,5.9863821 z"
+                                  HorizontalAlignment="Left" Grid.Column="2" Height="11.435" Stretch="Fill" Stroke="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}" VerticalAlignment="Top" Width="10.135" Fill="{Binding GanttView.HeaderTaskNodeBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}">
+                                                    </Path>
+                                                </Grid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style TargetType="chart:GanttNode" BasedOn="{StaticResource TaskNode}" />
+                            <Style TargetType="chart:GanttChartRow">
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="{Binding Path=GanttView.GridRowColor, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"/>
+                            </Style>
+                            <Style TargetType="{x:Type schedule:GanttScheduleCell}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type schedule:GanttScheduleCell}">
+                                            <Border BorderThickness="{Binding Path=GanttView.ScalaCronologicaViewLocal.BordiCelle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"
+                            BorderBrush="Black" >
+                                                <ToolTipService.ToolTip>
+                                                    <ToolTip Content="{TemplateBinding CellToolTip}"/>
+                                                </ToolTipService.ToolTip>
+                                                <TextBlock Name="TextBlock1" VerticalAlignment="Center" Text="{TemplateBinding Content}"  Margin="1,0,1,0" 
+                                                HorizontalAlignment="{Binding Path=GanttView.ScalaCronologicaViewLocal.AllineamentoTrigger, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"  
+                                                FontSize="{Binding GanttView.ScalaCronologicaView.FontSize, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}" 
+                                                FontFamily="{Binding GanttView.ScalaCronologicaView.FontFamily, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"  
+                                                Foreground="{Binding GanttView.ScalaCronologicaView.ColorCharacther, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"
+                                                Background="{Binding GanttView.ScalaCronologicaView.ColorBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"
+                                                TextDecorations="{Binding GanttView.ScalaCronologicaView.TextDecorations, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"
+                                                FontWeight="{Binding GanttView.ScalaCronologicaView.FontWeight, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"
+                                                FontStyle="{Binding GanttView.ScalaCronologicaView.FontStyle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}"> 
+                                                    <ToolTipService.ToolTip> 
+                                        <ToolTip Content="{TemplateBinding CellToolTip}"/> 
+                                    </ToolTipService.ToolTip>
+                                                </TextBlock>
+
+                                                -->
+                    <!--<ContentPresenter  Margin="1,0,1,0" SnapsToDevicePixels="True" VerticalAlignment="Center" HorizontalAlignment="{Binding Path=GanttView.ScalaCronologicaViewLocal.AllineamentoTrigger, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type UserControl}}}">
+                                                </ContentPresenter>-->
+                    <!--
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </local:MyGanttControl.Resources>
+                        <local:MyGanttControl.InputBindings>
+                        </local:MyGanttControl.InputBindings>
+                        <local:MyGanttControl.ContextMenu>
+                            <ContextMenu x:Name="GanttContextMenu">
+                            </ContextMenu>
+                        </local:MyGanttControl.ContextMenu>
+                    </local:MyGanttControl>-->
+                </Grid>
+            </Grid>
+
+            <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}"  Grid.RowSpan="3" />
+            <Grid Name="DetailGrid" Grid.Column="4" Grid.RowSpan="2" HorizontalAlignment="Stretch" MinWidth="200" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Style="{StaticResource menuStackPanelStyle}">
+                    <Button Name="ScrollToCurrentEntity" Command="{Binding ItemsView.ScrollToCurrentEntityCommand}" ToolTip="{lex:Loc Vai a...}" Style="{StaticResource menuButtonStyle}" Content="&#xe06a;" Visibility="{Binding ItemsView.IsScrollToCurrentEntityEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                    <Button Name="SetAttributi" ToolTip="{lex:Loc Imposta attributi}" Click="SetAttributi_Click"
+                            Style="{StaticResource menuButtonStyle}" Content="&#xe069;" IsEnabled="True"/>
+                </StackPanel>
+                <ListView x:Name="DetailListView" ItemsSource="{Binding ItemsView.AttributiEntities.AttributiValoriComuniView}" Margin="10" Background="White" RenderTransformOrigin="0.5,0.5" Grid.Row="1"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="0" KeyboardNavigation.TabNavigation="Cycle" PreviewMouseLeftButtonDown="listViewDetail_PreviewMouseLeftButtonDown" PreviewMouseMove="listViewDetail_PreviewMouseMove" DragEnter="listViewDetail_DragEnter" AllowDrop="True"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False"
+                          SelectedItem="{Binding ItemsView.AttributiEntities.SelectedItem}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Name="DetailListViewItem" Background="Transparent">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxMenuItemHeader}"
+                                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxCommand}">
+                                            <MenuItem.Icon>
+                                                <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" FontSize="13"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Name="DragRectangle" Text="{Binding Etichetta}" VerticalAlignment="Top" Grid.Column="0" HorizontalAlignment="Stretch" Width="{Binding EtichettaWidth}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <!--IsHilighted-->
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="true">
+                                                        <Setter Property="Background" Value="{StaticResource SelectedColor}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="false">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </DataTrigger>
+                                                    <!--IsGuid-->
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="true">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="false">
+                                                        <Setter Property="FontWeight" Value="Normal"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+
+                                    </TextBlock>
+
+                                    <!--<Popup Style="{StaticResource popupStyle}"
+											IsOpen="{Binding IsHilighted}" 
+											PlacementTarget="{Binding ElementName=DragRectangle}">
+                                        <Border Style="{StaticResource popupBorderStyle}">
+                                            <TextBlock Text="{lex:Loc Attributi}"/>
+                                        </Border>
+                                    </Popup>-->
+                                    <!--<dxe:FlyoutControl IsOpen="{Binding IsHilighted, Mode=TwoWay}" 
+										   PlacementTarget="{Binding ElementName=DragRectangle}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                                        <dxe:FlyoutControl.Settings>
+                                            <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                            </dxe:FlyoutSettings>
+                                        </dxe:FlyoutControl.Settings>
+                                       -->
+                                    <!--<commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                                        LoadedBehavior="Play" UnloadedBehavior="Manual" MaxWidth="200" MaxHeight="200"/>-->
+                                    <!--                                        
+                                    </dxe:FlyoutControl>-->
+                                    <Button x:Name="ExpandButton" Command="{Binding ExpandCommand}" Visibility="{Binding IsExpandable, Converter={StaticResource VisibilityConverter}}" Grid.Column="1" Content="{Binding Path=IsExpanded, Mode=TwoWay, Converter={StaticResource expandCollapseVerticalGlyphConverter}}" IsTabStop="False" VerticalAlignment="Top" Style="{StaticResource smallButtonStyle}" Foreground="Gray"/>
+                                </Grid>
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" Background="Transparent" DragCompleted="GridSplitter_DragCompleted" IsTabStop="False"/>
+                                <ContentControl Name="ValoreControl" Content="{Binding ValoreView, Mode=OneWay}" Grid.Column="2" ContentTemplateSelector="{StaticResource ValoreAttributoTemplateSelector}"  Visibility="{Binding IsValoreViewVisible, Mode=TwoWay, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" TabIndex="{Binding TabIndex}" IsTabStop="False" Height="{Binding Height}" Padding="0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <!--IsExpanded="{Binding Items[0].IsGroupExpanded}"-->
+                                            <ControlTemplate>
+                                                <Expander IsExpanded="True"  Style="{StaticResource expanderStyle}">
+                                                    <Expander.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="16" />
+                                                        </StackPanel>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter/>
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </Grid>
+        </Grid>
+        <!--<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />-->
+        <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1">
+            <Grid Name="RightSplitGrid" HorizontalAlignment="Stretch">
+                <Grid Style="{StaticResource rightSplitGridStyle}" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Name="RightSplitPaneControl" Content="{Binding RightPanesView.CurrentControlView, Mode=TwoWay}" 
+                                    Visibility="{Binding RightPanesView.IsPaneOpen, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                    ContentTemplateSelector="{StaticResource RightSplitPaneTemplateSelector}" VerticalContentAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch" Grid.Column="0"  AllowDrop="True"
+                                    DragOver="RightSplitPaneControl_DragOver"  Drop="RightSplitPaneControl_Drop" 
+                                    Width="150" BorderThickness="0"/>
+                    <Grid Grid.Column="1" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ToggleButton x:Name="OpenPanel" IsChecked="{Binding RightPanesView.IsPaneOpen, Mode=TwoWay}" Width="50" VerticalAlignment="Stretch" ToolTipService.ToolTip="{lex:Loc EspandiCollassa}" AllowDrop="True" Grid.Row="0" Margin="0"
+                                  Style="{StaticResource menuToggleButtonStyle}" Content="{Binding Path=RightPanesView.IsPaneOpen, Mode=TwoWay, Converter={StaticResource expandCollapseHorizontalGlyphConverter}}"/>
+                        <Grid Grid.Row="1" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <!--<RowDefinition/>-->
+                            </Grid.RowDefinitions>
+                            <ToggleButton x:Name="FilterToggleButton" IsChecked="{Binding RightPanesView.IsFilterPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc TrovaFiltra}" AllowDrop="True" Grid.Row="0"
+                                          Margin="0" Style="{StaticResource filterToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="FilterToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe07f;" FontSize="20"  HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.FilterView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.FilterView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}"/>
+                                </StackPanel>
+                            </ToggleButton>
+                            <!--<ToggleButton x:Name="SortToggleButton" IsChecked="{Binding RightPanesView.IsSortPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc Ordina}" Grid.Row="1" AllowDrop="True"
+                                          Margin="0" Style="{StaticResource sortToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="SortToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe066;" FontSize="20" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.SortView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.SortView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}"/>
+                                </StackPanel>
+                            </ToggleButton>-->
+                            <Rectangle HorizontalAlignment="Right" Width="50" VerticalAlignment="Stretch" Grid.Row="3"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+
+</UserControl>

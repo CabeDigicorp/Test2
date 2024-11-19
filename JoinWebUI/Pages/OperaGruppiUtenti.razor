@@ -1,0 +1,1035 @@
+﻿@page "/opere/{OperaId:guid}/gruppi"
+@using AutoMapper
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Popups
+@using System.Collections.ObjectModel
+
+
+@implements IDisposable
+@inject NavigationManager _navigation
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+@inject SfDialogService DialogService
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Gruppi di utenti per @_operaNome</PageTitle>
+
+<PageHeader Title="Utenti e gruppi opera"
+            ObjectType="Opera"
+            ObjectName="@_operaNome"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+
+<SfTab ID="tab" @ref="_tabs" HeaderPlacement="HeaderPosition.Top" CssClass="e-fill">
+    <TabItems>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Gruppi" />
+            </ChildContent>
+            <ContentTemplate>
+                <div id="gruppi" class="control-section row" style="min-height:100%">
+                    <ListBoxCard ComplexDataSource=@_gruppi
+                                 SelectedValues=@_selectedGruppiGruppi
+                                 OnClickNew=@OnAddGruppiGruppi
+                                 OnClickEdit=@OnEditGruppo
+                                 OnClickDelete=@OnDelGruppiGruppi
+                                 MultiSelect=false
+                                 OnValueChanged=@OnSelectedGruppiGruppiChanged
+                                 Title="Gruppi dell'opera"
+                                 NoRecordsString="Nessun gruppo trovato"
+                                 Width=@LargeCardWidth
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                    <ListBoxCard ComplexDataSource=@_utentiGruppo
+                                 DisableNew=@DisableNewGruppiUtenti
+                                 OnClickNew=@OnAddGruppiUtenti
+                                 OnClickDelete=@OnDelGruppiUtenti
+                                 MultiSelect=true
+                                 Title="Utenti del gruppo selezionato"
+                                 NoRecordsString="Nessun utente trovato"
+                                 Width=@NarrowCardWidth
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                    <ListBoxCard ComplexDataSource=@_teamsGruppo
+                                 DisableNew=@DisableNewGruppiTeams
+                                 OnClickNew=@OnAddGruppiTeams
+                                 OnClickDelete=@OnDelGruppiTeams
+                                 MultiSelect=true
+                                 Title="Teams del gruppo selezionato"
+                                 NoRecordsString="Nessun team trovato"
+                                 Width=@NarrowCardWidth
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                </div>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Utenti" />
+            </ChildContent>
+            <ContentTemplate>
+                <div id="utenti" class="control-section row" style="min-height:100%">
+                    <ListBoxCard ComplexDataSource=@_utenti
+                                 SelectedValues=@_selectedUtentiUtenti
+                                 OnClickNew=@OnAddUtentiUtenti
+                                 OnClickDelete=@OnDelUtentiUtenti
+                                 MultiSelect=false
+                                 OnValueChanged=@OnSelectedUtentiUtentiChanged
+                                 Title="Utenti dell'opera"
+                                 NoRecordsString="Nessun utente trovato"
+                                 Width=@StandardCardWidth
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                    <ListBoxCard ComplexDataSource=@_gruppiUtente
+                                 DisableNew=@DisableNewUtentiGruppi
+                                 OnClickNew=@OnAddUtentiGruppi
+                                 OnClickEdit=@OnEditGruppo
+                                 OnClickDelete=@OnDelUtentiGruppi
+                                 MultiSelect=true
+                                 Title="Gruppi dell'utente selezionato"
+                                 NoRecordsString="Nessun gruppo trovato"
+                                 Width=@StandardCardWidth
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                </div>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Teams" />
+            </ChildContent>
+            <ContentTemplate>
+                <div id="teams" class="control-section row" style="min-height:100%">
+                    <ListBoxCard ComplexDataSource=@_teams
+                                 SelectedValues=@_selectedTeamsTeams
+                                 OnClickNew=@OnAddTeamsTeams
+                                 OnClickDelete=@OnDelTeamsTeams
+                                 MultiSelect=false
+                                 OnValueChanged=@OnSelectedTeamsTeamsChanged
+                                 Title="Teams dell'opera"
+                                 NoRecordsString="Nessun team trovato"
+                                 Width="@StandardCardWidth"
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                    <ListBoxCard ComplexDataSource=@_gruppiTeam
+                                 DisableNew=@DisableNewTeamsGruppi
+                                 OnClickNew=@OnAddTeamsGruppi
+                                 OnClickEdit=@OnEditGruppo
+                                 OnClickDelete=@OnDelTeamsGruppi
+                                 MultiSelect=true
+                                 Title="Gruppi del team selezionato"
+                                 NoRecordsString="Nessun gruppo trovato"
+                                 Width=@StandardCardWidth
+                                 Height="stretch"
+                                 MinHeight="180px" />
+                </div>
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+<FindUserDialog IsVisible="@_showUserSearch" OkCallback="@OnUserDialogOk" CancelCallback="@OnUserDialogCancel" />
+<FindGroupDialog OperaId="@OperaId" IsVisible="@_showGroupSearch" OkCallback="@OnGroupDialogOk" CancelCallback="@OnGroupDialogCancel" />
+<FindTeamDialog ClienteId="@ClienteId" IsVisible="@_showTeamSearch" OkCallback="@OnTeamDialogOk" CancelCallback="@OnTeamDialogCancel" />
+
+<StringInputPopup IsVisible=@(_createEditGruppoDialogOpen)
+                  OnSubmit=@(OnCreateEditGruppoSubmit)
+                  OnCancel=@(OnCreateEditGruppoCancel)
+                  PopupTitle=@(_createEditGruppoTitle)
+                  Value="@((EditingGruppo as GruppoUtentiModel)?.Nome ?? string.Empty)" />
+
+@code {
+
+    [Parameter] public Guid OperaId { get; set; }
+
+    private string _operaNome = "";
+
+    private Guid ClienteId { get; set; }
+
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private ObservableCollection<IListBoxCardBaseModel> _gruppi = new ObservableCollection<IListBoxCardBaseModel>();
+    private ObservableCollection<IListBoxCardBaseModel> _utenti = new ObservableCollection<IListBoxCardBaseModel>();
+    private ObservableCollection<IListBoxCardBaseModel> _teams = new ObservableCollection<IListBoxCardBaseModel>();
+
+    private List<IListBoxCardBaseModel> _selectedGruppiGruppi = new List<IListBoxCardBaseModel>();
+    private ObservableCollection<IListBoxCardBaseModel> _utentiGruppo = new ObservableCollection<IListBoxCardBaseModel>();
+    private List<IListBoxCardBaseModel> _selectedGruppiUtenti = new List<IListBoxCardBaseModel>();
+    private ObservableCollection<IListBoxCardBaseModel> _teamsGruppo = new ObservableCollection<IListBoxCardBaseModel>();
+    private List<IListBoxCardBaseModel> _selectedGruppiTeams = new List<IListBoxCardBaseModel>();
+    private bool DisableNewGruppiUtenti { get { return (_selectedGruppiGruppi?.Count() ?? 0) == 0; } }
+    private bool DisableNewGruppiTeams { get { return (_selectedGruppiGruppi?.Count() ?? 0) == 0; } }
+
+    private List<IListBoxCardBaseModel> _selectedUtentiUtenti = new List<IListBoxCardBaseModel>();
+    private ObservableCollection<IListBoxCardBaseModel> _gruppiUtente = new ObservableCollection<IListBoxCardBaseModel>();
+    private bool DisableNewUtentiGruppi { get { return (_selectedUtentiUtenti?.Count() ?? 0) == 0; } }
+
+    private List<IListBoxCardBaseModel> _selectedTeamsTeams = new List<IListBoxCardBaseModel>();
+    private ObservableCollection<IListBoxCardBaseModel> _gruppiTeam = new ObservableCollection<IListBoxCardBaseModel>();
+    private bool DisableNewTeamsGruppi { get { return (_selectedTeamsTeams?.Count() ?? 0) == 0; } }
+
+    SfTab? _tabs;
+
+    private bool _showUserSearch = false;
+    private bool _showGroupSearch = false;
+    private bool _showTeamSearch = false;
+
+    private bool _createEditGruppoDialogOpen = false;
+    private string _createEditGruppoTitle = string.Empty;
+    private IListBoxCardBaseModel? EditingGruppo { get; set; } = null;
+
+    private const int CARDMINWIDTH = 350;
+    private const int CARDMAXWIDTH = 1600;
+    private int _largeCardWidth = CARDMINWIDTH;
+    private string LargeCardWidth { get { return _largeCardWidth.ToString() + "px"; } }
+    private int _narrowCardWidth = CARDMINWIDTH;
+    private string NarrowCardWidth { get { return _narrowCardWidth.ToString() + "px"; } }
+    private int _standardCardWidth = CARDMINWIDTH;
+    private string StandardCardWidth { get { return _standardCardWidth.ToString() + "px"; } }
+
+    private async Task ComputeCardWidth()
+    {
+        string tab;
+        switch (_tabs.SelectedItem)
+        {
+            case 0:
+                tab = "gruppi";
+                break;
+            case 1:
+                tab = "utenti";
+                break;
+            case 2:
+                tab = "teams";
+                break;
+            default:
+                tab = "gruppi";
+                break;
+
+        }
+
+        BrowserWindowSize size = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getElementDimensions", tab);
+
+        int cardsPerRow = 0;
+        int maxCardsPerRow = 3;
+        int pixel = CARDMINWIDTH;
+        do
+        {
+            cardsPerRow++;
+            pixel += (CARDMINWIDTH);
+        }
+        while (pixel < size.Width && cardsPerRow < maxCardsPerRow);
+
+        _narrowCardWidth = ((size.Width) / cardsPerRow);
+        _narrowCardWidth = Math.Min(_narrowCardWidth, CARDMAXWIDTH);
+
+        switch (cardsPerRow)
+        {
+            case 0: //should never occur
+            case 1:
+                _standardCardWidth = _largeCardWidth = _narrowCardWidth;
+                break;
+            case 2:
+                _largeCardWidth = size.Width;
+                _standardCardWidth = size.Width / 2;
+                break;
+            default:
+                _largeCardWidth = _narrowCardWidth;
+                _standardCardWidth = size.Width / 2;
+                break;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        var operaResult = await _apiClient.JsonGetAsync<OperaDto>("opere", OperaId.ToString());
+        if (!operaResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore download opera";
+            return;
+        }
+
+        _operaNome = operaResult.ResponseContentData!.Nome;
+        ClienteId = operaResult.ResponseContentData!.ClienteId;
+        _breadcrumbs = new List<(string, string)>()
+                        {
+                ("Opere", "/opere"),
+                (String.IsNullOrWhiteSpace(_operaNome) ? "[nome sconosciuto]" : _operaNome, "/opere/" + OperaId.ToString()),
+                ("Utenti e gruppi","/opere/" + OperaId.ToString() + "/gruppi")
+                        };
+
+
+        var gruppiResult = await _apiClient.JsonGetAsync<IEnumerable<GruppoUtentiDto>>("gruppiutenti/get-by-opera", query: new Dictionary<string, string>() { { "operaId", OperaId.ToString() } });
+        if (!gruppiResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore download gruppi utenti";
+            return;
+        }
+        var gruppiConverted = _mapper.Map<List<GruppoUtentiModel>>(gruppiResult.ResponseContentData);
+        _gruppi = new ObservableCollection<IListBoxCardBaseModel>(gruppiConverted);
+        _gruppiUtente = new ObservableCollection<IListBoxCardBaseModel>();
+        _gruppiTeam = new ObservableCollection<IListBoxCardBaseModel>();
+
+        var utentiResult = await _apiClient.JsonGetAsync<IEnumerable<UtenteDto>>("utenti/get-by-opera", query: new Dictionary<string, string>() { { "operaId", OperaId.ToString() } });
+        if (!utentiResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore download utenti";
+            return;
+        }
+        var utentiConverted = _mapper.Map<List<UtenteModel>>(utentiResult.ResponseContentData);
+        _utenti = new ObservableCollection<IListBoxCardBaseModel>(utentiConverted);
+        _utentiGruppo = new ObservableCollection<IListBoxCardBaseModel>();
+
+
+        var teamsResult = await _apiClient.JsonGetAsync<IEnumerable<TeamDto>>("teams/get-by-opera", query: new Dictionary<string, string>() { { "operaId", OperaId.ToString() } });
+        if (!teamsResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore download teams";
+            return;
+        }
+        var teamsConverted = _mapper.Map<List<TeamModel>>(teamsResult.ResponseContentData);
+        _teams = new ObservableCollection<IListBoxCardBaseModel>(teamsConverted);
+        _teamsGruppo = new ObservableCollection<IListBoxCardBaseModel>();
+
+
+        await ComputeCardWidth();
+
+    }
+
+
+    private async Task OnSelectedGruppiGruppiChanged(string[] selectedValues)
+    {
+        if ((selectedValues?.Count() ?? -1) > 0)
+        {
+            _selectedGruppiGruppi = _gruppi.Where(g => selectedValues![0] == g.IdString).ToList();
+
+            if (_selectedGruppiGruppi.Count() == 1)
+            {
+                var query = new Dictionary<string, string>() { { "gruppoId", selectedValues![0] }, { "operaId", OperaId.ToString() } };
+
+                var resultUtenti = await _apiClient.JsonGetAsync<IEnumerable<Guid>>("utenti/get-gruppo-opera-utenti-ids", query: query);
+                if (!resultUtenti.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore download utenti del gruppo";
+                    return;
+                }
+                _utentiGruppo = new ObservableCollection<IListBoxCardBaseModel>(_utenti.Where(u => resultUtenti.ResponseContentData!.Contains(u.Id)));
+
+                //OnSelectedGruppiUtentiChanged(null);
+
+
+                var resultTeams = await _apiClient.JsonGetAsync<IEnumerable<Guid>>("teams/get-gruppo-opera-teams-ids", query: query);
+                if (!resultTeams.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore download teams del gruppo";
+                    return;
+                }
+                _teamsGruppo = new ObservableCollection<IListBoxCardBaseModel>(_teams.Where(t => resultTeams.ResponseContentData!.Contains(t.Id)));
+
+                //OnSelectedGruppiTeamsChanged(null);
+            }
+        }
+        else
+        {
+            _selectedGruppiGruppi.Clear();
+        }
+
+        if ((_selectedGruppiGruppi?.Count() ?? -1) != 1)
+        {
+            _utentiGruppo.Clear();
+            _teamsGruppo.Clear();
+        }
+
+
+        StateHasChanged();
+    }
+
+    private void OnSelectedGruppiUtentiChanged(string[] selectedValues)
+    {
+        StateHasChanged();
+    }
+
+    private void OnSelectedGruppiTeamsChanged(string[] selectedValues)
+    {
+        StateHasChanged();
+    }
+
+    private async Task OnSelectedUtentiUtentiChanged(string[] selectedValues)
+    {
+        if ((selectedValues?.Count() ?? -1) > 0)
+        {
+            _selectedUtentiUtenti = _utenti.Where(u => selectedValues![0] == u.IdString).ToList();
+
+            if (_selectedUtentiUtenti.Count() == 1)
+            {
+                var result = await _apiClient.JsonGetAsync<IEnumerable<Guid>>("gruppiutenti/get-utente-opera-gruppi-ids", query:
+                    new Dictionary<string, string>() { { "utenteId", selectedValues![0] }, { "operaId", OperaId.ToString() } });
+
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore download gruppi dell'utente";
+                    return;
+                }
+                _gruppiUtente = new ObservableCollection<IListBoxCardBaseModel>(_gruppi.Where(g => result.ResponseContentData!.Contains(g.Id)));
+
+                //OnSelectedUtentiGruppiChanged(null);
+            }
+        }
+        else
+        {
+            _selectedUtentiUtenti.Clear();
+
+        }
+
+        if ((_selectedUtentiUtenti?.Count() ?? -1) != 1)
+        {
+            _gruppiUtente.Clear();
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnSelectedUtentiGruppiChanged(string[]? selectedValues)
+    {
+        StateHasChanged();
+    }
+
+    private async Task OnSelectedTeamsTeamsChanged(string[]? selectedValues)
+    {
+        if ((selectedValues?.Count() ?? -1) > 0)
+        {
+            _selectedTeamsTeams = _teams.Where(t => selectedValues![0] == t.IdString).ToList();
+
+            if (_selectedTeamsTeams.Count() == 1)
+            {
+                var result = await _apiClient.JsonGetAsync<IEnumerable<Guid>>("gruppiutenti/get-team-opera-gruppi-ids", query:
+                    new Dictionary<string, string>() { { "teamId", selectedValues![0] }, { "operaId", OperaId.ToString() } });
+
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore download gruppi del team";
+                    return;
+                }
+                _gruppiTeam = new ObservableCollection<IListBoxCardBaseModel>(_gruppi.Where(g => result.ResponseContentData!.Contains(g.Id)));
+
+                //OnSelectedTeamsGruppiChanged(null);
+            }
+        }
+        else
+        {
+            _selectedTeamsTeams.Clear();
+        }
+
+        if ((_selectedTeamsTeams?.Count() ?? -1) != 1)
+        {
+            _gruppiTeam.Clear();
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnSelectedTeamsGruppiChanged(string[]? selectedValues)
+    {
+        StateHasChanged();
+    }
+
+
+    private async Task OnAddGruppiGruppi()
+    {
+        EditingGruppo = null;
+        _createEditGruppoTitle = "Crea nuovo gruppo di utenti";
+        _createEditGruppoDialogOpen = true;
+    }
+
+    private async Task OnDelGruppiGruppi(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Cancellare il gruppo selezionato?";
+                break;
+            default:
+                msg = "Cancellare i gruppi selezionati?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if (confirm)
+        {
+            foreach (string id in ids)
+            {
+                var result = await _apiClient.JsonDeleteAsync("gruppiutenti", id);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore eliminazione gruppo";
+                    return;
+                }
+
+                _gruppi.Remove(_gruppi.Where(g => g.IdString == id).Single());
+
+            }
+
+            _selectedGruppiGruppi.Clear();
+            OnSelectedGruppiGruppiChanged(new string[] { });
+
+        }
+
+
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnAddGruppiUtenti()
+    {
+        _showUserSearch = true;
+    }
+
+    private async Task OnDelGruppiUtenti(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Rimuovere l'utente selezionato dal gruppo?";
+                break;
+            default:
+                msg = "Rimuovere gli utenti selezionati dal gruppo?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if ((_selectedGruppiGruppi?.Count() ?? -1) == 1 && confirm)
+        {
+            foreach (string id in ids)
+            {
+                var dto = new AssignUtenteGruppoDto();
+                dto.UtenteId = new Guid(id);
+                dto.GruppoId = _selectedGruppiGruppi![0].Id;
+
+                var result = await _apiClient.JsonPostAsync("utenti/remove-utente-gruppo", dto);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore rimozione";
+                    return;
+                }
+
+                _utentiGruppo.Remove(_utentiGruppo.Where(u => u.IdString == id).Single());
+
+            }
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnAddGruppiTeams()
+    {
+        _showTeamSearch = true;
+    }
+
+    private async Task OnDelGruppiTeams(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Rimuovere il team selezionato dal gruppo?";
+                break;
+            default:
+                msg = "Rimuovere i teams selezionati dal gruppo?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if ((_selectedGruppiGruppi?.Count ?? -1) == 1 && confirm)
+        {
+            foreach (string id in ids)
+            {
+                var dto = new AssignTeamGruppoDto();
+                dto.TeamId = new Guid(id);
+                dto.GruppoId = _selectedGruppiGruppi![0].Id;
+
+                var result = await _apiClient.JsonPostAsync("teams/remove-team-gruppo", dto);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore rimozione";
+                    return;
+                }
+                _teamsGruppo.Remove(_teamsGruppo.Where(t => t.IdString == id).Single());
+            }
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnAddUtentiUtenti()
+    {
+        _showUserSearch = true;
+    }
+
+    private async Task OnDelUtentiUtenti(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Rimuovere l'utente selezionato da tutti i gruppi dell'opera?";
+                break;
+            default:
+                msg = "Rimuovere gli utenti  selezionati da tutti i gruppi dell'opera?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if (confirm)
+        {
+            foreach (string id in ids)
+            {
+                var dto = new RemoveUtenteOperaDto();
+                dto.UtenteId = new Guid(id);
+                dto.OperaId = OperaId;
+
+                var result = await _apiClient.JsonPostAsync("utenti/remove-utente-opera", dto);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore rimozione utente";
+                    return;
+                }
+
+                _utenti.Remove(_utenti.Where(t => t.IdString == id).Single());
+
+            }
+
+            _selectedUtentiUtenti.Clear();
+            OnSelectedUtentiUtentiChanged(new string[] { });
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnAddUtentiGruppi()
+    {
+        _showGroupSearch = true;
+    }
+
+    private async Task OnDelUtentiGruppi(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Rimuovere l'utente dal gruppo selezionato?";
+                break;
+            default:
+                msg = "Rimuovere l'utente dai gruppi selezionati?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if ((_selectedUtentiUtenti?.Count() ?? -1) == 1 && confirm)
+        {
+            foreach (string id in ids)
+            {
+                var dto = new AssignUtenteGruppoDto();
+                dto.UtenteId = _selectedUtentiUtenti![0].Id;
+                dto.GruppoId = new Guid(id);
+
+                var result = await _apiClient.JsonPostAsync("utenti/remove-utente-gruppo", dto);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore rimozione";
+                    return;
+                }
+
+                _gruppiUtente.Remove(_gruppiUtente.Where(g => g.IdString == id).Single());
+
+            }
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnAddTeamsTeams()
+    {
+        _showTeamSearch = true;
+    }
+
+    private async Task OnDelTeamsTeams(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Rimuovere il team selezionato da tutti i gruppi dell'opera?";
+                break;
+            default:
+                msg = "Rimuovere i teams selezionati da tutti i gruppi dell'opera?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if (confirm)
+        {
+            foreach (string id in ids)
+            {
+                var dto = new RemoveTeamOperaDto();
+                dto.TeamId = new Guid(id);
+                dto.OperaId = OperaId;
+
+                var result = await _apiClient.JsonPostAsync("teams/remove-team-opera", dto);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore rimozione team";
+                    return;
+                }
+
+                _teams.Remove(_teams.Where(t => t.IdString == id).Single());
+
+            }
+
+            _selectedTeamsTeams.Clear();
+            OnSelectedTeamsTeamsChanged(new string[] { });
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnAddTeamsGruppi()
+    {
+        _showGroupSearch = true;
+    }
+
+    private async Task OnDelTeamsGruppi(string[] ids)
+    {
+        string msg = string.Empty;
+        switch (ids.Count())
+        {
+            case 0:
+                return;
+            case 1:
+                msg = "Rimuovere il team dal gruppo selezionato?";
+                break;
+            default:
+                msg = "Rimuovere il team dai gruppi selezionati?";
+                break;
+        }
+
+        bool confirm = await DialogService.ConfirmAsync(msg, "Conferma cancellazione");
+        if ((_selectedTeamsTeams?.Count ?? -1) == 1 && confirm)
+        {
+            foreach (string id in ids)
+            {
+                var dto = new AssignTeamGruppoDto();
+                dto.TeamId = _selectedTeamsTeams[0].Id;
+                dto.GruppoId = new Guid(id);
+
+                var result = await _apiClient.JsonPostAsync("teams/remove-team-gruppo", dto);
+                if (!result.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore rimozione";
+                    return;
+                }
+
+                _gruppiTeam.Remove(_gruppiTeam.Where(g => g.IdString == id).Single());
+
+            }
+        }
+
+        StateHasChanged();
+
+    }
+
+    private void OnEditGruppo(string id)
+    {
+        EditingGruppo = _gruppi.Where(g => g.IdString == id).FirstOrDefault();
+
+        if (EditingGruppo != null)
+        {
+            _createEditGruppoTitle = "Rinomina gruppo di utenti";
+            _createEditGruppoDialogOpen = true;
+        }
+    }
+
+    private async Task OnUserDialogOk(UtenteModel utente)
+    {
+        _showUserSearch = false;
+
+        switch (_tabs.SelectedItem)
+        {
+            case 0:
+                AssignUtenteGruppoDto dto = new AssignUtenteGruppoDto();
+                dto.UtenteId = utente.Id;
+                dto.GruppoId = _selectedGruppiGruppi[0].Id;
+                var result = await _apiClient.JsonPostAsync<GruppoUtentiUpdateDto>("utenti/assign-utente-gruppo", dto);
+                if (result.Success)
+                {
+                    _utentiGruppo.Add(utente);
+                }
+                break;    
+            case 1:
+                if (!_utenti.Select(u => u.Id).Contains(utente.Id))
+                {
+                    _utenti.Add(utente);
+                }
+                break;
+
+            default:
+                break;
+
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnUserDialogCancel()
+    {
+        _showUserSearch = false;
+    }
+
+
+    private async Task OnGroupDialogOk(GruppoUtentiModel gruppo)
+    {
+        _showGroupSearch = false;
+
+        switch (_tabs.SelectedItem)
+        {
+            case 1:
+                AssignUtenteGruppoDto dto = new AssignUtenteGruppoDto();
+                dto.UtenteId = _selectedUtentiUtenti[0].Id;
+                dto.GruppoId = gruppo.Id;
+                var result = await _apiClient.JsonPostAsync<GruppoUtentiUpdateDto>("utenti/assign-utente-gruppo", dto);
+                if (result.Success)
+                {
+                    _gruppiUtente.Add(gruppo);
+                }
+                break;
+            case 2:
+                AssignTeamGruppoDto dto2 = new AssignTeamGruppoDto();
+                dto2.TeamId = _selectedTeamsTeams[0].Id;
+                dto2.GruppoId = gruppo.Id;
+                var result2 = await _apiClient.JsonPostAsync<GruppoUtentiUpdateDto>("team/assign-team-gruppo", dto2);
+                if (result2.Success)
+                {
+                    _gruppiTeam.Add(gruppo);
+                }
+                break;
+            default:
+                break;
+
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task OnGroupDialogCancel()
+    {
+        _showGroupSearch = false;
+    }
+
+
+    private async Task OnTeamDialogOk(TeamModel team)
+    {
+        _showTeamSearch = false;
+
+        switch (_tabs.SelectedItem)
+        {
+            case 0:
+                AssignTeamGruppoDto dto = new AssignTeamGruppoDto();
+                dto.TeamId = team.Id;
+                dto.GruppoId = _selectedGruppiGruppi[0].Id;
+                var result = await _apiClient.JsonPostAsync<GruppoUtentiUpdateDto>("teams/assign-team-gruppo", dto);
+                if (result.Success)
+                {
+                    _teamsGruppo.Add(team);
+                }
+                break;
+            case 2:
+                if (!_teams.Select(t => t.Id).Contains(team.Id))
+                {
+                    _teams.Add(team);
+                }
+                break;
+
+            default:
+                break;
+
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task OnTeamDialogCancel()
+    {
+        _showTeamSearch = false;
+    }
+
+
+
+    private async Task OnCreateEditGruppoSubmit(string value)
+    {
+        if (!String.IsNullOrWhiteSpace(value))
+        {
+            if (EditingGruppo == null)
+            {
+                if (!String.IsNullOrWhiteSpace(value))
+                {
+                    GruppoUtentiCreateDto dto = new GruppoUtentiCreateDto();
+                    dto.OperaId = OperaId;
+                    dto.Nome = value;
+
+                    var result = await _apiClient.JsonPostAsync<GruppoUtentiDto>("gruppiutenti", dto);
+                    if (result.Success)
+                    {
+                        GruppoUtentiModel gruppo = _mapper.Map<GruppoUtentiModel>(result.ResponseContentData);
+                        _gruppi.Add(gruppo);
+                    }
+                    else
+                    {
+                        _requestError = true;
+                        _requestErrorMessage = "Errore creazione nuovo gruppo";
+                        return;
+                    }
+                }
+
+                StateHasChanged();
+            }
+            else
+            {
+                GruppoUtentiUpdateDto dto = new GruppoUtentiUpdateDto();
+                dto.Id = EditingGruppo.Id;
+                dto.Nome = value;
+
+                var result = await _apiClient.JsonPutAsync<GruppoUtentiUpdateDto>("gruppiutenti", EditingGruppo.IdString, dto);
+                if (result.Success)
+                {
+                    GruppoUtentiModel? casted = EditingGruppo as GruppoUtentiModel;
+                    if (casted != null)
+                    {
+                        casted.Nome = value;
+                        EditingGruppo = casted;
+                        var gruppoU = _gruppiUtente.Where(g => g.IdString == EditingGruppo.IdString).FirstOrDefault();
+                        casted = gruppoU as GruppoUtentiModel;
+                        if (gruppoU != null && casted != null)
+                        {
+                            casted.Nome = value;
+                            gruppoU = casted;
+                        }
+                        var gruppoT = _gruppiTeam.Where(g => g.IdString == EditingGruppo.IdString).FirstOrDefault();
+                        casted = gruppoT as GruppoUtentiModel;
+                        if (gruppoT != null && casted != null)
+                        {
+                            casted.Nome = value;
+                            gruppoT = casted;
+                        }
+                    }
+                }
+                else
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore modifica gruppo";
+                }
+            }
+
+            StateHasChanged();
+        }
+
+        _createEditGruppoDialogOpen = false;
+
+    }
+
+    private void OnCreateEditGruppoCancel()
+    {
+        _createEditGruppoDialogOpen = false;
+    }
+
+
+    private void CancelButtonClick()
+    {
+        _navigation.NavigateTo("/opere/" + OperaId);
+    }
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            _listener.OnResized += WindowResized;
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        _listener.OnResized -= WindowResized;
+
+    }
+
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await ComputeCardWidth();
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+
+    }
+
+
+}

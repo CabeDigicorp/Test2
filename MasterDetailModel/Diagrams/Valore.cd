@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailModel.ValoreTesto" BaseTypeListCollapsed="true">
+    <Position X="7.75" Y="7" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAAAAAAAAAAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.177" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreData" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="7" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAgAAAAAAAAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreCollection" BaseTypeListCollapsed="true">
+    <Position X="21.75" Y="7" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACYAQAAEAAACIACAgAAEBQBABAAAEAgAAAAAAABwAHA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="V" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTestoSuggest" BaseTypeListCollapsed="true">
+    <Position X="19.5" Y="7" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAAAAAAAAAAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTestoRtf" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="7" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACUAAAAEAAAAIACAgAAEAQBABAAAEAABAACAAgAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreReale" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="7" Width="1.75" />
+    <Members>
+      <Method Name="Update" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AiQAAAAEAABQIACAgAAEAQBABEgAEAAAAAAgAgAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreContabilita" BaseTypeListCollapsed="true">
+    <Position X="15.5" Y="7" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AiQAAAAEAABQIACAgAAEAQBABEgAEAAAAAAgAgAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreGuid" BaseTypeListCollapsed="true">
+    <Position X="17.75" Y="7" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAAAAAAAAAAwAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTestoCollection" Collapsed="true">
+    <Position X="20.5" Y="9.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.ValoreGuidCollection" Collapsed="true">
+    <Position X="22.75" Y="9.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTestoCollectionItem" Collapsed="true">
+    <Position X="26.75" Y="7" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACQCAAAEAAAAIECAgAAEAQBABQAAEAAAAAAAAAAgAHA=</HashCode>
+      <FileName>Model\ValoreCollectionItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreGuidCollectionItem" Collapsed="true">
+    <Position X="24" Y="7" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACQCAAAEAAIAIECAgAAEAQBABAAAEAAAAAAAAAAgAHA=</HashCode>
+      <FileName>Model\ValoreCollectionItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.1" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreCollectionItem" Collapsed="true">
+    <Position X="25.25" Y="5.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAEAAAAAAAAAAAQAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Model\ValoreCollectionItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="MasterDetailModel.Valore">
+    <Position X="5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAAAAAAAAAAgAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MasterDetailModel.ValoreSingle">
+    <Position X="5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

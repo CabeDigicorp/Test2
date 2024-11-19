@@ -1,0 +1,313 @@
+﻿<Window x:Class="ReJo.UI.RulesWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ReJo.UI"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        xmlns:utility="clr-namespace:ReJo.Utility"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        Title="{lex:Loc Regole}"
+        Height="600" Width="800"
+        MinHeight="600" MinWidth="800">
+    <Window.DataContext>
+        <local:RulesView/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.Rejo;component/Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <utility:VisibilityConverter x:Key="VisibilityConverter"/>
+            <utility:InverseConverter x:Key="InverseConverter"/>
+            <DataTemplate x:Key="gridDragdroptemplate">
+                <Border x:Name="border" Width="250" Height="30"     
+                    Background="WhiteSmoke" 
+                    BorderBrush="LightGray"
+                    BorderThickness="1">
+                    <TextBlock Text="{Binding DraggingRecords[0].Formula}" Grid.Row="0" Grid.Column="1"/>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Margin="0,5,0,5">
+            <Run Text="{lex:Loc NomeFiltro}"/><Run Text=": "/><Run Text="{Binding FilterName}" FontWeight="Bold"/>
+        </TextBlock>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal"  Margin="0,5,0,5">
+            <TextBlock VerticalAlignment="Bottom">
+                <Run Text="{lex:Loc Elemento}"/> <Run Text=":"/>
+            </TextBlock>
+            <Button Command="{Binding CurrentElementFirstCommand}" Content="&#xe083;" Style="{StaticResource fontButtonStyle}" Margin="20,0,0,0"/>
+            <Button Command="{Binding CurrentElementPrevCommand}" Content="&#xe081;" Style="{StaticResource fontButtonStyle}" Margin="5,0,0,0"/>
+            <TextBox Name="CurrentElementTextBox" Text="{Binding CurrentElementNumber}" KeyDown="CurrentElementTextBox_KeyDown" Width="50" Margin="5,0,0,0" ToolTip="{Binding ElementsInfo}" VerticalContentAlignment="Center"/>
+            <TextBlock Text="/" Margin="5,0,0,0" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding ElementsCount}" VerticalAlignment="Center"/>
+            <Button Command="{Binding CurrentElementNextCommand}" Content="&#xe082;" Style="{StaticResource fontButtonStyle}" Margin="5,0,0,0"/>
+            <Button Command="{Binding CurrentElementLastCommand}" Content="&#xe084;" Style="{StaticResource fontButtonStyle}" Margin="5,0,0,0"/>
+            <TextBlock VerticalAlignment="Bottom" Margin="5,0,0,0">
+                <Run Text="{lex:Loc Categoria}"/>
+                <Run Text=": "/>
+                <Run Text="{Binding CurrentElementCategoria}"/>
+            </TextBlock>
+        </StackPanel>
+        <TextBlock Grid.Row="2" Text="{lex:Loc Regole}" Margin="0,5,0,0" VerticalAlignment="Bottom" Style="{StaticResource titleTextBlockStyle}"/>
+        <Grid Grid.Row="3" Margin="0,5,0,5">
+            <TabControl>
+                <TabItem Header="{lex:Loc Computo}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,5">
+                            <Button Command="{Binding ArticoloAddCommand}" Content="&#xe02b;" Style="{StaticResource fontButtonStyle}"/>
+                            <Button Command="{Binding ArticoloRemoveCommand}" Content="&#xe03a;" Style="{StaticResource fontButtonStyle}" Margin="5,0,0,0"/>
+                            <Button Command="{Binding ArticoloMoveUpCommand}" Content="&#xe08c;" Style="{StaticResource fontButtonStyle}" Margin="5,0,0,0"/>
+                            <Button Command="{Binding ArticoloMoveDownCommand}" Content="&#xe08d;" Style="{StaticResource fontButtonStyle}" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <syncfusion:SfDataGrid x:Name="RulesGrid" Grid.Row="1" ItemsSource="{Binding RulesItem}" Margin="0,5,0,5"
+                                SelectionMode="Single" SelectionUnit="Row"
+                                CurrentItem="{Binding CurrentRulesItem, Mode=TwoWay}"
+                                AllowResizingColumns="True" AutoGenerateColumns="False"
+                                AllowDraggingRows="False" AllowDrop="False" AllowSorting="False" AllowEditing="False" IsReadOnly="True"
+                                ColumnSizer ="Auto">
+                           
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding CurrentRuleReplaceCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <syncfusion:SfDataGrid.Columns>
+                                <syncfusion:GridTemplateColumn HeaderText="" Width="30" MappingName="RuleInfoSign" syncfusion:FocusManagerHelper.WantsKeyInput="True">
+                                    <syncfusion:GridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Button Name="RuleInfoBtn" Content="&#xe093;" syncfusion:FocusManagerHelper.FocusedElement="True" Margin="2"   
+                                                        Command="{Binding RuleInfoOpenCommand}"
+                                                        Visibility="{Binding IsRuleInfoBtnVisible, Converter={StaticResource VisibilityConverter}}"
+                                                        BorderThickness="0" Background="Transparent"
+                                                        Foreground="Red"
+                                                        BorderBrush="Red"    
+                                                        Width="15" Height="15"
+                                                        FontFamily="{StaticResource digicorpFontFamilyKey}"
+                                                        FontSize="10"/>
+                                                <Popup Name="myPopup" IsOpen="{Binding IsRuleInfoOpen}" StaysOpen="False" MaxHeight="200" MaxWidth="400">
+                                                    <Border BorderThickness="1">
+                                                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                                            <TextBlock Text="{Binding RuleInfo}" Background="LightYellow" Foreground="Black" Padding="15"/>
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </Popup>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </syncfusion:GridTemplateColumn.CellTemplate>
+                                </syncfusion:GridTemplateColumn>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Prezzario origine}" MappingName="Prezzario" CellStyle="{StaticResource cellStyle}"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Codice}" MappingName="Codice" CellStyle="{StaticResource cellStyle}"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Descrizione}" MappingName="Descrizione" CellStyle="{StaticResource cellStyle}" ColumnSizer="Star"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc UM}" MappingName="UM" CellStyle="{StaticResource cellStyle}"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc QuantitaElemento}" MappingName="QuantitaElemento" CellStyle="{StaticResource cellStyle}" TextAlignment="Right"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc Prezzo}" MappingName="Prezzo" CellStyle="{StaticResource cellStyle}" TextAlignment="Right"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc ImportoElemento}" MappingName="ImportoElemento" CellStyle="{StaticResource cellStyle}" TextAlignment="Right"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc QuantitaTotale}" MappingName="QuantitaTotale" CellStyle="{StaticResource cellStyle}" TextAlignment="Right"/>
+                                <syncfusion:GridTextColumn HeaderText="{lex:Loc ImportoTotale}" MappingName="ImportoTotale" CellStyle="{StaticResource cellStyle}" TextAlignment="Right"/>
+                            </syncfusion:SfDataGrid.Columns>
+                        </syncfusion:SfDataGrid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+        <GridSplitter Grid.Row="4" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}"/>
+        <Grid Grid.Row="5" Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+            <TabControl>
+                    <TabItem Header="{lex:Loc Parametri}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <!--<RowDefinition Height="*"/>-->
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,0">
+                                <ToggleButton IsChecked="{Binding ParamsInAllElements}" Content="{Binding ParamsInAllElementsText}" Style="{StaticResource fontToggleButtonStyle}" Foreground="Black"/>
+                                <ToggleButton IsChecked="{Binding ParamsAnyValueInvalid}" Content="{Binding ParamsAnyValueInvalidText}" Style="{StaticResource fontToggleButtonStyle}" Foreground="Red"/>
+                                <ToggleButton IsChecked="{Binding ParamsInAnyElements}" Content="{Binding ParamsInAnyElementsText}" Style="{StaticResource fontToggleButtonStyle}" Foreground="Gray"/>
+                                <CheckBox Content="{lex:Loc ValoriNumerici}" IsChecked="{Binding ParamsIsValoriNumericiChecked}" VerticalAlignment="center" Margin="20,0,0,0"/>
+                                <CheckBox Content="{lex:Loc Testi}" IsChecked="{Binding ParamsIsTestiChecked}" VerticalAlignment="center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1" Text="{lex:Loc TrascinareParametriNelleCaselleADestra}" Margin="0,5,0,0"/>
+                            <TextBox Grid.Row="2" Text="{Binding ParamsFilterText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0"/>
+                            <syncfusion:SfDataGrid x:Name="ParametersGrid" Grid.Row="3" ItemsSource="{Binding ParameterItems}" Margin="0,5,0,5"
+                                    SelectionMode="Single" SelectionUnit="Row"
+                                    AllowResizingColumns="True" AutoGenerateColumns="False"
+                                    AllowDraggingRows="True" AllowDrop="False" AllowSorting="False" AllowEditing="True" IsReadOnly="True"
+                                    ColumnSizer ="AutoWithLastColumnFill"
+                                                   >
+                                <syncfusion:SfDataGrid.CellStyle>
+                                    <Style TargetType="syncfusion:GridCell">
+                                        <Setter Property="Foreground" Value="{Binding Path=ParameterForeground}"/>
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="Focusable" Value="False"/>
+                                    </Style>
+                                </syncfusion:SfDataGrid.CellStyle>
+
+                                <syncfusion:SfDataGrid.Columns>
+                                    <syncfusion:GridTextColumn HeaderText="" MappingName="InElementType" CellStyle="{StaticResource cellStyleDigicorpFont}"/>
+                                    <syncfusion:GridTemplateColumn HeaderText="" Width="30" MappingName="ParameterInfoSign" syncfusion:FocusManagerHelper.WantsKeyInput="True">
+                                        <syncfusion:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Button Name="ParameterInfoBtn" Content="&#xe056;" syncfusion:FocusManagerHelper.FocusedElement="True" Margin="2"   
+                                                        Command="{Binding ParameterInfoOpenCommand}"
+                                                         Visibility="{Binding IsParameterInfoBtnVisible, Converter={StaticResource VisibilityConverter}}"
+                                                          BorderThickness="0" Background="Transparent"
+                                                         Foreground="{Binding ParameterForeground}"
+                                                         BorderBrush="{Binding ParameterForeground}"
+                                                            Width="15" Height="15"
+                                                         FontFamily="{StaticResource digicorpFontFamilyKey}"
+                                                            FontSize="10"/>
+                                                    <Popup Name="myPopup" IsOpen="{Binding IsParameterInfoOpen}" StaysOpen="False" MaxHeight="200">
+                                                        <Border BorderThickness="1">
+                                                            <ScrollViewer>
+                                                                <TextBlock Name="myPopupText" Text="{Binding ParameterInfo}" Background="LightBlue" Foreground="Black" Padding="10"/>
+                                                            </ScrollViewer>
+                                                        </Border>
+                                                    </Popup>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.CellTemplate>
+                                    </syncfusion:GridTemplateColumn>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Parametro}" MappingName="ParameterName"/>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Valore}" MappingName="ParameterValue"/>
+                                </syncfusion:SfDataGrid.Columns>
+                            </syncfusion:SfDataGrid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="{lex:Loc Materiali}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <!--<RowDefinition Height="*"/>-->
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,0">
+                                <ToggleButton IsChecked="{Binding MatsInAllElements}" Content="{Binding MatsInAllElementsText}" Style="{StaticResource fontToggleButtonStyle}" Foreground="Black"/>
+                                <!--<ToggleButton IsChecked="{Binding MatsAnyValueInvalid}" Content="{Binding MatsAnyValueInvalidText}" Style="{StaticResource fontToggleButtonStyle}" Foreground="Red"/>-->
+                                <ToggleButton IsChecked="{Binding MatsInAnyElements}" Content="{Binding MatsInAnyElementsText}" Style="{StaticResource fontToggleButtonStyle}" Foreground="Gray"/>
+                                <!--<CheckBox Content="{lex:Loc ValoriNumerici}" IsChecked="{Binding MatsIsValoriNumericiChecked}" VerticalAlignment="center" Margin="20,0,0,0"/>
+                                <CheckBox Content="{lex:Loc Testi}" IsChecked="{Binding MatsIsTestiChecked}" VerticalAlignment="center" Margin="5,0,0,0"/>-->
+                            </StackPanel>
+                            <TextBlock Grid.Row="1" Text="{lex:Loc TrascinareMaterialiNelleCaselleADestra}" Margin="0,5,0,0"/>
+                            <TextBox Grid.Row="2" Text="{Binding MatsFilterText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0"/>
+                            <syncfusion:SfDataGrid x:Name="MaterialGrid" Grid.Row="3" ItemsSource="{Binding MaterialItems}" Margin="0,5,0,5"
+                                    SelectionMode="Single" SelectionUnit="Row"
+                                    AllowResizingColumns="True" AutoGenerateColumns="False"
+                                    AllowDraggingRows="True" AllowDrop="False" AllowSorting="False" AllowEditing="True" IsReadOnly="True"
+                                    ColumnSizer ="AutoWithLastColumnFill"
+                                                   >
+                                <syncfusion:SfDataGrid.CellStyle>
+                                    <Style TargetType="syncfusion:GridCell">
+                                        <Setter Property="Foreground" Value="{Binding Path=MaterialForeground}"/>
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="Focusable" Value="False"/>
+                                    </Style>
+                                </syncfusion:SfDataGrid.CellStyle>
+
+                                <syncfusion:SfDataGrid.Columns>
+                                    <!--<syncfusion:GridTextColumn HeaderText="" MappingName="InElementType" CellStyle="{StaticResource cellStyleDigicorpFont}"/>-->
+                                    <syncfusion:GridTemplateColumn HeaderText="" Width="30" MappingName="MaterialInfoSign" syncfusion:FocusManagerHelper.WantsKeyInput="True">
+                                        <syncfusion:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Button Name="MaterialInfoBtn" Content="&#xe056;" syncfusion:FocusManagerHelper.FocusedElement="True" Margin="2"   
+                                                        Command="{Binding MaterialInfoOpenCommand}"
+                                                         Visibility="{Binding IsMaterialInfoBtnVisible, Converter={StaticResource VisibilityConverter}}"
+                                                          BorderThickness="0" Background="Transparent"
+                                                         Foreground="{Binding MaterialForeground}"
+                                                         BorderBrush="{Binding MaterialForeground}"
+                                                            Width="15" Height="15"
+                                                         FontFamily="{StaticResource digicorpFontFamilyKey}"
+                                                            FontSize="10"/>
+                                                    <Popup Name="myPopup" IsOpen="{Binding IsMaterialInfoOpen}" StaysOpen="False" MaxHeight="200">
+                                                        <Border BorderThickness="1">
+                                                            <ScrollViewer>
+                                                                <TextBlock Name="myPopupText" Text="{Binding MaterialInfo}" Background="LightBlue" Foreground="Black" Padding="10"/>
+                                                            </ScrollViewer>
+                                                        </Border>
+                                                    </Popup>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </syncfusion:GridTemplateColumn.CellTemplate>
+                                    </syncfusion:GridTemplateColumn>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Materiale}" MappingName="MaterialQtaName"/>
+                                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Valore}" MappingName="MaterialQtaValue"/>
+                                </syncfusion:SfDataGrid.Columns>
+                            </syncfusion:SfDataGrid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}"/>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Text="{lex:Loc Quantità elemento}" VerticalAlignment="Center"/>
+                <Grid Grid.Row="1" Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Name="QuantitaTextBox" Text="{Binding FormulaQuantita}" IsEnabled="{Binding IsQtaEnabled}" AllowDrop="True" VerticalContentAlignment="Center"/>
+                    <Button Grid.Column="1" Content="{lex:Loc Calcola}" Command="{Binding CalculateRulesCommand}" HorizontalAlignment="Right" Style="{StaticResource buttonStyle}" Width="100" Margin="5,0,0,0"/>
+                </Grid>
+                <syncfusion:SfDataGrid x:Name="AttributiGrid" Grid.Row="2" ItemsSource="{Binding FormuleAttributi}" Margin="0,5,0,5" IsEnabled="{Binding IsAttributiGridEnabled}"
+                    SelectionMode="Single" SelectionUnit="Row"
+                    CurrentItem="{Binding CurrentQuantitaAttributoItem, Mode=TwoWay}"
+                    AllowResizingColumns="True" AutoGenerateColumns="False"
+                    AllowDraggingRows="True" AllowDrop="True" AllowSorting="False" AllowEditing="True"
+                    ColumnSizer ="AutoWithLastColumnFill" RowDragDropTemplate="{StaticResource gridDragdroptemplate}" 
+                    EditorSelectionBehavior="MoveLast" LostFocusBehavior="EndEditCurrentCell">
+                    <syncfusion:SfDataGrid.Columns>
+                        <syncfusion:GridTextColumn HeaderText="{lex:Loc Attributo1}" MappingName="AttributoEtichetta" IsReadOnly="True" CellStyle="{StaticResource cellStyle}"/>
+                        <syncfusion:GridTextColumn HeaderText="{lex:Loc Valore}" MappingName="AttributoValore" CellStyle="{StaticResource cellStyle}" />
+                    </syncfusion:SfDataGrid.Columns>
+                </syncfusion:SfDataGrid>  
+
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="6" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,5,0,5">
+            <Button Name="OkBtn" Content="{lex:Loc OK}" Click="OkBtn_Click" Margin="2,0,2,0" Width="100" Style="{StaticResource buttonStyle}"/>
+            <Button Name="CancelBtn" Content="{lex:Loc Annulla}" Click="CancelBtn_Click" Margin="2,0,2,0" Width="100" Style="{StaticResource buttonStyle}"/>
+        </StackPanel>
+    </Grid>
+</Window>

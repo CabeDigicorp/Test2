@@ -1,0 +1,259 @@
+﻿@page "/authentication/{Action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inject IConfiguration _configuration
+@inject NavigationManager _navigationManager
+@inject IAuthSyncService _authSync
+@inject JoinWebApiClient _apiClient
+@inject AutoMapper.IMapper _mapper
+@inject IJSRuntime _jsRuntime
+
+@*@implements IDisposable*@
+
+<PageTitle>JoinWeb - Autenticazione utente</PageTitle>
+
+@if (JoinUser != null && Action == "register")
+{
+    <PageHeader Title="Registrazione nuovo utente"
+                ObjectType="Utente"
+                ObjectName="@(JoinUser?.Email ?? string.Empty)"
+                Breadcrumbs="@_breadcrumbs"
+                RequestError="@_requestError"
+                RequestMessage="@_requestMessage" />
+}
+<RemoteAuthenticatorView Action="@Action">
+    <Registering>
+        <div class="d-flex justify-content-center mb-4">
+            <h2 class="fw-bold color-primary">Ciao @(_model?.Nome ?? _model?.Email ?? "Utente anonimo")</h2>
+        </div>
+        @if (_requestSuccess)
+        {
+            <div class="d-flex justify-content-center mb-4">
+                <h3 class="fw-bold color-green">
+                    Registrazione completata.
+                </h3>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-header text-center py-3">
+                    <h4>Completa la registrazione a JoinWeb</h4>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="_model" OnValidSubmit="OnValidSubmitAsync" Context="RegisterFormContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <SfTextBox @bind-Value="_model.Nome" Placeholder="Nome" ValidateOnInput="true" FloatLabelType="FloatLabelType.Always" />
+                        <div class="text-danger">
+                            <ValidationMessage For="@(() => _model.Nome)" />
+                        </div>
+                        <br>
+                        <SfTextBox @bind-Value="_model.Cognome" Placeholder="Cognome" ValidateOnInput="true" FloatLabelType="FloatLabelType.Always" />
+                        <div class="text-danger">
+                            <ValidationMessage For="@(() => _model.Cognome)" />
+                        </div>
+                        <br>
+                        <SfTextBox @bind-Value="_model.Email" Placeholder="E-mail" ValidateOnInput="true" FloatLabelType="FloatLabelType.Always" Enabled="false"/>
+                        <div class="text-danger">
+                            <ValidationMessage For="@(() => _model.Email)" />
+                        </div>
+                        <br>
+                        <SfCheckBox @bind-Checked="_model.PrivacyConsent" @onchange="OnPrivacyCheckedChanged" Label="Privacy bla bla bla..." LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.After" />
+
+                        <br>
+                        <br>
+                        <br>
+
+                        <div>
+                            <SfButton Content="Registra" CssClass="e-btn-yellow" HtmlAttributes="@registerAttr" Disabled="@(!_model.PrivacyConsent)">
+
+                            </SfButton>
+                            <SfButton Content="Annulla" CssClass="e-btn-blue" HtmlAttributes="@cancelAttr" OnClick="@LogOut">
+
+                            </SfButton>
+                        </div>
+                        @if (_requestError)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @_requestMessage
+                            </div>
+                        }
+
+                    </EditForm>
+
+                </div>
+            </div>
+        }
+    </Registering>
+    <LoggingIn>
+        <div class="d-flex justify-content-center mb-4">
+            <h3 class="fw-bold color-primary">
+                Reindirizzamento alla pagina di accesso...
+            </h3>
+        </div>
+    </LoggingIn>
+    <CompletingLoggingIn>
+        @if (JoinUser == null)
+        {
+            <div class="d-flex justify-content-center mb-4">
+                <h3 class="fw-bold color-green">
+                    Completamento accesso...
+                </h3>
+            </div>
+        }
+        else
+        {
+            GoToHomePage();
+        }
+    </CompletingLoggingIn>
+    <LogInFailed>
+        <div class="d-flex justify-content-center mb-4">
+            <h3 class="fw-bold color-red">
+                Autenticazione non riuscita.
+            </h3>
+        </div>
+    </LogInFailed>
+    <CompletingLogOut>
+        @{
+            GoToHomePage();
+         }
+    </CompletingLogOut>
+</RemoteAuthenticatorView>
+
+
+@code {
+
+    [Parameter] public string Action { get; set; }
+
+    [CascadingParameter(Name = "JoinUser")] UtenteModel? JoinUser { get; set; }
+
+    private UtenteModel _model { get; set; } = new UtenteModel();
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private bool _requestSuccess = false;
+    private string _requestMessage = "";
+
+    private bool _editing = false;
+
+
+    private Dictionary<string, object> registerAttr = new Dictionary<string, object>()
+    {
+        {"title","Conferma registrazione" },
+        {"type","submit" }
+    };
+
+    private Dictionary<string, object> cancelAttr = new Dictionary<string, object>()
+    {
+        {"title","Annulla registrazione" },
+        {"type","button" }
+    };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        switch (Action)
+        {
+            case RemoteAuthenticationActions.Register:
+
+                _breadcrumbs = new List<(string, string)>()
+                                {
+                                    ("Registrazione utente", "/authentication/register"),
+                                };
+
+                if (JoinUser != null)
+                {
+                    _model = (UtenteModel)JoinUser.Clone();
+
+                    _editing = false;
+
+                    if (_model.Auth0Roles.Contains(RuoliAuth0.REGISTERING))
+                    {
+                        GoToHomePage();
+                        return;
+                    }
+                    else if (_model.Id != Guid.Empty)
+                    {
+                        _editing = true;
+                        if (_model.Disabled || (!string.IsNullOrWhiteSpace(_model.Email) && _model.PrivacyConsent))
+                        {
+                            _navigationManager.NavigateTo("/");
+                            return;
+                        }
+                    }
+                }
+
+                break;
+
+            default:
+                break;
+
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnPrivacyCheckedChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        StateHasChanged();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        await SaveToDB();
+    }
+
+    private async Task SaveToDB()
+    {
+        _requestSuccess = false;
+        _requestError = false;
+
+        var result = await _authSync.SaveCurrentUserAsync(_model, _editing);
+
+        if (result)
+        {
+            _requestSuccess = true;
+            _requestMessage = "Salvataggio completato";
+
+            if (!_editing) _model = await _authSync.GetJoinUserInfoAsync();
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestMessage = "Salvataggio fallito";
+        }
+    }
+
+    private bool _loggingOut = false;
+
+    public async Task LogOut()
+    {
+
+        await _authSync.LogoutAsync();
+
+        var authority = _configuration["Auth0:Authority"];
+        var clientId = _configuration["Auth0:ClientId"];
+        var callback = _configuration["Auth0:LogOutCallback"];
+
+        {
+            await _jsRuntime.InvokeVoidAsync("sessionStorage.clear");
+            _navigationManager.NavigateTo($"{authority}/v2/logout" +
+                                                    $"?returnTo={callback}" +
+                                                    $"&client_id={clientId}");
+        }
+
+    }
+
+    public void GoToHomePage()
+    {
+        _navigationManager.NavigateTo("/");
+
+    }
+
+}

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+    kompose.service.expose: joincloud.digicorp.it
+    kompose.service.type: NodePort
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: joinwebui
+  name: joinwebui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: joinwebui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+        kompose.service.expose: joincloud.digicorp.it
+        kompose.service.type: NodePort
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+              # io.kompose.network/node-network: "true"
+        io.kompose.service: joinwebui
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: DOCKER_TLS_VERIFY
+              value: "0"
+          image: digicorpregistry.azurecr.io/joinwebui:k8s
+          imagePullPolicy: Always
+          name: joinwebui
+          ports:
+            - containerPort: 5101
+            - containerPort: 5001
+            - containerPort: 80
+          resources: {}
+          volumeMounts:
+            - mountPath: /logs
+              name: joinlogs
+      imagePullSecrets:
+      - name: regcred
+      hostname: joinwebui
+      restartPolicy: Always
+      volumes:
+        - name: joinlogs
+          persistentVolumeClaim:
+            claimName: joinlogs
+status: {}

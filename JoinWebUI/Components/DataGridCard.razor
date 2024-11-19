@@ -1,0 +1,246 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using System.Collections.ObjectModel
+@using System.Collections.Specialized;
+
+<div class="col my-3" style="min-width:@(Width);max-width:@(Width);height:@Height;min-height:@MinHeight">
+    <SfCard CssClass="e-card">
+        <CardHeader Title="@Title">
+            <div>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition=IconPosition.Left hidden=@(!OnClickNew.HasDelegate) Disabled=@IsNewDisabled OnClick=@ClickNew></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-edita" IconPosition=IconPosition.Left hidden=@(!OnClickEdit.HasDelegate) Disabled=@IsEditDisabled OnClick=@ClickEdit></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-download-file" IconPosition=IconPosition.Left hidden=@(!OnClickDownload.HasDelegate) Disabled=@IsDownloadDisabled OnClick=@ClickDownload></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition=IconPosition.Left hidden=@(!OnClickDelete.HasDelegate) Disabled=@IsDelDisabled OnClick=@ClickDelete></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition=IconPosition.Left OnClick=@ClickRefresh></SfButton>
+            </div>
+        </CardHeader>
+        <CardContent>
+            <SfGrid DataSource=@DataSource
+                    @ref=_grid
+                    AllowSelection=true
+                    AllowGrouping=false
+                    AllowFiltering=false
+                    AllowReordering=true
+                    AllowResizing=true
+                    AllowSorting=true
+                    AllowMultiSorting=true
+                    TValue=object>
+                <GridEditSettings AllowAdding=@(!DisableNew) AllowDeleting=@(!DisableDelete) AllowEditing=@AllowEditing ShowDeleteConfirmDialog=true />
+                <GridSelectionSettings Type=@(MultiSelect ? Syncfusion.Blazor.Grids.SelectionType.Multiple : Syncfusion.Blazor.Grids.SelectionType.Single)
+                                       EnableSimpleMultiRowSelection=false
+                                       CheckboxOnly=@ShowCheckbox
+                                       Mode=SelectionMode.Row />
+                <GridEvents TValue=object RowSelected=@RowSelected RowDeselected=@RowDeselected OnRecordDoubleClick=@RecordDoubleClick></GridEvents>
+                <GridColumns>
+
+                    @foreach (var column in ColumnInfo)
+                    {
+                        if (StandardFields.Contains(column.FieldName))
+                        {
+                            <GridColumn Field=@column.FieldName
+                                        HeaderText=@ColumnInfo[column.FieldName].HeaderText
+                                        Width=@ColumnInfo[column.FieldName].Width
+                                        AllowEditing=false />
+                        }
+                        else
+                        {
+                            var property = DataType.GetProperty(column.FieldName);
+                            if (property != null)
+                            {
+                                <GridColumn Field=@column.FieldName HeaderText=@column.HeaderText IsPrimaryKey=@(column.FieldName == "Id")
+                                            AllowEditing=@property.CanWrite AllowSorting=false Width=@column.Width>
+                                    <Template>
+                                        @if (property.PropertyType == typeof(bool))
+                                        {
+                                            if ((bool)(property.GetValue(context) ?? false))
+                                            {
+                                                <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                            }
+                                            //else non mostro nulla
+                                        }
+                                        else
+                                        {
+                                            <span>@property.GetValue(context)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+                            }
+                        }
+                    }
+                </GridColumns>
+            </SfGrid>
+        </CardContent>
+    </SfCard>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<object> DataSource { get; set; }
+    [Parameter] public Type DataType { get; set; }
+    [Parameter] public VisibleColumnsList ColumnInfo { get; set; }
+
+    [Parameter] public EventCallback OnClickNew { get; set; }
+    [Parameter] public bool DisableNew { get; set; } = false;
+    [Parameter] public EventCallback<object> OnClickEdit { get; set; }
+    [Parameter] public bool DisableEdit { get; set; } = false;
+    [Parameter] public EventCallback<object[]> OnClickDelete { get; set; }
+    [Parameter] public bool DisableDelete { get; set; } = false;
+    [Parameter] public EventCallback<object[]> OnClickDownload { get; set; }
+    [Parameter] public bool DisableDownload { get; set; } = false;
+    [Parameter] public EventCallback OnClickRefresh { get; set; }
+    [Parameter] public bool DisableRefresh { get; set; } = false;
+
+    [Parameter] public bool MultiSelect { get; set; } = false;
+
+    private GridSelectionSettings _multiSelect
+    {
+        get
+        {
+            var settings = new GridSelectionSettings();
+            settings.Type = MultiSelect ? Syncfusion.Blazor.Grids.SelectionType.Multiple : Syncfusion.Blazor.Grids.SelectionType.Single;
+            settings.EnableSimpleMultiRowSelection = true;
+            settings.CheckboxOnly = ShowCheckbox;
+            settings.Mode = SelectionMode.Row;
+
+            return settings;
+        }
+    }
+
+    [Parameter] public bool ShowCheckbox { get; set; } = false;
+
+    [Parameter] public bool AllowEditing { get; set; } = false;
+
+    [Parameter] public EventCallback<object[]?> OnRowSelectionChanged { get; set; }
+    [Parameter] public EventCallback<object?> OnRecordDoubleClick { get; set; }
+
+    [Parameter] public string Title { get; set; } = "[Titolo]";
+    [Parameter] public string NoRecordsString { get; set; } = "[Nessun elemento trovato]";
+
+    [Parameter] public string Width { get; set; }
+    [Parameter] public string Height { get; set; }
+    [Parameter] public string MinHeight { get; set; }
+
+
+    private SfGrid<object> _grid;
+
+    private List<GridColumn> _columns = new List<GridColumn>();
+
+
+    private bool IsNewDisabled { get { return !OnClickNew.HasDelegate || DisableNew; } }
+    private bool IsEditDisabled { get { return !OnClickEdit.HasDelegate || DisableEdit || (_grid?.SelectedRecords?.Count() ?? -1) != 1; } }
+    private bool IsDownloadDisabled { get { return !OnClickDownload.HasDelegate || DisableDownload || (_grid?.SelectedRecords?.Count() ?? -1) < 1; } }
+    private bool IsDelDisabled { get { return !OnClickDelete.HasDelegate || DisableDelete || (_grid?.SelectedRecords?.Count() ?? -1) < 1; } }
+
+
+    private async Task ClickNew()
+    {
+        await OnClickNew.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickEdit()
+    {
+        await OnClickEdit.InvokeAsync(_grid.SelectedRecords?[0]);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickDelete()
+    {
+        await OnClickDelete.InvokeAsync(_grid.SelectedRecords.ToArray());
+
+        await _grid.ClearSelectionAsync();
+
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task ClickDownload()
+    {
+        if (OnClickDownload.HasDelegate) await OnClickDownload.InvokeAsync(_grid.SelectedRecords.ToArray());
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickRefresh()
+    {
+        await _grid.ClearSelectionAsync();
+        if (OnClickRefresh.HasDelegate) await OnClickRefresh.InvokeAsync();
+
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task RowSelected(RowSelectEventArgs<object> args)
+    {
+        if (OnRowSelectionChanged.HasDelegate)
+        {
+            await OnRowSelectionChanged.InvokeAsync(_grid?.SelectedRecords?.ToArray());
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RowDeselected(RowDeselectEventArgs<object> args)
+    {
+        if (OnRowSelectionChanged.HasDelegate)
+        {
+            await OnRowSelectionChanged.InvokeAsync(_grid?.SelectedRecords?.ToArray());
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RecordDoubleClick(RecordClickEventArgs<object> args)
+    {
+        if (OnRecordDoubleClick.HasDelegate)
+        {
+            await OnRecordDoubleClick.InvokeAsync(args.RowData);
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    // private async Task Sorting(SortingEventArgs args)
+    // {
+    //     // await _grid.Refresh();
+    // }
+
+    // private async Task Sorted(SortedEventArgs args)
+    // {
+    //     await _grid.Refresh();
+    // }
+
+
+    public class VisibleColumnsList : KeyedCollection<string, ColumnDefinition>
+    {
+        protected override string GetKeyForItem(ColumnDefinition item)
+        {
+            return item.FieldName;
+        }
+    }
+
+    public struct ColumnDefinition
+    {
+
+        public string FieldName;
+        public string HeaderText;
+        public string Width;
+
+        public ColumnDefinition(string fieldName, string headerText, string width)
+        {
+            FieldName = fieldName;
+            HeaderText = headerText;
+            Width = width;
+        }
+    }
+
+    public static ReadOnlyCollection<string> StandardFields = new List<string>()
+    {   "Nome",
+        "Descrizione",
+        "Valore"
+    }.AsReadOnly();
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+</style>

@@ -1,0 +1,418 @@
+﻿@using Syncfusion.Blazor.Navigations;
+@using Syncfusion.Blazor.Buttons;
+@using Syncfusion.Blazor.SplitButtons;
+@using JoinWebUI.Utilities
+
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject NavigationManager _navigation /*@inject AuthSyncService _authSyncService */
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+@inject JoinWebApiClient _apiClient
+@inject IAuthSyncService _authSync
+@inject AuthenticationStateProvider _authState
+@inject IConfiguration _configuration
+@inject Log Log
+
+<Syncfusion.Blazor.Popups.SfDialogProvider />
+
+<div class="app-bar">
+    <SfAppBar IsSticky="true" Position="AppBarPosition.Top" Mode="AppBarMode.Regular" ColorMode="AppBarColor.Inherit">
+
+        <SfButton CssClass="e-inherit">
+            <a href="/"><img class="bar-icon" src="images/logo-join.webp" /></a>
+        </SfButton>
+
+        <AppBarSpacer />
+        <AppBarSpacer />
+
+
+        @if (!IsLoggedIn)
+        {
+            <SfButton CssClass="e-inherit main-menu px-2" style="font-size: 20px" OnClick="@BeginLogin">
+                <span class="fw-demi-bold me-1">Accedi</span>
+                <img class="bar-icon-primary" src="icons/57640-log-in.svg" />
+            </SfButton>
+
+        }
+@*         else
+        {
+            @if (ShowAggiornaButton)
+            {
+                <SfButton CssClass="e-inherit main-menu px-6" style="font-size: 20px; margin-bottom: 0.3rem" IconCss="icon-aggiorna" OnClick="@OnAggiorna">
+                    <span class="fw-demi-bold me-1">Aggiorna</span>
+                </SfButton>
+            }
+        } *@
+
+        <SfDropDownButton @ref="@_hamburgerDropDown" aria-label="menu" CssClass="e-inherit e-caret-hide main-menu px-2" style="font-size: 20px" EnableRtl="false">
+            @if (IsLoggedIn)
+            {
+                <span class="fw-demi-bold me-1">@UserDisplayName</span>
+                <img class="bar-icon-primary me-3" src="icons/57641-loggato.svg" />
+            }
+            <img class="bar-icon-primary" src="icons/57378-menu.svg" />
+            <DropDownButtonEvents ItemSelected="HamburgerItemSelected" />
+            <DropDownMenuItems>
+                <DropDownMenuItem IconCss="e-icons icon-opera" Text="Opere" Id="opere" Disabled=@(DisableAll)></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-amministrazione" Text="Amministrazione" Id="admin" Disabled=@(DisableAll || DisableAdmin)></DropDownMenuItem>
+                <DropDownMenuItem Separator=true></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-log-in" Text="Accedi" Id="login" hidden="@(IsLoggedIn)"></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-impostazioni" Text="Profilo utente" Id="profile" hidden="@(!IsLoggedIn || JoinUser == null || JoinUser.Id == Guid.Empty)"></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-log-out" Text="Esci" Id="logout" hidden="@(!IsLoggedIn)"></DropDownMenuItem>
+                <DropDownMenuItem Separator=true></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-teleassistenza" Text="Teleassistenza" Id="service"></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-guida" Text="Guida" Id="help"></DropDownMenuItem>
+                <DropDownMenuItem IconCss="e-icons icon-info" Text="Info" Id="info"></DropDownMenuItem>
+            </DropDownMenuItems>
+        </SfDropDownButton>
+
+    </SfAppBar>
+
+</div>
+<div class="maincontent">
+    <CascadingValue Value="@Ping" Name="PingResult">
+        <CascadingValue Value="@IsLoggedIn" Name="IsLoggedIn">
+            <CascadingValue Value="@JoinUser" Name="JoinUser">
+                @* <CascadingValue Value="InteractWithProjectDetails" Name="InteractWithProjectDetails"> *@
+                    @Body
+                @* </CascadingValue> *@
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</div>
+<div class="footer">
+    <p>© 2024  <a href="https://www.digicorp.it" style="color:white">Digi Corp s.r.l.</a></p>
+</div>
+
+@code {
+
+    AuthenticationState? _authenticationState;
+    // private bool ShowAggiornaButton { get; set; }
+    // private IDisposable locationChangedHandler;
+    public List<Func<bool, Task<bool>>> InteractWithProjectDetails { get; set; } = new List<Func<bool, Task<bool>>>();
+
+    private bool IsLoggedIn
+    {
+        get
+        {
+            return _authenticationState?.User?.Identity?.IsAuthenticated ?? false;
+        }
+    }
+
+    private string UserDisplayName
+    {
+        get
+        {
+            return IsLoggedIn && !IsSmallMedia && JoinUser != null ? JoinUser.Nome : string.Empty;
+        }
+    }
+
+    public System.Net.HttpStatusCode Ping { get; private set; } = System.Net.HttpStatusCode.NotFound;
+    public UtenteModel? JoinUser { get; private set; } = null;
+
+    private bool DisableAll { get => Ping != System.Net.HttpStatusCode.OK || JoinUser == null || JoinUser.Disabled; }
+    private bool DisableAdmin { get; set; } = true;
+    private string _adminPath = "/clienti";
+
+    SfDropDownButton _loginDropDown, _hamburgerDropDown;
+
+    private static SemaphoreSlim _userUpdateMutex = new SemaphoreSlim(1);
+
+
+    private async void UpdateUser(bool forceUpdate)
+    {
+        await _userUpdateMutex.WaitAsync();
+
+        if (Disposing) return;
+
+        await RefreshPing();
+
+        string oldUser = JoinUser?.Email ?? string.Empty;
+
+        string newUser = _authenticationState?.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(newUser))
+        {
+            JoinUser = null;
+            DisableAdmin = true;
+            if (!string.IsNullOrWhiteSpace(oldUser))
+            {
+                await _jsRuntime.InvokeVoidAsync("sessionStorage.clear");
+            }
+        }
+        else if (Ping != System.Net.HttpStatusCode.OK)
+        {
+            DisableAdmin = true;
+        }
+        else if (newUser != oldUser || forceUpdate)
+        {
+            JoinUser = await _authSync.GetJoinUserInfoAsync();
+
+            if (JoinUser == null)
+            {
+                JoinUser = new UtenteModel()
+                    {
+                        Id = Guid.Empty,
+                        Email = newUser,
+                        PrivacyConsent = false,
+                        Disabled = false
+                    };
+            }
+
+            var resultClienti = await _apiClient.JsonGetAsync<List<ClienteDto>>("clienti/get-by-utente-admin");
+            if (resultClienti.Success && (resultClienti.ResponseContentData?.Count ?? 0) > 0)
+            {
+                _adminPath = "/clienti";
+                DisableAdmin = false;
+                if (resultClienti.ResponseContentData!.Count == 1)
+                {
+                    _adminPath += "/" + resultClienti.ResponseContentData![0].Id.ToString();
+                }
+            }
+
+        }
+        await InvokeAsync(StateHasChanged);
+
+        _userUpdateMutex.Release();
+
+    }
+
+    private async void BeginLogout(MouseEventArgs? args = null)
+    {
+        //await _jsRuntime.InvokeVoidAsync("sessionStorage.clear");
+        //_navigation.NavigateTo("/authentication/logout");
+
+        await _authSync.LogoutAsync();
+
+        var authority = _configuration["Auth0:Authority"];
+        var clientId = _configuration["Auth0:ClientId"];
+        var callback = _configuration["Auth0:LogOutCallback"];
+
+        {
+            await _jsRuntime.InvokeVoidAsync("sessionStorage.clear");
+            _navigation.NavigateTo($"{authority}/v2/logout" +
+                                                    $"?returnTo={callback}" +
+                                                    $"&client_id={clientId}");
+        }
+
+    }
+
+    internal void BeginLogin(MouseEventArgs? args = null)
+    {
+        _navigation.NavigateToLogin("/authentication/login");
+    }
+
+    // internal async void OnAggiorna(MouseEventArgs? args = null)
+    // {
+    //     foreach (var func in InteractWithProjectDetails)
+    //     {
+    //         try
+    //         {
+    //             await func.Invoke(true);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             Log.Error(ex.Message);
+    //         }
+    //     }
+    // }
+
+    private void NavigateToPage(string url)
+    {
+        _navigation.NavigateTo(url);
+    }
+
+    private async void HamburgerItemSelected(MenuEventArgs args)
+    {
+        switch (args.Item.Id)
+        {
+            case "opere":
+                NavigateToPage("/opere");
+                break;
+            case "admin":
+                NavigateToPage(_adminPath);
+                break;
+            case "login":
+                BeginLogin();
+                break;
+            case "profile":
+                if (IsLoggedIn && JoinUser != null && JoinUser.Id != Guid.Empty)
+                {
+                    NavigateToPage("/utenti/" + JoinUser.IdString);
+                }
+                break;
+            case "logout":
+                BeginLogout();
+                break;
+            case "service":
+                //TODO
+                break;
+            case "help":
+                //TODO
+                break;
+            case "info":
+                //TODO
+                break;
+            default:
+                break;
+        }
+    }
+
+    // We can also capture the browser's width / height if needed. We hold the value here.
+    BrowserWindowSize Browser = new BrowserWindowSize();
+
+    bool IsSmallMedia = false;
+    //bool SidebarToggle = false;
+
+    //private void ToggleSidebar()
+    //{
+    //    SidebarToggle = !SidebarToggle;
+    //}
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            _listener.OnResized += WindowResized;
+        }
+        base.OnAfterRender(firstRender);
+
+    }
+
+    private bool Disposing = false;
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+
+        Disposing = true;
+
+        _listener.OnResized -= WindowResized;
+        _navigation.LocationChanged -= OnLocationChanged;
+        _authState.AuthenticationStateChanged -= AuthenticationStateChangedHandler;
+        _authSync.SyncedUserUpdated -= AuthSyncStateUpdated;
+
+    }
+
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        // Get the browsers's width / height
+        Browser = window;
+
+        // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
+        IsSmallMedia = await _listener.MatchMedia(Breakpoints.MediumDown);
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        int cnt = 0;
+        while (true)
+        {
+            await RefreshPing();
+            cnt++;
+            if (cnt > 4 || Ping != System.Net.HttpStatusCode.NotFound)
+            {
+                break;
+            }
+            Thread.Sleep(1000);
+        }
+
+        _navigation.LocationChanged += OnLocationChanged;
+        //SidebarToggle = false;
+
+        _authState.AuthenticationStateChanged += AuthenticationStateChangedHandler;
+        //AuthenticationStateChangedHandler(_authState.GetAuthenticationStateAsync());
+        _authSync.SyncedUserUpdated += AuthSyncStateUpdated;
+
+
+
+        // Sottoscrive l'evento LocationChanged
+        // _navigation.LocationChanged += HandleLocationChanged;
+
+        // // Aggiorna lo stato del pulsante Aggiorna
+        // UpdateButtonState(_navigation.Uri);
+    }
+
+
+    protected override void OnParametersSet()
+    {
+        if (_authState != null)
+        {
+            AuthenticationStateChangedHandler(_authState.GetAuthenticationStateAsync());
+        }
+        base.OnParametersSet();
+    }
+
+    async void OnLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        if (IsSmallMedia)
+        {
+            IsSmallMedia = false;
+            await InvokeAsync(StateHasChanged);
+        }
+
+    }
+
+    // private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    // {
+    //     UpdateButtonState(e.Location);
+    // }
+
+    // private void UpdateButtonState(string uri)
+    // {
+    //     ShowAggiornaButton = /*IsLoggedIn && */(uri.Contains("/progetti") /*|| uri.Contains("/opere")*/);
+    //     StateHasChanged();
+    // }
+
+    // public void Dispose()
+    // {
+    //     if (locationChangedHandler != null)
+    //     {
+    //         _navigation.LocationChanged -= HandleLocationChanged;
+    //         locationChangedHandler.Dispose();
+    //     }
+    // }
+
+    private async Task RefreshPing()
+    {
+        var resultPing = await _apiClient.JsonGetAsync("ping");
+        Ping = resultPing.ResponseStatusCode ?? System.Net.HttpStatusCode.NotFound;
+    }
+
+    private async void AuthenticationStateChangedHandler(Task<AuthenticationState> task)
+    {
+        try
+        {
+            _authenticationState = Disposing ? null : await task;
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+            _authenticationState = null;
+
+        }
+        finally
+        {
+            UpdateUser(false);
+        }
+    }
+
+    private void AuthSyncStateUpdated(object? sender, System.EventArgs e)
+    {
+        UpdateUser(true);
+    }
+
+
+}

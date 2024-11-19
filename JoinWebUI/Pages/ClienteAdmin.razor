@@ -1,0 +1,95 @@
+﻿@page "/clienti/{ClienteId:guid}"
+@using AutoMapper
+@using JoinWebUI.Components
+@using ModelData.Dto
+@using ModelData.Utilities
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Pannello amministrazione</PageTitle>
+
+<PageHeader Title="Pannello di amministrazione"
+            ObjectType="Cliente"
+            ObjectName="@ClienteInfo"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+<NavigationButtonGroup NavigationButtons="@_navButtons"
+                       ButtonHeight="160px" />
+
+
+@code {
+
+    [Parameter] public Guid ClienteId { get; set; }
+
+    private ClienteModel? _cliente;
+    private string ClienteInfo { get { return _cliente?.Info ?? string.Empty; } }
+
+
+
+    private List<NavigationComponentInfo> _navButtons = new List<NavigationComponentInfo>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        var result = await _apiClient.JsonGetAsync<ClienteDto>("clienti/" + ClienteId.ToString());
+
+        if (!result.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - Cliente";
+            return;
+        }
+
+        _cliente = _mapper.Map<ClienteModel>(result.ResponseContentData);
+        string baseUrl = "clienti/" + ClienteId.ToString();
+
+        _breadcrumbs = new List<(string, string)>()
+            {
+                ("Amministrazione clienti", "/clienti"),
+                (_cliente.Info, baseUrl)
+            };
+
+        _navButtons.Add(new NavigationComponentInfo(title: "Domini associati",
+                                                    //description: "Gestione dei domini di posta elettronica associati al Cliente",
+                                                    image: "icons/57645-domini.svg",
+                                                    linkUrl: baseUrl + "/domini"));
+        _navButtons.Add(new NavigationComponentInfo(title: "Licenze",
+                                                    //description: "Prospetto licenze acquistate",
+                                                    image: "icons/57646-licenze.svg",
+                                                    linkUrl: baseUrl + "/licenze"));
+        _navButtons.Add(new NavigationComponentInfo(title: "Settori",
+                                                    //description: "Gestione dei settori (divisioni operative)",
+                                                    image: "icons/57643-settore.svg",
+                                                    linkUrl: baseUrl + "/settori"));
+        _navButtons.Add(new NavigationComponentInfo(title: "Utenti",
+                                                    //description: "Gestione degli utenti associati al Cliente",
+                                                    image: "icons/57635-utente.svg",
+                                                    linkUrl: baseUrl + "/utenti"));
+        _navButtons.Add(new NavigationComponentInfo(title: "Teams",
+                                                    //description: "Gestione dei Teams del Cliente",
+                                                    image: "icons/57427-contatti.svg",
+                                                    linkUrl: baseUrl + "/teams"));
+        _navButtons.Add(new NavigationComponentInfo(title: "Permessi",
+                                                    //description: "Gestione dei permessi associati a Cliente, settori e teams",
+                                                    image: "icons/57647-permessi.svg",
+                                                    linkUrl: baseUrl + "/permessi"));
+
+
+
+        StateHasChanged();
+
+    }
+
+}

@@ -1,0 +1,326 @@
+﻿<UserControl x:Class="StampeWpf.DocumentoCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Wizard="clr-namespace:StampeWpf.Wizard"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+             xmlns:Stampe="clr-namespace:StampeWpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                        <Border x:Name="Bd"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        Padding="{TemplateBinding Padding}"
+                        SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                    <Condition Property="IsSelected" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Selector.IsSelectionActive" Value="True" />
+                                    <Condition Property="IsSelected" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--<Stampe:WidthConverter x:Key="WidthConverter"></Stampe:WidthConverter >
+        <Stampe:TextBoxItemCtrlWidthConverter x:Key="TextBoxItemCtrlWidthConverter"></Stampe:TextBoxItemCtrlWidthConverter >-->
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <!--28-->
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        
+
+        <StackPanel x:Name="IntestazioneColonnaTitolo" Grid.Row="0" Orientation="Horizontal" Height="58" >
+            <StackPanel Orientation="Horizontal" Background="White" Width="180" >
+                <Label Content="{lex:Loc IntestazioneColonnaTitolo}" Background="White" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                <!--LightGray-->
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Background="White" Width="78"/>
+            <!--WhiteSmoke-->
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Visibility="{Binding IsRaggruppamentiInDocumentTestaVisible}" >
+            <StackPanel Orientation="Horizontal" Background="SteelBlue" Width="180">
+                <Label Content="{Binding Path=RaggruppamentoSelected}" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Foreground="White"/>
+                <Label Content="{lex:Loc Testa}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Foreground="White"/>
+            </StackPanel>
+            <ListView x:Name="ListaComandiTesta" ItemsSource="{Binding ListaComandiTesta}" BorderThickness="0" Background="LightSteelBlue" Focusable="False">
+                <ListView.ItemTemplate >
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Width="60" Focusable="False" Height="30">
+                            <Button Command="{Binding AddUpRowCommand}" CommandParameter="{Binding .}" Content="&#xe0d0;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding AddRowCommand}" CommandParameter="{Binding .}" Content="&#xe02d;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding DeleteRowCommand}" CommandParameter="{Binding .}" Content="&#xe03a;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <!--Background="LightBlue"-->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Visibility="{Binding IsDocumentoVisible}">
+            <StackPanel Orientation="Horizontal" Background="LightGray" Width="180">
+                <Label Content="{lex:Loc Documento}" Background="LightGray" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="180" />
+            </StackPanel>
+            <ListView x:Name="ListaComandiCorpo" ItemsSource="{Binding ListaComandiCorpo}" BorderThickness="0" Focusable="False" Background="WhiteSmoke">
+                <ListView.ItemTemplate  >
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Width="60" Height="30">
+                            <Button Command="{Binding AddUpRowCommand}" CommandParameter="{Binding .}" Content="&#xe0d0;" Style="{StaticResource smallButtonStyle}"  Foreground="Black" Margin="0,5,0,0" FontSize="20" />
+                            <Button Command="{Binding AddRowCommand}" CommandParameter="{Binding .}"  Content="&#xe02d;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding DeleteRowCommand}" CommandParameter="{Binding .}"  Content="&#xe03a;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Visibility="{Binding IsRaggruppamentiInDocumentCodaVisible}" >
+            <StackPanel Orientation="Horizontal" Background="SteelBlue" Width="180">
+                <Label Content="{Binding Path=RaggruppamentoSelected}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Foreground="White" />
+                <Label Content="{lex:Loc Coda}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Foreground="White"/>
+            </StackPanel>
+            <ListView x:Name="ListaComandiCoda" ItemsSource="{Binding ListaComandiCoda}" BorderThickness="0" Background="LightSteelBlue" Focusable="False">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Width="60" Height="30">
+                            <Button Command="{Binding AddUpRowCommand}" CommandParameter="{Binding .}" Content="&#xe0d0;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding AddRowCommand}" CommandParameter="{Binding .}" Content="&#xe02d;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding DeleteRowCommand}" CommandParameter="{Binding .}" Content="&#xe03a;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Visibility="{Binding IsFineDocumentoVisible}">
+            <StackPanel Orientation="Horizontal" Width="180">
+                <Label Content="{lex:Loc FineDocumento}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <ListView x:Name="ListaComandiFine" ItemsSource="{Binding ListaComandiFine}" BorderThickness="0" Focusable="False">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Width="60" Height="30">
+                            <Button Command="{Binding AddUpRowCommand}" CommandParameter="{Binding .}" Content="&#xe0d0;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding AddRowCommand}" CommandParameter="{Binding .}"  Content="&#xe02d;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                            <Button Command="{Binding DeleteRowCommand}" CommandParameter="{Binding .}"  Content="&#xe03a;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Margin="0,5,0,0" FontSize="20"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <StackPanel x:Name="TotaleLarghezzaColonne" Grid.Row="5" Orientation="Horizontal" >
+            <StackPanel Orientation="Horizontal" Background="LightGray">
+                <Label Content="{lex:Loc LarghezzaColonne}" Background="LightGray" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"  Width="110"/>
+                <Label Content="{Binding TotaleLarghezzaColonne}" Background="LightGray" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="70" Height="40"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Background="WhiteSmoke" Width="70" />
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled" Grid.RowSpan="6" Grid.Column="1" ScrollChanged="ScrollViewer_ScrollChanged">
+            <Grid RequestBringIntoView ="Grid_RequestBringIntoView">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="56"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition Height="30"/>
+                    <!--<RowDefinition />-->
+                </Grid.RowDefinitions>
+
+                <!--ActualHeight-->
+                <!--WhiteSmoke-->
+                <ListView Name="LstViewDocumentoIntestazioniColonne" ItemsSource="{Binding IntestazioniColonne}" Background="White" BorderThickness="0" Grid.Row="0" Height="55" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical" Width="200" Margin="0,0,0,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Command="{Binding StyleCommand}" Content="&#xe0be;" Style="{StaticResource smallButtonStyle}" Foreground="Black"  FontSize="20" Width="25"/>
+                                    <Button Command="{Binding AddColumnCommand}" Content="&#xe0ec;" Style="{StaticResource smallButtonStyle}" Foreground="Black"  FontSize="20" Width="25" />
+                                    <Button Command="{Binding DeleteColumnCommand}" Content="&#xe03a;" Style="{StaticResource smallButtonStyle}" Foreground="Black"  FontSize="20" Width="25" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Width="200" Margin="0,5,0,0">
+                                    <TextBox Text="{Binding IntestazioneColonna}" Background="WhiteSmoke" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="200" BorderThickness="1"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="Focusable" Value="False" />
+                            <Setter Property="Height" Value="50" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                        <Border x:Name="Bd"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        Padding="{TemplateBinding Padding}"
+                        SnapsToDevicePixels="true">
+                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                                    <Condition Property="IsSelected" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                            </MultiTrigger>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="Selector.IsSelectionActive" Value="True" />
+                                                    <Condition Property="IsSelected" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                            </MultiTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+
+                <ListView x:Name="LstViewDocumentoraggruppamentoTesta" ItemsSource="{Binding RaggruppamentoTeste}" BorderThickness="0" Background="LightSteelBlue" Grid.Row="1" Height="{Binding  ElementName=ListaComandiTesta, Path=Height}" Visibility="{Binding IsRaggruppamentiInDocumentTestaVisible}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ListView  x:Name="DocumentoraggruppamentoTesta" ItemsSource="{Binding ListaDettaglio}" BorderThickness="0" Background="LightSteelBlue" Width="200" >
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Stampe:TextBoxItemCtrl/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+
+                <ListView  x:Name="LstViewDocumentoCorpo" ItemsSource="{Binding DocumentoCorpi}" BorderThickness="0" Grid.Row="2" Height="{Binding  ElementName=ListaComandiCorpo, Path=Height}" Background="WhiteSmoke">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ListView  x:Name="DocumentoCorpo" ItemsSource="{Binding ListaDettaglio}" BorderThickness="0" Width="200" Background="WhiteSmoke">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Stampe:TextBoxItemCtrl BorderThickness="0"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+
+                <ListView x:Name="LstViewDocumentoraggruppamentoCoda" ItemsSource="{Binding RaggruppamentoCode}" BorderThickness="0" Background="LightSteelBlue" Grid.Row="3" Height="{Binding  ElementName=ListaComandiCoda, Path=Height}" Visibility="{Binding IsRaggruppamentiInDocumentCodaVisible}" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ListView   x:Name="DocumentoraggruppamentoCoda" ItemsSource="{Binding ListaDettaglio}" BorderThickness="0" Background="LightSteelBlue" Width="200" >
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Stampe:TextBoxItemCtrl/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+
+                <ListView Name="LstViewDocumentoFine" ItemsSource="{Binding DocumentoFine}" BorderThickness="0" Grid.Row="4" Height="{Binding  ElementName=ListaComandiFine, Path=Height}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ListView Name="DocumentoFine" ItemsSource="{Binding ListaDettaglio}" BorderThickness="0" Width="200" >
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Stampe:TextBoxItemCtrl BorderThickness="0"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+
+                <ListView  Name="LstViewDocumentoDimensioniColonne" ItemsSource="{Binding LarghezzaColonne}" Background="WhiteSmoke" BorderThickness="0" Grid.Row="5" Height="40">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding LarghezzaColonna}" Background="WhiteSmoke" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0" Width="195" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+            </Grid>
+        </ScrollViewer>
+
+    </Grid>
+
+</UserControl>

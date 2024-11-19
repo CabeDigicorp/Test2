@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+    kompose.service.expose: joincloud.digicorp.it:5100
+    kompose.service.type: NodePort
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: joinapi
+  name: joinapi
+spec:
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 31661
+    - name: "5100"
+      port: 5110
+      targetPort: 5100
+      nodePort: 31662
+    - name: "5080"
+      port: 5080
+      targetPort: 80
+    - name: "58080"
+      port: 58080
+      targetPort: 8080
+      nodePort: 31663
+  selector:
+    io.kompose.service: joinapi
+  type: NodePort
+status:
+  loadBalancer: {}

@@ -1,0 +1,266 @@
+﻿@page "/clienti/{ClienteId:guid}/domini"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navMan
+@inject Syncfusion.Blazor.Popups.SfDialogService _dialogService
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Domini associati a Cliente</PageTitle>
+
+<PageHeader Title="Domini associati"
+            ObjectType="Cliente"
+            ObjectName="@_cliente.Info"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+<div id="domains" class="control-section row" style="min-height:300px">
+<ListBoxCard StringDataSource=@_domains
+             OnClickNew=@OnClickAdd
+             OnClickDelete=@OnClickDelete
+             OnClickRefresh=@OnClickRefresh
+             OnValueChanged=@OnSelectedChanged
+             MultiSelect=true
+             Title="Domini associati al Cliente"
+             NoRecordsString="Nessun dominio trovato"
+             Width="100%"
+             Height="stretch"
+             MinHeight="180px" />
+</div>
+
+
+<StringInputPopup PopupTitle="Associa dominio"
+                  ValidFormat="StringInputPopup.ValidFormats.Email"
+                  OnSubmit="@SubmitNewDomainHandlerAsync"
+                  OnCancel="@CancelNewDomainHandler"
+                  IsVisible="@_newDomainPopupVisible" />
+
+@code {
+
+    [Parameter]
+    public Guid? ClienteId { get; set; }
+
+    private ClienteModel _cliente = new ClienteModel();
+
+
+    private bool _editMode;
+
+    private ObservableCollection<string> _domains = new ObservableCollection<string>();
+    private string? _selectedDomain = null;
+
+    private bool _newDomainPopupVisible = false;
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnClickRefresh();
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            _breadcrumbs = new List<(string, string)>()
+            {
+                ("Amministrazione Clienti", "/clienti"),
+                (_cliente.Info, "/clienti/" + ClienteId.ToString()),
+                ("Domini associati", "/clienti/" + ClienteId.ToString() + "/domini")
+            };
+        }
+    }
+
+    private async Task OnClickRefresh()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            _editMode = true;
+
+            var clienteResult = await _apiClient.JsonGetAsync<ClienteDto>("clienti", ClienteId.ToString());
+            if (!clienteResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #1 - Cliente";
+                return;
+            }
+            _cliente = _mapper.Map<ClienteModel>(clienteResult.ResponseContentData!);
+            _domains = new ObservableCollection<string>(_cliente.DominiAssociati);
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+    }
+
+    private void OnSelectedChanged(string[] selectedValues)
+    {
+        if ((selectedValues?.Count() ?? -1) == 1)
+        {
+            _selectedDomain = selectedValues!.First();
+
+        }
+        else
+        {
+            _selectedDomain = null;
+        }
+
+        StateHasChanged();
+    }
+
+    private void CancelNewDomainHandler()
+    {
+        _newDomainPopupVisible = false;
+    }
+
+    private async Task SubmitNewDomainHandlerAsync(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+            value = value.Trim();
+
+        _newDomainPopupVisible = false;
+
+        System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,6}$");
+        string[] valueSplit = value.Split('.');
+        if (!regex.IsMatch(value) || valueSplit.Length < 2)
+        {
+            await _dialogService.AlertAsync("Non è stato inserito un dominio valido", "Errore", DialogOptions.AlertOptions);
+            return;
+        }
+
+        if (forbiddenDomains.Any(d => valueSplit[valueSplit.Length-2].Contains(d)))
+        {
+            await _dialogService.AlertAsync("Dominio generico non inseribile", "Errore", DialogOptions.AlertOptions);
+            return;
+        }
+
+        var resultCheck = await _apiClient.JsonGetAsync<List<GruppoUtentiModel>>("clienti/check-domain-free", query: new Dictionary<string, string>() { { "domain", value } });
+
+        if (!resultCheck.Success)
+        {
+            _requestError = true;
+
+            if (resultCheck.ResponseStatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                try
+                {
+                    if (resultCheck.ResponseContentErrorData!["Reason"] == "DuplicateKey")
+                    {
+                        _requestErrorMessage = "Il dominio indicato è già in uso";
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            _requestErrorMessage = "Operazione fallita";
+            return;
+        }
+
+        
+        _cliente!.DominiAssociati.Add(value);
+        var dto = _mapper.Map<ClienteDto>(_cliente);
+        var result = await _apiClient.JsonPutAsync("clienti", _cliente.IdString, dto);
+
+        if (!result.Success)
+        {
+            _requestError = true;
+
+            if (result.ResponseStatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                try
+                {
+                    if (result.ResponseContentErrorData!["Reason"] == "DuplicateKey")
+                    {
+                        _requestErrorMessage = "Esiste già un Cliente con il nome specificato";
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            _requestErrorMessage = "Operazione fallita";
+            return;
+        }
+
+        if (_domains == null)
+        {
+            _domains = new ObservableCollection<string>() { value };
+        }
+        else
+        {
+            _domains.Add(value);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnClickAdd()
+    {
+        _newDomainPopupVisible = true;
+
+    }
+
+    private async Task OnClickDelete()
+    {
+        bool confirm = _cliente?.DominiAssociati != null && _selectedDomain != null
+                       && await _dialogService.ConfirmAsync("Eliminare il dominio '" + _selectedDomain + "'?\r\nATTENZIONE: l'operazione non potrà essere annullata", "Conferma eliminazione", DialogOptions.ConfirmOptions);
+
+        if (confirm)
+        {
+            _cliente!.DominiAssociati!.Remove(_selectedDomain!);
+            var dto = _mapper.Map<ClienteDto>(_cliente);
+
+            var result = await _apiClient.JsonPutAsync("clienti", _cliente.IdString, dto);
+            if (result.Success)
+            {
+                _domains!.Remove(_selectedDomain!);
+                _selectedDomain = null;
+            }
+            else
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore eliminazione settore";
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private static List<string> forbiddenDomains = new List<string>()
+    {
+        "gmail",
+        "googlemail",
+        "outlook",
+        "hotmail",
+        "alice",
+        "tin",
+        "libero",
+        "iol",
+        "inwind",
+        "email",
+        "poste",
+        "aruba"
+    };
+
+}

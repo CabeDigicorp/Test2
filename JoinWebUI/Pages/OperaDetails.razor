@@ -1,0 +1,868 @@
+﻿@page "/opere/{OperaId:guid}"
+
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Components
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.TreeGrid
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navigation
+@inject IConfiguration _configuration
+@inject SfDialogService _dialogService
+@inject IJSRuntime _jsRuntime
+@inject Log Log
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Opera @_operaNome</PageTitle>
+
+<PageHeader Title=@(String.IsNullOrWhiteSpace(_operaNome) ? "Dettaglio opera" : _operaNome)
+            ObjectType="Opera"
+            ObjectName=@_operaNome
+            Breadcrumbs=@_breadcrumbs
+            RequestError=@_requestError
+            RequestMessage=@_requestErrorMessage />
+
+@*<div class="mb-2">
+    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-edita" IconPosition="IconPosition.Left" OnClick="() => _navigation.NavigateTo(OperaEditUrl)">Modifica</SfButton>
+    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-upload-file" IconPosition="IconPosition.Left">Uplad progetto</SfButton>
+    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-contatti" IconPosition="IconPosition.Left" OnClick="() => _navigation.NavigateTo(OperaGruppiUtentiUrl)">Utenti e Gruppi</SfButton>
+</div>
+*@
+<div class="mb-4 d-flex justify-content-between align-items-center" id="mainDiv">
+    <SfButton CssClass="e-btn-blue me-2" IconCss="e-icons icon-edita" IconPosition="IconPosition.Left" OnClick="() => _navigation.NavigateTo(OperaEditUrl)">Modifica</SfButton>
+    <SfButton CssClass="e-btn-blue me-5" IconCss="e-icons icon-contatti" IconPosition="IconPosition.Left" OnClick="() => _navigation.NavigateTo(OperaGruppiUtentiUrl)">Utenti e Gruppi</SfButton>
+    <SfIcon IconCss="e-inherit e-icons e-normal-icon pe-sm-3 icon-trova" />
+    <SfTextBox ID="SearchBox" Placeholder="Filtra progetti e allegati..." Input="@OnSearchInput" FloatLabelType="FloatLabelType.Never" ShowClearButton="true" />
+</div>
+
+<SfTab HeaderPlacement="HeaderPosition.Top" CssClass="e-fill">
+    <TabItems>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Progetti" />
+            </ChildContent>
+            <ContentTemplate>
+                <div id="projectsProjects" class="control-section row" style="min-height:300px">
+                    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                        <DataGridCard DataSource=@_filteredProgetti
+                                      DataType=@typeof(ProgettoModel)
+                                      ColumnInfo=@_projectColumnInfo
+                                      OnClickNew=OnProgettiClickNew
+                                      OnClickEdit=@OnProgettiClickEdit
+                                      DisableEdit=@(_selectedProgetti.Count != 1)
+                                      OnClickDelete=@OnProgettiClickDelete
+                                      DisableDelete=@(_selectedProgetti.Count == 0)
+                                      DisableDownload=true
+                                      OnClickRefresh=@RefreshListProgetti
+                                      MultiSelect=true
+                                      OnRowSelectionChanged=@OnProgettiSelectionChanged
+                                      OnRecordDoubleClick=@OnProgettiDoubleClick
+                                      Title="Progetti opera"
+                                      NoRecordsString="Nessun progetto trovato"
+                                      MinHeight="180px" />
+                    </div>
+                </div>
+
+                <div id="projectsAttachments" class="control-section row" style="min-height:300px">
+                    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                        <GenericCard Title="Allegati del progetto selezionato"
+                                     HideNew=true
+                                     HideEdit=true
+                                     HideDelete=true
+                                     OnClickDownload="OnAllegatiClickDownload"
+                                     DisableDownload=@(_selectedProgettoAllegati.Count != 1)
+                                     OnClickRefresh=@RefreshListProgettoAllegati
+                                     MinHeight="180px">
+                            <Content>
+                                <SfTreeGrid @ref="@_treeGridProgettoAllegati" TValue="AllegatoModel" DataSource="@_progettoAllegati"
+                                            ChildMapping="Children" TreeColumnIndex="0"
+                                            AllowPaging="false" AllowSelection="true"
+                                            Width="100%">
+                                    <TreeGridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                    <TreeGridEvents TValue="AllegatoModel" RowSelected=@OnProgettoAllegatiRowSelected RowDeselected="@OnProgettoAllegatiRowDeselected" OnRecordDoubleClick="@OnAllegatiDoubleClick" />
+                                    <TreeGridColumns>
+                                        <TreeGridColumn Field=@nameof(AllegatoModel.FileName) HeaderText="Nome file" Width="50%" AllowEditing="false" />
+                                        <TreeGridColumn Field=@nameof(AllegatoModel.TextLine2) HeaderText="Dimensione" Width="15%" AllowEditing="false" />
+                                        <TreeGridColumn Field=@nameof(AllegatoModel.UploadDateTime) HeaderText="Ultimo upload" Width="15%" AllowEditing="false" />
+                                        <TreeGridColumn HeaderText="Conversione" Width="20%" AllowEditing="false">
+                                            <Template>
+                                                @{
+                                                    var state = (context as AllegatoModel)!.ConversionState;
+                                                    var guid = (context as AllegatoModel)!.Id;
+
+                                                    string IconCss = "e-inherit e-icons pe-sm-3 icon-sostituisci-file-ifc e-grid-tick ";
+                                                    string color = ""; //"color-card";
+                                                    try
+                                                    {
+                                                        switch (state)
+                                                        {
+                                                            case AllegatoConversionState.NotConverted:
+                                                                color = "color-primary";
+                                                                <div>
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-impostazioni" IconPosition=IconPosition.Left OnClick=@(e => OnAllegatiClickConverti(guid))>Converti</SfButton>
+                                                                </div>
+                                                                break;
+                                                            case AllegatoConversionState.ConversionInProgress:
+                                                                color = "color-secondary";
+                                                                <div><SfIcon IconCss="@(IconCss + color)" /></div>
+                                                                break;
+                                                            case AllegatoConversionState.Converted:
+                                                                color = "color-green";
+                                                                <div>
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-annulla-azione" IconPosition=IconPosition.Left OnClick=@(e => OnAllegatiClickDeconverti(guid))></SfButton>
+                                                                </div>
+                                                                break;
+                                                            case AllegatoConversionState.Invalid:
+                                                                color = "color-red";
+                                                                <div>
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-annulla-azione" IconPosition=IconPosition.Left OnClick=@(e => OnAllegatiClickDeconverti(guid))></SfButton>
+                                                                </div>
+                                                                break;
+                                                            default:
+                                                                <div></div>
+                                                                break;
+
+                                                        }
+                                                    }
+                                                    catch { }
+                                                }
+                                            </Template>
+                                        </TreeGridColumn>
+                                    </TreeGridColumns>
+                                </SfTreeGrid>
+                            </Content>
+                        </GenericCard>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Allegati" />
+            </ChildContent>
+            <ContentTemplate>
+                <div id="attachmentsAttachments" class="control-section row" style="min-height:300px">
+                    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                        <GenericCard Title="Allegati opera"
+                                     OnClickNew=@OnAllegatiClickNew
+                                     HideEdit=true
+                                     OnClickDownload="OnAllegatiClickDownload"
+                                     DisableDownload=@(_selectedAllegati.Count != 1)
+                                     OnClickDelete=@OnAllegatiClickDelete
+                                     DisableDelete=@(_selectedAllegati.Count == 0)
+                                     OnClickRefresh=@RefreshListAllegati
+                                     MinHeight="180px">
+                            <Content>
+                                <SfTreeGrid @ref="@_treeGridAllegati" TValue="AllegatoModel" DataSource="@_filteredAllegati"
+                                            ChildMapping="Children" TreeColumnIndex="0"
+                                            AllowPaging="false" AllowSelection="true"
+                                            Width="100%">
+                                    <TreeGridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                    <TreeGridEvents TValue="AllegatoModel" RowSelected="@OnAllegatiRowSelected" RowDeselected="@OnAllegatiRowDeselected" OnRecordDoubleClick="@OnAllegatiDoubleClick" />
+                                    <TreeGridColumns>
+                                        <TreeGridColumn Field=@nameof(AllegatoModel.FileName) HeaderText="Nome file" Width="50%" AllowEditing="false" />
+                                        <TreeGridColumn Field=@nameof(AllegatoModel.TextLine2) HeaderText="Dimensione" Width="15%" AllowEditing="false" />
+                                        <TreeGridColumn Field=@nameof(AllegatoModel.UploadDateTime) HeaderText="Ultimo upload" Width="15%" AllowEditing="false" />
+                                        <TreeGridColumn HeaderText="Conversione" Width="20%" AllowEditing="false">
+                                            <Template>
+                                                @{
+                                                    var state = (context as AllegatoModel)!.ConversionState;
+                                                    var guid = (context as AllegatoModel)!.Id;
+
+                                                    string IconCss = "e-inherit e-icons pe-sm-3 icon-sostituisci-file-ifc e-grid-tick ";
+                                                    string color = ""; //"color-card";
+                                                    try
+                                                    {
+                                                        switch (state)
+                                                        {
+                                                            case AllegatoConversionState.NotConverted:
+                                                                color = "color-primary";
+                                                                <div>
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-impostazioni" IconPosition=IconPosition.Left OnClick=@(e => OnAllegatiClickConverti(guid))>Converti</SfButton>
+                                                                </div>
+                                                                break;
+                                                            case AllegatoConversionState.ConversionInProgress:
+                                                                color = "color-secondary";
+                                                                <div><SfIcon IconCss="@(IconCss + color)" /></div>
+                                                                break;
+                                                            case AllegatoConversionState.Converted:
+                                                                color = "color-green";
+                                                                <div>
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-annulla-azione" IconPosition=IconPosition.Left OnClick=@(e => OnAllegatiClickDeconverti(guid))></SfButton>
+                                                                </div>
+                                                                break;
+                                                            case AllegatoConversionState.Invalid:
+                                                                color = "color-red";
+                                                                <div>
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-annulla-azione" IconPosition=IconPosition.Left OnClick=@(e => OnAllegatiClickDeconverti(guid))></SfButton>
+                                                                </div>
+                                                                break;
+                                                            default:
+                                                                <div></div>
+                                                                break;
+
+                                                        }
+                                                    }
+                                                    catch { }
+                                                }
+                                            </Template>
+                                        </TreeGridColumn>
+                                    </TreeGridColumns>
+                                </SfTreeGrid>
+                            </Content>
+                        </GenericCard>
+                    </div>
+                </div>
+                <div id="attachmentsProjects" class="control-section row" style="min-height:300px">
+                    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                        <DataGridCard DataSource=@_allegatoProgetti
+                                      DataType=@typeof(ProgettoModel)
+                                      ColumnInfo=@_projectColumnInfo
+                                      DisableNew=true
+                                      DisableDelete=true
+                                      OnClickEdit=@OnProgettiClickEdit
+                                      DisableEdit=@(_selectedAllegatoProgetti.Count != 1)
+                                      DisableDownload=true
+                                      OnClickRefresh=@RefreshListAllegatoProgetti
+                                      MultiSelect=true
+                                      OnRowSelectionChanged=@OnAllegatoProgettiSelectionChanged
+                                      OnRecordDoubleClick=@OnProgettiDoubleClick
+                                      Title="Progetti che usano l'allegato selezionato"
+                                      NoRecordsString="Nessun progetto trovato"
+                                      MinHeight="180px" />
+                    </div>
+                </div>
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+
+<SfDialog Width="400px"
+          Visible="_uploadProgettiPopupVisible"
+          ShowCloseIcon="true"
+          IsModal="true"
+          onclose="@(() => _uploadProgettiPopupVisible=false)">
+    <DialogTemplates>
+        <Header>Upload Progetti</Header>
+        <Content>
+            <SfUploader ID="uploaderProgetti"
+                        @ref=@_uploaderProgetti
+                        AllowMultiple=true
+                        ShowProgressBar=true
+                        MaxFileSize=@(double.MaxValue)
+                        AutoUpload=false>
+
+                <UploaderEvents BeforeUpload=@OnBeforeUpload
+                                Success=@OnUploadProgettiSuccess
+                                OnFailure=@OnUploadProgettiFailure>
+                </UploaderEvents>
+                <UploaderAsyncSettings SaveUrl=@(UploadProgettiUrl) ChunkSize="5000000" /> @*RemoveUrl=@(_uploadAllegatiUrl + "/delete")/>*@
+            </SfUploader>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-blue" Content="Chiudi" OnClick="@(() => _uploadProgettiPopupVisible=false)" />
+    </DialogButtons>
+</SfDialog>
+
+<SfDialog Width="400px"
+          Visible="_uploadAllegatiPopupVisible"
+          ShowCloseIcon="true"
+          IsModal="true"
+          onclose="@(() => _uploadAllegatiPopupVisible=false)">
+    <DialogTemplates>
+        <Header>Upload Allegati</Header>
+        <Content>
+            <SfUploader ID="uploadFiles"
+                        @ref=@_uploaderAllegati
+                        AllowMultiple=true
+                        ShowProgressBar=true
+                        MaxFileSize=@(double.MaxValue)
+                        AutoUpload=false>
+
+                <UploaderEvents BeforeUpload=@OnBeforeUpload
+                                OnUploadStart=@OnUploadStart
+                                OnChunkUploadStart=@OnChunkUploadStart
+                                FileSelected=@OnFileSelected
+                                Success=@OnUploadAllegatiSuccess
+                                OnFailure=@OnUploadAllegatiFailure
+                                OnChunkFailure=@OnUploadAllegatiFailure>
+
+                </UploaderEvents>
+                <UploaderAsyncSettings SaveUrl=@(UploadAllegatiUrl) ChunkSize=@(_fileChunkSize) /> @*RemoveUrl=@(_uploadAllegatiUrl + "/delete")/>*@
+            </SfUploader>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-blue" Content="Chiudi" OnClick="@(() => _uploadAllegatiPopupVisible=false)" />
+    </DialogButtons>
+</SfDialog>
+
+
+@code {
+    private bool _uploadAllegatiPopupVisible = false;
+    private string UploadAllegatiUrl => _configuration["JoinApiSettings:ServerBaseUrl"] + "allegati/upload";
+
+    private bool _uploadProgettiPopupVisible = false;
+    private string UploadProgettiUrl => _configuration["JoinApiSettings:ServerBaseUrl"] + "progetti/upload";
+
+    private string? _currentFilter;
+
+    [Parameter]
+    public Guid OperaId { get; set; }
+    private string OperaEditUrl => "/opere/" + OperaId.ToString() + "/edit";
+    private string OperaGruppiUtentiUrl => "/opere/" + OperaId.ToString() + "/gruppi";
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private string _operaNome = "";
+
+    //private DataGridCard _dataGridProgetti = new DataGridCard();
+    private List<ProgettoModel> _progetti = new List<ProgettoModel>();
+    private ObservableCollection<ProgettoModel> _filteredProgetti = new ObservableCollection<ProgettoModel>();
+    private List<ProgettoModel> _selectedProgetti = new List<ProgettoModel>();
+    private SfTreeGrid<AllegatoModel> _treeGridProgettoAllegati = new SfTreeGrid<AllegatoModel>();
+    private ObservableCollection<AllegatoModel> _progettoAllegati = new ObservableCollection<AllegatoModel>();
+    private List<AllegatoModel> _selectedProgettoAllegati = new List<AllegatoModel>();
+
+    private SfTreeGrid<AllegatoModel> _treeGridAllegati = new SfTreeGrid<AllegatoModel>();
+    private List<AllegatoModel> _allegati = new List<AllegatoModel>();
+    private ObservableCollection<AllegatoModel> _filteredAllegati = new ObservableCollection<AllegatoModel>();
+    private List<AllegatoModel> _selectedAllegati = new List<AllegatoModel>();
+    private ObservableCollection<ProgettoModel> _allegatoProgetti = new ObservableCollection<ProgettoModel>();
+    private List<ProgettoModel> _selectedAllegatoProgetti = new List<ProgettoModel>();
+
+    private SfUploader _uploaderAllegati;
+    private SfUploader _uploaderProgetti;
+
+    private int _fileChunkSize = 1000000;
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private static DataGridCard.VisibleColumnsList _projectColumnInfo = new DataGridCard.VisibleColumnsList()
+                                                        {
+                                                            new DataGridCard.ColumnDefinition(nameof(ProgettoModel.Nome), "Nome progetto", "40%"),
+                                                            new DataGridCard.ColumnDefinition(nameof(ProgettoModel.Descrizione), "Descrizione", "60%"),
+                                                        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        var operaResult = await _apiClient.JsonGetAsync<OperaDto>("opere", OperaId.ToString());
+        if (!operaResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - opere";
+            return;
+        }
+        _operaNome = operaResult.ResponseContentData.Nome;
+        _breadcrumbs = new List<(string, string)>()
+            {
+                ("Opere", "/opere"),
+                (String.IsNullOrWhiteSpace(_operaNome) ? "[nome sconosciuto]" : _operaNome, "/opere/" + OperaId.ToString())
+            };
+        await RefreshListProgetti();
+        await RefreshListAllegati();
+
+        OnSearchInput(null);
+        Log.Information("Accesso alla pagina di riepilogo delle opere.");
+    }
+
+    private void OnLocationChanged(Object? source, LocationChangedEventArgs e)
+    {
+        Log.Information(e.Location);
+    }
+
+
+    //private void FilterChanged(string? value = null)
+    //{
+    //    _currentFilter = value;
+    //    LoadFilteredProgettiItems(value);
+    //    LoadFilteredAllegatiItems(value);
+    //}
+
+    private async Task RefreshListProgetti()
+    {
+        var result = await _apiClient.JsonGetAsync
+    <List<ProgettoModel>>("progetti", query: new Dictionary<string, string>() { { "operaId", OperaId.ToString() } });
+        if (!result.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - progetti";
+            return;
+        }
+        var converted = _mapper.Map<List<ProgettoModel>>(result.ResponseContentData!);
+        _progetti.Clear();
+        foreach (var p in converted)
+        {
+            _progetti.Add(p);
+        }
+
+        LoadFilteredProgettiItems();
+    }
+
+    private void RefreshListProgettoAllegati()
+    {
+        _progettoAllegati.Clear();
+
+        if (_selectedProgetti.Count() == 1)
+        {
+            foreach (var allegato in _allegati.FindAll(x => x.Progetti.Contains(_selectedProgetti.First().Id)))
+            {
+                _progettoAllegati.Add(allegato);
+            }
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task RefreshListAllegati()
+    {
+        var result = await _apiClient.JsonGetAsync<List<AllegatoDto>>("allegati", query: new Dictionary<string, string>() { { "operaId", OperaId.ToString() } });
+        if (!result.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - allegati";
+            return;
+        }
+        var converted = _mapper.Map<List<AllegatoModel>>(result.ResponseContentData!);
+        _allegati.Clear();
+        foreach (var a in converted)
+        {
+            _allegati.Add(a);
+        }
+
+        LoadFilteredAllegatiItems();
+    }
+
+    private void RefreshListAllegatoProgetti()
+    {
+        _allegatoProgetti.Clear();
+
+        if (_selectedAllegati.Count() == 1)
+        {
+            foreach (var progetto in _progetti.FindAll(x => _selectedAllegati.First().Progetti.Contains(x.Id)))
+            {
+                _allegatoProgetti.Add(progetto);
+            }
+        }
+
+        StateHasChanged();
+    }
+
+
+    private void LoadFilteredProgettiItems(string? value = null)
+    {
+        _filteredProgetti.Clear();
+        var filtered = string.IsNullOrWhiteSpace(value) ?
+            _progetti.OrderBy(i => i.Nome) :
+            _progetti.Where(i => i.Nome.Contains(value, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Nome);
+        foreach (var p in filtered)
+        {
+            _filteredProgetti.Add(p);
+        }
+
+        StateHasChanged();
+    }
+
+    private void LoadFilteredAllegatiItems(string? value = null)
+    {
+        _filteredAllegati.Clear();
+        var filtered = string.IsNullOrWhiteSpace(value) ?
+            _allegati.OrderBy(i => i.FileName) :
+            _allegati.Where(i => i.FileName.Contains(value, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.FileName);
+        foreach (var a in filtered)
+        {
+            if (a.ParentId == null || a.ParentId == Guid.Empty)
+            {
+                _filteredAllegati.Add(a);
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnProgettiClickNew()
+    {
+        _uploadProgettiPopupVisible = true;
+    }
+
+    // private async Task OnProgettiClickDownload()
+    // {
+    //     foreach (var a in _selectedAllegati)
+    //     {
+    //         var query = new Dictionary<string, string>()
+    //         {
+    //             { "uploadGuid", a.IdString },
+    //             { "operaId", OperaId.ToString() }
+    //         };
+    //         using var result = await _apiClient.DownloadFileAsync("allegati/download", query: query);
+    //         {
+    //             if (!result.Success)
+    //             {
+    //                 _requestError = true;
+    //                 _requestErrorMessage = "Errore download file - allegato";
+    //                 return;
+    //             }
+    //             using var streamRef = new DotNetStreamReference(stream: result.FileContentStream!);
+    //             {
+    //                 await _jsRuntime.InvokeVoidAsync("downloadFileFromStream", result.FileName, streamRef);
+    //             }
+    //         }
+    //     }
+    // }
+
+    private void OnProgettiDoubleClick(object? value)
+    {
+        if (value != null)
+        {
+            var p = (ProgettoModel)value;
+            string url = "/progetti/" + p.IdString;
+            _navigation.NavigateTo(url);
+        }
+    }
+
+    private void OnProgettiClickEdit()
+    {
+        if (_selectedProgetti != null && _selectedProgetti.Count > 0)
+        {
+            string url = "/progetti/" + _selectedProgetti[0].IdString;
+            _navigation.NavigateTo(url);
+        }
+
+    }
+
+    private async Task OnProgettiClickDelete()
+    {
+        foreach (var a in _selectedProgetti)
+        {
+            //var result = await _apiClient.JsonPostAsync("allegati/delete", new AllegatoInfoDto { FileName = fileName, OperaId = OperaId });
+            var result = await _apiClient.JsonDeleteAsync("progetti", a.IdString);
+            if (!result.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore eliminazione progetti";
+                break;
+            }
+        }
+        await RefreshListProgetti();
+        LoadFilteredProgettiItems(_filter);
+    }
+
+    private void OnProgettiSelectionChanged(object[] value)
+    {
+        if (value != null && value.Length > 0)
+        {
+            _selectedProgetti = (from f in _filteredProgetti
+                                 join v in value on f.Id equals (v as ProgettoModel)!.Id
+                                 orderby f.Nome
+                                 select f).Distinct().ToList();
+
+            RefreshListProgettoAllegati();
+
+        }
+        else
+            _selectedProgetti.Clear();
+
+        StateHasChanged();
+    }
+
+    private async Task OnProgettoAllegatiRowSelected(Syncfusion.Blazor.Grids.RowSelectEventArgs<AllegatoModel> args)
+    {
+        await OnProgettoAllegatiSelectionChanged();
+    }
+
+    private async Task OnProgettoAllegatiRowDeselected(Syncfusion.Blazor.Grids.RowDeselectEventArgs<AllegatoModel> args)
+    {
+        await OnProgettoAllegatiSelectionChanged();
+    }
+
+    private async Task OnProgettoAllegatiSelectionChanged()
+    {
+        var selection = await _treeGridProgettoAllegati.GetSelectedRecordsAsync();
+
+        if (selection != null && selection.Count > 0)
+        {
+            _selectedProgettoAllegati = (from a in _progettoAllegati
+                                         join v in selection on a.Id equals (v as AllegatoModel)!.Id
+                                         orderby a.TextLine1
+                                         select a).Distinct().ToList();
+        }
+        else
+            _selectedProgettoAllegati.Clear();
+
+        StateHasChanged();
+    }
+
+    private void OnAllegatiClickNew()
+    {
+        _uploadAllegatiPopupVisible = true;
+    }
+
+    private async Task OnAllegatiDoubleClick(RecordDoubleClickEventArgs<AllegatoModel> args)
+    {
+        if (args?.RowData != null)
+        {
+            Task? t = DownloadAllegatoToBrowser(args.RowData);
+            await t;
+            t.Dispose();
+            t = null;
+        }
+    }
+
+    private async Task OnAllegatiClickDownload()
+    {
+        foreach (var a in _selectedAllegati)
+        {
+            Task? t = DownloadAllegatoToBrowser((AllegatoModel)a);
+            await t;
+            t.Dispose();
+            t = null;
+        }
+    }
+
+    private async Task DownloadAllegatoToBrowser(AllegatoModel a)
+    {
+
+
+        await _jsRuntime.InvokeVoidAsync("downloadFileFromUrl", a.FileName, _apiClient.GetBaseUrl() + "allegati/download?operaId=" + OperaId.ToString() + "&uploadGuid=" + a.IdString + "&decompress=" + a.Compressed.ToString().ToLower());
+
+        // List<AllegatoModel> downloadList = new List<AllegatoModel>();
+        // downloadList.Add(a);
+
+        // if (a.ConversionState == AllegatoConversionState.Converted)
+        // {
+        //     List<AllegatoModel> children = _allegatiItems.FindAll(i => i.ParentId == a.Id).ToList();
+        //     foreach(var child in children)
+        //     {
+        //         downloadList.Add(child);
+        //     }
+
+        // }
+
+        // List<string> urls = new List<string>();
+        // List<string> fileNames = new List<string>();
+        // foreach (var allegato in downloadList)
+        // {
+        //     urls.Add(_apiClient.GetBaseUrl() + "allegati/download?operaId=" + OperaId.ToString() + "&uploadGuid=" + allegato.IdString + "&decompress=" + allegato.Compressed.ToString().ToLower());
+        //     fileNames.Add(allegato.FileName);
+        // }
+        // await _jsRuntime.InvokeVoidAsync("downloadFilesFromUrls", fileNames.ToArray(), urls.ToArray());
+    }
+
+    private async Task OnAllegatiClickDelete()
+    {
+        foreach (var a in _selectedAllegati)
+        {
+            //var result = await _apiClient.JsonPostAsync("allegati/delete", new AllegatoInfoDto { FileName = fileName, OperaId = OperaId });
+            var result = await _apiClient.JsonDeleteAsync("allegati", a.IdString);
+            if (!result.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore eliminazione file - allegato";
+                break;
+            }
+        }
+        await RefreshListAllegati();
+        LoadFilteredAllegatiItems(_filter);
+    }
+
+    private async Task OnAllegatiRowSelected(Syncfusion.Blazor.Grids.RowSelectEventArgs<AllegatoModel> args)
+    {
+        await OnAllegatiSelectionChanged();
+    }
+
+    private async Task OnAllegatiRowDeselected(Syncfusion.Blazor.Grids.RowDeselectEventArgs<AllegatoModel> args)
+    {
+        await OnAllegatiSelectionChanged();
+    }
+
+    private async Task OnAllegatiSelectionChanged()
+    {
+        var selection = await _treeGridAllegati.GetSelectedRecordsAsync();
+
+        if (selection != null && selection.Count > 0)
+        {
+            _selectedAllegati = (from f in _filteredAllegati
+                                 join v in selection on f.Id equals (v as AllegatoModel)!.Id
+                                 orderby f.TextLine1
+                                 select f).Distinct().ToList();
+                                             
+            RefreshListAllegatoProgetti();           
+        }
+        else
+            _selectedAllegati.Clear();
+
+        StateHasChanged();
+    }
+
+    private void OnAllegatoProgettiSelectionChanged(object[] value)
+    {
+        if (value != null && value.Length > 0)
+        {
+            _selectedAllegatoProgetti = (from p in _allegatoProgetti
+                                         join v in value on p.Id equals (v as ProgettoModel)!.Id
+                                         orderby p.Nome
+                                         select p).Distinct().ToList();
+        }
+        else
+            _selectedAllegatoProgetti.Clear();
+
+        StateHasChanged();
+    }
+
+    private async Task OnAllegatiClickConverti(Guid uploadGuid)
+    {
+        //var result = await _apiClient.JsonPutAsync("allegati/convert3D", uploadGuid.ToString(), null);
+
+        var result = await _apiClient.JsonSendAsync("allegati/convert3D",
+                                                    HttpMethod.Patch,
+                                                    new Dictionary<string, string>() { { "sourceUploadGuid", uploadGuid.ToString() } },
+                                                    null);
+        if (!result.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Conversione fallita";
+        }
+    }
+
+    private async Task OnAllegatiClickDeconverti(Guid uploadGuid)
+    {
+        //var result = await _apiClient.JsonPutAsync("allegati/convert3D", uploadGuid.ToString(), null);
+
+        var result = await _apiClient.JsonSendAsync("allegati/unconvert3D",
+                                                    HttpMethod.Patch,
+                                                    new Dictionary<string, string>() { { "sourceUploadGuid", uploadGuid.ToString() } },
+                                                    null);
+        if (!result.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Deconversione fallita";
+        }
+
+        await RefreshListAllegati();
+    }
+
+
+    private void OnBeforeUpload(BeforeUploadEventArgs args)
+    {
+        Guid batchGuid = Guid.NewGuid();
+
+        args.CurrentRequest = new List<object> { new { Authorization = "Bearer " + _apiClient.BearerToken } };
+        args.WithCredentials = true;
+
+        args.CustomFormData = new List<object>
+            {
+                new { operaId = OperaId },
+                new { batchGuid = batchGuid },
+                new { chunkSize = _fileChunkSize },
+                new { compressed = false },
+                new { overwrite = false }
+            };
+
+
+    }
+
+    private async Task OnUploadStart(UploadingEventArgs args)
+    {
+
+    }
+
+    private void OnChunkUploadStart(UploadingEventArgs args)
+    {
+
+    }
+
+    private void OnProgressing(Syncfusion.Blazor.Inputs.ProgressEventArgs args)
+    {
+    }
+
+    private async Task OnFileSelected(SelectedEventArgs args)
+    {
+        // for(int i =0; i < args.FilesData.Count(); i++)
+        // {
+        //     //var rawFile = file.RawFile;
+        //     string[] splitStr = { ";base64," };
+        //     var fileStr = args.FilesData[i].RawFile?.ToString();
+        //     var file64 = fileStr?.Split(splitStr, 2, StringSplitOptions.RemoveEmptyEntries);
+        //     if (file64?.Count()>0)
+        //     {
+        //         MemoryStream tmp = new MemoryStream();
+        //         var byteArr = System.Convert.FromBase64String(file64[0]);
+        //         ICSharpCode.SharpZipLib.GZip.GZip.Compress(new MemoryStream(byteArr), tmp, true);
+        //         byteArr = tmp.ToArray();
+        //         args.FilesData[i].RawFile = splitStr + System.Convert.ToBase64String(byteArr);
+
+        //     }
+        // }
+
+        // args.IsModified = true;
+        // args.ModifiedFilesData = args.FilesData;
+    }
+
+    private async Task OnUploadProgettiSuccess(SuccessEventArgs args)
+    {
+        await RefreshListProgetti();
+    }
+
+    private void OnUploadProgettiFailure(Syncfusion.Blazor.Inputs.FailureEventArgs args)
+    {
+        string msg = "Il progetto " + args.File.Name + " non è stato caricato. Informazioni sull errore: " + args.StatusText;
+        _dialogService.AlertAsync(msg, "Caricamento non riuscito", Utilities.DialogOptions.AlertOptions);
+    }
+
+    private async Task OnUploadAllegatiSuccess(SuccessEventArgs args)
+    {
+        await RefreshListAllegati();
+    }
+
+    private void OnUploadAllegatiFailure(Syncfusion.Blazor.Inputs.FailureEventArgs args)
+    {
+        string msg = "Il file " + args.File.Name + " non è stato caricato. Informazioni sull errore: " + args.StatusText;
+        _dialogService.AlertAsync(msg, "Caricamento non riuscito", Utilities.DialogOptions.AlertOptions);
+    }
+
+    private void TabChanged(int activeTabIndex)
+    {
+        StateHasChanged();
+    }
+
+    private string _filter = string.Empty;
+    //private string Filter { get; set; } = string.Empty;
+    private void OnSearchInput(InputEventArgs? args)
+    {
+        if (args != null)
+        {
+            _filter = args.Value;
+        }
+        LoadFilteredProgettiItems(_filter); // ?? string.Empty);
+        LoadFilteredAllegatiItems(_filter); // ?? string.Empty);
+        StateHasChanged();
+    }
+
+
+
+}

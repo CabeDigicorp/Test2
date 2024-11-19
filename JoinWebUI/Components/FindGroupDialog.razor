@@ -1,0 +1,160 @@
+﻿@using AutoMapper;
+@using System.Text.RegularExpressions;
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+<SfDialog Width="400px" CloseOnEscape="true" IsModal="true" @bind-Visible="@IsVisible">
+    <DialogTemplates>
+        <Header>Ricerca gruppo</Header>
+        <Content>
+            <div class="my-4 d-flex justify-content-between align-items-center" id="mainDiv">
+                <SfIcon IconCss="e-inherit e-icons e-normal-icon pe-sm-3 icon-cerca-filtra" />
+                <SfTextBox ID="SearchBox" Placeholder="Cerca gruppo..." Input="@OnSearchInput" FloatLabelType="FloatLabelType.Never" ShowClearButton="true" />
+            </div>
+            <div style="min-height:300px;width:100%">
+            <SfListBox TValue="string[]" TItem="GruppoUtentiModel"
+                       Height="100%"
+                       style="min-height:100%"
+                       DataSource="@_filteredGroups"
+                       @ref="_list">
+                <ListBoxFieldSettings Value="IdString" Text="Nome"/>
+                <ListBoxSelectionSettings Mode="SelectionMode.Single" ShowCheckbox="false" />
+                    <ListBoxTemplates TItem="GruppoUtentiModel">
+                    <NoRecordsTemplate><span class="text">Nessun gruppo trovato</span></NoRecordsTemplate>
+                    <ItemTemplate>
+                        <div class="list-wrapper">
+                                <span class="text">@((context as GruppoUtentiModel).TextLine1)</span>
+                        </div>
+                        
+                    </ItemTemplate>
+                </ListBoxTemplates>
+                    <ListBoxEvents TValue="string[]" TItem="GruppoUtentiModel" ValueChange="@OnValueChanged" />
+            </SfListBox>
+            </div>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" Content="OK" IsPrimary="true" OnClick="@OkClick" Disabled="@DisableOKButton" />
+        <DialogButton CssClass="e-btn-blue" Content="Annulla" OnClick="@CancelClick" />
+    </DialogButtons>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<GruppoUtentiModel> OkCallback { get; set; }
+    [Parameter] public EventCallback CancelCallback { get; set; }
+    [Parameter] public Guid OperaId { get; set; }
+    [Parameter] public bool IsVisible { get; set; } = false;
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private List<GruppoUtentiModel> _operaGroups = new List<GruppoUtentiModel>();
+    private List<GruppoUtentiModel> _filteredGroups = new List<GruppoUtentiModel>();
+    private GruppoUtentiModel? _chosenGroup;
+    private string _filter = "";
+
+    private SfListBox<string[], GruppoUtentiModel>? _list;
+    //private string[] _selectedValues;
+
+    private bool DisableOKButton { get { return _chosenGroup == null; } }
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private async Task OnSearchInput(InputEventArgs? e)
+    {
+        _filter = e?.Value ?? String.Empty;
+
+        //ricerca generica
+
+        string[] filters = _filter.Split(" ,;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+        if (filters == null || filters.Count() == 0)
+        {
+            _filteredGroups = _operaGroups.OrderBy(g => g.Nome).ToList();
+        }
+        else
+        {
+            var filteredUsers = (from g in _operaGroups
+                                 from f in filters
+                                 where (g.Nome.Contains(f, StringComparison.CurrentCultureIgnoreCase))
+                                 select g).Distinct().OrderBy(g => g.Nome).ToList();
+        }
+
+        StateHasChanged();
+
+    }
+
+
+    protected void OnValueChanged(ListBoxChangeEventArgs<string[], GruppoUtentiModel> e)
+    {
+        if (e?.Value != null && e.Value.Length > 0)
+        {
+            _chosenGroup = _operaGroups.Where(g => g.Id.ToString() == e.Value[0]).FirstOrDefault();
+        }
+        else
+        {
+            _chosenGroup = null;
+        }
+
+        StateHasChanged();
+    }
+
+
+    protected async override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (IsVisible)
+        {
+            _filter = string.Empty;
+            _chosenGroup = null;
+            _filteredGroups = new List<GruppoUtentiModel>();
+            _operaGroups = new List<GruppoUtentiModel>();
+
+            var result = await _apiClient.JsonGetAsync<List<GruppoUtentiModel>>("gruppiutenti/get-by-opera", query: new Dictionary<string, string>() { { "operaId", OperaId.ToString() } });
+            if (result.Success)
+            {
+                _operaGroups = result.ResponseContentData.ToList();
+            }
+            else
+            {
+                //TODO errore
+            }
+
+            await OnSearchInput(null);
+        }
+    }
+
+
+    private void OkClick()
+    {
+        if(_chosenGroup == null)
+        {
+            Console.Error.WriteLine("FindGroupPopup - Errore - codice 2");
+            return;
+        }
+        if (OkCallback.HasDelegate)
+        {
+            IsVisible = false;
+            OkCallback.InvokeAsync(_chosenGroup);
+        }
+    } 
+
+    private void CancelClick()
+    {
+        if (CancelCallback.HasDelegate)
+        {
+            CancelCallback.InvokeAsync();
+        }
+        IsVisible = false;
+    }
+
+
+}

@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.ValoreConditionsGroupView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>SABQwACCEAAASAAMIAAEgCAAYAABgBAAAoAAhAAAJAU=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MasterDetailView.ValoreConditionSingleView" Collapsed="true">
+    <Position X="10.25" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AiAAgACAEAAAABAAAAAAAAABAAAAEABAIAAAAAQAAAg=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreContabilitaConditionSingleView" Collapsed="true">
+    <Position X="13.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAAEAACAAAAAAAAACAAQIACEAAAAAAAGAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreRealeConditionSingleView" Collapsed="true">
+    <Position X="4.75" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAAEAACAAAAAAAAACAAQIACEAAAAAAAGAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreDataConditionSingleView" Collapsed="true">
+    <Position X="9.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAAEAACAAAQAAAAACAAQAACEIAAAACAEAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreTestoConditionSingleView" Collapsed="true">
+    <Position X="11.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAAEAACAAAAAAAAACAAQIACEAAAAAAAGAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreElencoConditionSingleView" Collapsed="true">
+    <Position X="16" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAAEAACAAAAAAAAACAAQIACEAAAAAAAGAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreBooleanoConditionSingleView" Collapsed="true">
+    <Position X="7" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQgAAAEAACAAAQAAAAACAAQAACEIAAAACAEAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.ValoreConditionEnumView" Collapsed="true">
+    <Position X="16.75" Y="1.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoValoreConditionSingleView" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="2.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>IAAQgACAEAACAAAAAABAAAAKAAQAgAAAAAAABggIAAQ=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="MasterDetailView.ValoreConditionView" Collapsed="true">
+    <Position X="18.5" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreConditionsView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

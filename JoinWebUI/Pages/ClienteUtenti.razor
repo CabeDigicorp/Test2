@@ -1,0 +1,725 @@
+﻿@page "/clienti/{ClienteId:guid}/utenti"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Popups
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navMan
+@inject SfDialogService _dialogService
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - utenti del Cliente</PageTitle>
+
+<PageHeader Title="Utenti"
+            ObjectType="Cliente"
+            ObjectName="@_cliente.Info"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+
+<div id="domains" class="control-section row" style="min-height:300px">
+    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+        <SfCard CssClass="e-card">
+            <CardHeader Title="Utenti del Cliente">
+                <div>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" OnClick="OnClickAddUtente"></SfButton>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-edita" IconPosition="IconPosition.Left" Disabled="@(!OneUtenteSelected)" OnClick="OnClickEditUtente"></SfButton>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" Disabled="@(!OneUtenteSelected)" OnClick="OnClickDisableUtenti"></SfButton>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" OnClick="OnClickRefreshUtenti"></SfButton>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <SfGrid DataSource="@_utenti"
+                        TValue="UtenteModel"
+                        @ref="_gridU"
+                        AllowSelection="true"
+                        AllowGrouping="false"
+                        AllowFiltering="true"
+                        AllowReordering="true"
+                        AllowResizing="true"
+                        AllowSorting="true"
+                        AllowMultiSorting="true">
+                    <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" Mode="EditMode.Dialog" />
+                    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"
+                                           EnableSimpleMultiRowSelection="false"
+                                           CheckboxOnly="false"
+                                           Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" ImmediateModeDelay="500" >
+                        <GridFilterColumns>
+                            <GridFilterColumn Field="@nameof(UtenteModel.PrivacyConsent)" Operator="Operator.Equal" Predicate="and" Value="-1"></GridFilterColumn>
+                            <GridFilterColumn Field="@nameof(UtenteModel.Disabled)" Operator="Operator.Equal" Predicate="and" Value="0"></GridFilterColumn>
+                        </GridFilterColumns>
+                    </GridFilterSettings>
+                    <GridEvents TValue="UtenteModel" RowSelected="@OnUtenteSelectedChanged" RowDeselected="@OnUtenteSelectedChanged" />
+                    <GridColumns>
+                        <GridColumn HeaderText="Id" Field=@nameof(UtenteModel.Id) IsPrimaryKey="true" Visible="false"/>
+                        <GridColumn HeaderText="Nome" Field=@nameof(UtenteModel.Nome) Type="ColumnType.String" EditType="EditType.DefaultEdit" Width="28%"></GridColumn>
+                        <GridColumn HeaderText="Cognome" Field=@nameof(UtenteModel.Cognome) Type="ColumnType.String" EditType="EditType.DefaultEdit" Width="28%"></GridColumn>
+                        <GridColumn HeaderText="E-mail" Field=@nameof(UtenteModel.Email) Type="ColumnType.String" EditType="EditType.DefaultEdit" Width="28%"></GridColumn>
+                        <GridColumn HeaderText="Privacy" Field=@nameof(UtenteModel.PrivacyConsent) Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" AllowEditing="false" Width="8%">
+                            <Template>
+                                @{
+                                    if ((context as UtenteModel)?.PrivacyConsent ?? false)
+                                    {
+                                            <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                    }
+                                    //else non mostro nulla
+                                }
+                            </Template>
+                            <FilterTemplate>
+                                <SfDropDownList AllowFiltering="false" ID="PrivacyFilter" TItem="NullableBoolChoices" TValue="int" DataSource="@_privacyChoices" @bind-Value="@_privacyFilterValue">
+                                    <DropDownListEvents ValueChange="@ChangePrivacyFilter" TItem="NullableBoolChoices" TValue="int"></DropDownListEvents>
+                                    <DropDownListFieldSettings Value="Value" Text="Description"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn HeaderText="Disabilitato" Field=@nameof(UtenteModel.Disabled) Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" AllowEditing="false" Width="8%">
+                            <Template>
+                                @{
+                                    if ((context as UtenteModel)?.Disabled ?? false)
+                                    {
+                                        <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-red" />
+                                    }
+                                    //else non mostro nulla
+                                }
+                            </Template>
+                            <FilterTemplate>
+                                <SfDropDownList AllowFiltering="false" ID="DisabledFilter" TItem="NullableBoolChoices" TValue="int" DataSource="@_disabledChoices" @bind-Value="@_disabledFilterValue">
+                                    <DropDownListEvents ValueChange="@ChangeDisabledFilter" TItem="NullableBoolChoices" TValue="int"></DropDownListEvents>
+                                    <DropDownListFieldSettings Value="Value" Text="Description"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                            </FilterTemplate>
+                        </GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </CardContent>
+        </SfCard>
+    </div>
+</div>
+
+<div id="domains" class="control-section row" style="min-height:300px">
+    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+        <SfCard CssClass="e-card">
+            <CardHeader Title="Teams dell'utente selezionato'">
+                <div>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" Disabled="@(!OneUtenteSelected)" OnClick="OnClickAddTeam"></SfButton>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-chiudi" IconPosition="IconPosition.Left" Disabled="@(!TeamSelected)" OnClick="OnClickRemoveTeams"></SfButton>
+                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" Disabled="@(!OneUtenteSelected)" OnClick="OnClickRefreshTeams"></SfButton>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <SfGrid DataSource="@_teams"
+                        TValue="TeamModel"
+                        @ref="_gridT"
+                        AllowSelection="true"
+                        AllowGrouping="false"
+                        AllowFiltering="false"
+                        AllowReordering="true"
+                        AllowResizing="true"
+                        AllowSorting="true"
+                        AllowMultiSorting="true">
+                    <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" ShowDeleteConfirmDialog="true" Mode="EditMode.Dialog" />
+                    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"
+                                           EnableSimpleMultiRowSelection="false"
+                                           CheckboxOnly="false"
+                                           Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                    <GridEvents TValue="TeamModel" RowSelected="@OnTeamSelectedChanged" RowDeselected="@OnTeamSelectedChanged" />
+                    <GridColumns>
+                        <GridColumn HeaderText="Id" Field=@nameof(TeamModel.Id) IsPrimaryKey="true" Visible="false" />
+                        <GridColumn HeaderText="Nome" Field=@nameof(TeamModel.Nome) Type="ColumnType.String" EditType="EditType.DefaultEdit" Width="70%"></GridColumn>
+                        <GridColumn HeaderText="Amministrativo" Field=@nameof(TeamModel.IsAdmin) Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" Width="15%">
+                            <Template>
+                                @{
+                                    if ((context as TeamModel)?.IsAdmin ?? false)
+                                    {
+                                        <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                    }
+                                    //else non mostro nulla
+                                }
+                            </Template>
+                        </GridColumn>
+                        <GridColumn HeaderText="Licenza" Field=@nameof(TeamModel.IsLicensed) Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" Width="15%">
+                            <Template>
+                                @{
+                                    if ((context as TeamModel)?.IsLicensed ?? false)
+                                    {
+                                        <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                    }
+                                    //else non mostro nulla
+                                }
+                            </Template>
+                        </GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </CardContent>
+        </SfCard>
+    </div>
+
+</div>
+
+<SfDialog @ref="_addEditDialog" Width="480px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="@AddEditDialogClosed"></DialogEvents>
+    <DialogTemplates>
+        <Header>@AddEditDialogHeader</Header>
+        <Content>
+            <span>Nome:</span><br>
+            <SfTextBox Value="@_editedName" Input="@ValidateNome" />
+            <span>Cognome:</span><br>
+            <SfTextBox Value="@_editedSurname" Input="@ValidateCognome" />
+            <span>E-mail:</span><br>
+            <SfTextBox Value="@_editedEmail" Input="@ValidateEmail" Width="50%" />
+            <SfDropDownList TValue="string" TItem="string"
+                        DataSource="@_cliente.DominiAssociati"
+                        Value="@_cliente.DominiAssociati![0]"
+                        SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                        Width="49%"
+                        pa
+                        @ref="@_mailCombo">
+                <DropDownListTemplates TItem="string">
+                    <ValueTemplate>@("@" + context)</ValueTemplate>
+                    <ItemTemplate>@("@" + context)</ItemTemplate>
+                </DropDownListTemplates>
+            </SfDropDownList>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" OnClick="@AddEditOkClick" Content="OK" IsPrimary="true" Disabled="@InvalidInput"></DialogButton>
+        <DialogButton CssClass="e-btn-blue" OnClick="@AddEditCancelClick" Content="Annulla"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+<SfDialog @ref="_disableDialog" Width="250px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="@DisableDialogClosed"></DialogEvents>
+    <DialogTemplates>
+        <Header>Cancella utente</Header>
+        <Content>
+             Disabilitare l'utente @(_editedName)?
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" OnClick="@DisableOkClick" Content="OK" IsPrimary="true"></DialogButton>
+        <DialogButton CssClass="e-btn-blue" OnClick="@DisableCancelClick" Content="Cancel"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+<FindTeamDialog ClienteId="@(_cliente.Id)" IsVisible="@_showTeamSearch" OkCallback="@OnTeamDialogOk" CancelCallback="@OnTeamDialogCancel"/>
+
+@code {
+
+    [Parameter]
+    public Guid? ClienteId { get; set; }
+
+    private ClienteModel _cliente = new ClienteModel();
+
+
+    private bool _editMode;
+
+    private SfGrid<UtenteModel> _gridU;
+    private SfGrid<TeamModel> _gridT;
+
+    private ObservableCollection<UtenteModel> _utenti = new ObservableCollection<UtenteModel>();
+    private bool OneUtenteSelected { get; set; } = false;
+
+    private ObservableCollection<TeamModel> _teams = new ObservableCollection<TeamModel>();
+    private bool TeamSelected { get; set; } = false;
+
+    private int _disabledFilterValue;
+    private int _privacyFilterValue;
+
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private Syncfusion.Blazor.Popups.SfDialog _addEditDialog, _disableDialog;
+    private bool _addDialogOpen = false, _editDialogOpen = false;
+
+    private string AddEditDialogHeader { get { return (_addDialogOpen ? "Crea utente" : "Modifica utente"); } }
+    private SfDropDownList<string, string> _mailCombo;
+
+    private string _editedName = string.Empty;
+    private string _editedSurname = string.Empty;
+    private string _editedEmail = string.Empty;
+
+    private bool InvalidName { get; set; } = false;
+    private bool InvalidSurname { get; set; } = false;
+    private bool InvalidEmail { get; set; } = false;
+
+    private bool InvalidInput { get { return InvalidName || InvalidSurname || InvalidEmail; } }
+
+    private bool _showTeamSearch = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            _editMode = true;
+
+            var clienteResult = await _apiClient.JsonGetAsync<ClienteDto>("clienti", ClienteId.ToString());
+            if (!clienteResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #1 - Cliente";
+                return;
+            }
+            _cliente = _mapper.Map<ClienteModel>(clienteResult.ResponseContentData!);
+
+            _breadcrumbs = new List<(string, string)>()
+                                {
+                ("Amministrazione Clienti", "/clienti"),
+                (_cliente.Info, "/clienti/" + ClienteId.ToString()),
+                ("Utenti", "/clienti/" + ClienteId.ToString() + "/utenti")
+                                };
+
+            await GetUtenti();
+
+            _disabledFilterValue = 0;
+            _privacyFilterValue = -1;
+
+            var sort1 = new SortColumn();
+            sort1.Field = nameof(UtenteModel.Cognome);
+            sort1.Direction = SortDirection.Ascending;
+
+            var sort2 = new SortColumn();
+            sort2.Field = nameof(UtenteModel.Nome);
+            sort2.Direction = SortDirection.Ascending;
+
+            await _gridU.SortColumnsAsync(new List<SortColumn>() { sort1, sort2 });
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnClickRefreshUtenti()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if (_cliente?.Id != null && _cliente.Id != Guid.Empty)
+        {
+            await GetUtenti();
+            _gridU.ForceUpdate = true;
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetUtenti()
+    {
+        var query = new Dictionary<string, string>()
+                {
+                    { "clienteId", _cliente.IdString },
+                    //{ "disabled", "false"}
+                };
+
+        var utentiResult = await _apiClient.JsonGetAsync<IEnumerable<UtenteDto>>("utenti/get-by-cliente", query: query);
+        if (!utentiResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #2 - Utenti";
+            return;
+        }
+        _utenti = _mapper.Map<ObservableCollection<UtenteModel>>(utentiResult.ResponseContentData!);
+    }
+
+    private void OnUtenteSelectedChanged()
+    {
+        OneUtenteSelected = (_gridU.SelectedRowIndexes?.Count() ?? -1) == 1;
+
+        OnClickRefreshTeams();
+
+    }
+
+
+    private void OnClickAddUtente()
+    {
+        _editedName = string.Empty;
+        InvalidName = true;
+        _editedSurname = string.Empty;
+        InvalidSurname = true;
+        _editedEmail = string.Empty;
+        InvalidEmail = true;
+        _addDialogOpen = true;
+        _addEditDialog.ShowAsync();
+
+    }
+
+    private void OnClickEditUtente()
+    {
+        if (OneUtenteSelected)
+        {
+            _editedName = _gridU.SelectedRecords[0].Nome ?? string.Empty;
+            ValidateNome(new InputEventArgs() { Value = _editedName });
+            _editedSurname = _gridU!.SelectedRecords[0].Cognome ?? string.Empty;
+            ValidateCognome(new InputEventArgs() { Value = _editedSurname });
+            _editedEmail = _gridU!.SelectedRecords[0].Email ?? string.Empty;
+            ValidateEmail(new InputEventArgs() { Value = _editedEmail });
+            _editDialogOpen = true;
+            _addEditDialog.ShowAsync();
+        }
+    }
+
+    private void OnClickDisableUtenti()
+    {
+        if (OneUtenteSelected)
+        {
+            _editedName = _gridU.SelectedRecords[0].Info;
+            _disableDialog.ShowAsync();
+        }
+    }
+
+
+    private void ValidateNome(Syncfusion.Blazor.Inputs.InputEventArgs args)
+    {
+        _editedName = args.Value;
+        InvalidName = string.IsNullOrWhiteSpace(_editedName);
+    }
+
+    private void ValidateCognome(Syncfusion.Blazor.Inputs.InputEventArgs args)
+    {
+        _editedSurname = args.Value;
+        InvalidSurname = string.IsNullOrWhiteSpace(_editedSurname);
+    }
+
+    private void ValidateEmail(Syncfusion.Blazor.Inputs.InputEventArgs args)
+    {
+        _editedEmail = args.Value;
+        InvalidEmail = string.IsNullOrWhiteSpace(_editedEmail)
+                       || _editedEmail.Contains('@');
+    }
+
+    private async Task AddEditOkClick()
+    {
+        _requestError = false;
+        _requestErrorMessage = string.Empty;
+
+        if (!InvalidInput)
+        {
+            if (_addDialogOpen)
+            {
+                UtenteDto dto = new UtenteDto()
+                    {
+                        Nome = _editedName,
+                        Cognome = _editedSurname,
+                        Email = _editedEmail + "@" + _mailCombo.Value,
+                        Disabled = false,
+                        PrivacyConsent = true
+                    };
+
+                var result = await _apiClient.JsonPostAsync<UtenteDto>("utenti", dto);
+                if (result.Success)
+                {
+                    UtenteModel newUtente = _mapper.Map<UtenteModel>(result.ResponseContentData);
+                    _utenti.Add(newUtente);
+                    _gridU.ForceUpdate = true;
+                }
+                else
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore creazione nuovo utente";
+                }
+            }
+            else if (_editDialogOpen)
+            {
+                UtenteDto dto = _mapper.Map<UtenteDto>(_gridU.SelectedRecords[0]);
+                dto.Nome = _editedName;
+                dto.Cognome = _editedSurname;
+                dto.Email = _editedEmail;
+
+                var result = await _apiClient.JsonPutAsync("utenti", _gridU.SelectedRecords[0].IdString, dto);
+                if (result.Success)
+                {
+                    _gridU.SelectedRecords[0].Nome = _editedName;
+                    _gridU.SelectedRecords[0].Cognome = _editedSurname;
+                    _gridU.SelectedRecords[0].Email = _editedEmail + "@" + _mailCombo.Value;
+                    _gridU.ForceUpdate = true;
+                }
+                else
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore in modifica utente";
+                }
+            }
+            else
+            {
+                _requestError = true;
+                _requestErrorMessage = "Operazione non valida";
+            }
+
+            await _addEditDialog.HideAsync();
+            StateHasChanged();
+
+        }
+    }
+
+    private void AddEditCancelClick()
+    {
+
+        _addEditDialog.HideAsync();
+    }
+
+    private void AddEditDialogClosed()
+    {
+        _addDialogOpen = false;
+        _editDialogOpen = false;
+        _editedName = string.Empty;
+        _editedSurname = string.Empty;
+        _editedEmail = string.Empty;
+    }
+
+
+    private async Task DisableOkClick()
+    {
+        _requestError = false;
+        _requestErrorMessage = string.Empty;
+
+
+        UtenteDto dto = _mapper.Map<UtenteDto>(_gridU.SelectedRecords[0]);
+        dto.Disabled = true;
+
+        var result = await _apiClient.JsonPutAsync("utenti", _gridU.SelectedRecords[0].IdString, dto);
+        if (result.Success)
+        {
+            _gridU.SelectedRecords[0].Disabled = true;
+            _gridU.ForceUpdate = true;
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore in disabilitazione utente";
+        }
+
+        await _disableDialog.HideAsync();
+        StateHasChanged();
+
+    }
+
+    private void DisableCancelClick()
+    {
+        _disableDialog.HideAsync();
+    }
+
+    private void DisableDialogClosed()
+    {
+        _editedName = string.Empty;
+        _editedSurname = string.Empty;
+        _editedEmail = string.Empty;
+    }
+
+    //private struct NullableBoolChoices
+    //{
+    //    public int Value;
+    //    public bool? BoolValue;
+    //    public string Description;
+    //}
+
+
+    private List<NullableBoolChoices> _disabledChoices = new List<NullableBoolChoices>()
+    {
+        new NullableBoolChoices() { Value = -1, BoolValue = null, Description = "Tutti" },
+        new NullableBoolChoices() { Value = 0, BoolValue = false, Description = "Abilitato" },
+        new NullableBoolChoices() { Value = 1, BoolValue = true, Description = "Disabilitato" }
+    };
+
+    private List<NullableBoolChoices> _privacyChoices = new List<NullableBoolChoices>()
+    {
+        new NullableBoolChoices() { Value = -1, BoolValue = null, Description = "Tutti" },
+        new NullableBoolChoices() { Value = 0, BoolValue = false, Description = "Non accettato" },
+        new NullableBoolChoices() { Value = 1, BoolValue = true, Description = "Accettato" }
+    };
+
+
+    private void ChangeDisabledFilter(Syncfusion.Blazor.DropDowns.ChangeEventArgs<int, NullableBoolChoices> args)
+    {
+        ChangeNullableBooleanFilter(nameof(UtenteModel.Disabled), args.ItemData.BoolValue);
+    }
+
+    private void ChangePrivacyFilter(Syncfusion.Blazor.DropDowns.ChangeEventArgs<int, NullableBoolChoices> args)
+    {
+        ChangeNullableBooleanFilter(nameof(UtenteModel.PrivacyConsent), args.ItemData.BoolValue);
+    }
+
+    private void ChangeNullableBooleanFilter(string field, bool? value)
+    {
+        if (value == null)
+        {
+            _gridU.ClearFilteringAsync(field);
+        }
+        else
+        {
+            _gridU.FilterByColumnAsync(field, "equal", value);
+        }
+    }
+
+    private void OnTeamSelectedChanged()
+    {
+        TeamSelected = (_gridT.SelectedRowIndexes?.Count() ?? -1) > 0;
+
+        StateHasChanged();
+    }
+
+
+    private void OnClickAddTeam()
+    {
+        _showTeamSearch = true;
+    }
+
+    private async Task OnClickRemoveTeams()
+    {
+        if (TeamSelected)
+        {
+
+            if (_gridT.SelectedRecords[0].IsAdmin && _teams.Where(t => t.IsAdmin).Count() <= 1
+                && _gridU.SelectedRecords.Count() == _gridU.TotalItemCount)
+            {
+                _dialogService.AlertAsync("Impossibile rimuovere tutti gli utenti dall'unico team amministrativo", "Eliminazione impossibile", Utilities.DialogOptions.AlertOptions);
+                return;
+            }
+
+
+            string msg = string.Empty;
+            switch (_gridT.SelectedRecords.Count())
+            {
+                case 0:
+                    return;
+                case 1:
+                    msg = "Rimuovere l'utente dal team selezionato?";
+                    break;
+                default:
+                    msg = "Rimuovere l'utente dai team selezionati?";
+                    break;
+            }
+
+            bool confirm = await _dialogService.ConfirmAsync(msg, "Conferma cancellazione", Utilities.DialogOptions.ConfirmOptions);
+            if ((_gridU.SelectedRecords?.Count ?? -1) == 1 && confirm)
+            {
+                foreach (var team in _gridT.SelectedRecords)
+                {
+                    var dto = new AssignUtenteTeamDto();
+                    dto.UtenteId = _gridU.SelectedRecords![0].Id;
+                    dto.TeamId = team.Id;
+
+                    var result = await _apiClient.JsonPostAsync("utenti/remove-utente-team", dto);
+                    if (!result.Success)
+                    {
+                        _requestError = true;
+                        _requestErrorMessage = "Errore rimozione";
+                        return;
+                    }
+                    _teams.Remove(_teams.Where(t => t.IdString == team.IdString).Single());
+                }
+
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnTeamDialogOk(TeamModel team)
+    {
+        _showTeamSearch = false;
+
+        AssignUtenteTeamDto dto = new AssignUtenteTeamDto();
+        dto.UtenteId = _gridU.SelectedRecords![0].Id;
+        dto.TeamId = team.Id;
+        var result = await _apiClient.JsonPostAsync("utenti/assign-utente-team", dto);
+        if (result.Success)
+        {
+            _teams.Add(team);
+        }      
+
+        StateHasChanged();
+    }
+
+
+    private async Task OnTeamDialogCancel()
+    {
+        _showTeamSearch = false;
+    }
+
+
+    private async Task OnClickRefreshTeams()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if (_cliente?.Id != null && _cliente.Id != Guid.Empty)
+        {
+            await GetTeams();
+            _gridT.ForceUpdate = true;
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetTeams()
+    {
+        if (OneUtenteSelected)
+        {
+            var teamsResult = await _apiClient.JsonGetAsync<IEnumerable<TeamDto>>("teams/get-by-cliente-utente", query: new Dictionary<string, string>()
+                {
+                    { "clienteId", _cliente.IdString },
+                    { "utenteId", _gridU.SelectedRecords[0].IdString }
+                });
+
+            if (!teamsResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #2 - Teams";
+                return;
+            }
+            _teams = _mapper.Map<ObservableCollection<TeamModel>>(teamsResult.ResponseContentData!);
+        }
+        else
+        {
+            _teams.Clear();
+            TeamSelected = false;
+        }
+    }
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+
+</style>

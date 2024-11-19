@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+    kompose.service.expose: joincloud.digicorp.it
+    kompose.service.type: NodePort
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: joinapi
+  name: joinapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: joinapi
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+        kompose.service.expose: joincloud.digicorp.it:5100
+        kompose.service.type: NodePort
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+              # io.kompose.network/node-network: "true"
+        io.kompose.service: joinapi
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+              value: pierantonella
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /root/.dotnet/corefx/cryptography/x509stores/my/joinwebkestrel.pfx
+            - name: ASPNETCORE_URLS
+              value: https://0.0.0.0:5100;http://0.0.0.0:5000
+            - name: AuthServer__RequireHttpsMetadata
+              value: "false"
+            - name: DOCKER_TLS_VERIFY
+              value: "0"
+            - name: MONGODB_URL
+              value: mongodb://mongodb:27017/join
+          image: digicorpregistry.azurecr.io/joinapi:k8s
+          imagePullPolicy: Always
+          name: joinapi
+          ports:
+            - containerPort: 5000
+            - containerPort: 5100
+            - containerPort: 80
+            - containerPort: 8080
+          resources: {}
+          volumeMounts:
+            - mountPath: /logs
+              name: joinlogs
+      imagePullSecrets:
+      - name: regcred
+      hostname: joinapi
+      restartPolicy: Always
+      volumes:
+        - name: joinlogs
+          persistentVolumeClaim:
+            claimName: joinlogs
+status: {}

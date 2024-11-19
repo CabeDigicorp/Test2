@@ -1,0 +1,160 @@
+﻿@using AutoMapper;
+@using System.Text.RegularExpressions;
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+<SfDialog Width="400px" CloseOnEscape="true" IsModal="true" @bind-Visible="@IsVisible">
+    <DialogTemplates>
+        <Header>Ricerca team</Header>
+        <Content>
+            <div class="my-4 d-flex justify-content-between align-items-center" id="mainDiv">
+                <SfIcon IconCss="e-inherit e-icons e-normal-icon pe-sm-3 icon-cerca-filtra" />
+                <SfTextBox ID="SearchBox" Placeholder="Cerca team..." Input="@OnSearchInput" FloatLabelType="FloatLabelType.Never" ShowClearButton="true" />
+            </div>
+            <div style="min-height:300px;width:100%">
+            <SfListBox TValue="string[]" TItem="TeamModel"
+                       Height="100%"
+                       style="min-height:100%"
+                       DataSource="@_filteredTeams"
+                       @ref="_list">
+                <ListBoxFieldSettings Value="IdString" Text="Nome"/>
+                <ListBoxSelectionSettings Mode="SelectionMode.Single" ShowCheckbox="false" />
+                    <ListBoxTemplates TItem="TeamModel">
+                    <NoRecordsTemplate><span class="text">Nessun team trovato</span></NoRecordsTemplate>
+                    <ItemTemplate>
+                        <div class="list-wrapper">
+                                <span class="text">@((context as TeamModel).TextLine1)</span>
+                        </div>
+                        
+                    </ItemTemplate>
+                </ListBoxTemplates>
+                    <ListBoxEvents TValue="string[]" TItem="TeamModel" ValueChange="@OnValueChanged" />
+            </SfListBox>
+            </div>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" Content="OK" IsPrimary="true" OnClick="@OkClick" Disabled="@DisableOKButton" />
+        <DialogButton CssClass="e-btn-blue" Content="Annulla" OnClick="@CancelClick" />
+    </DialogButtons>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<TeamModel> OkCallback { get; set; }
+    [Parameter] public EventCallback CancelCallback { get; set; }
+    [Parameter] public Guid ClienteId { get; set; }
+    [Parameter] public bool IsVisible { get; set; } = false;
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private List<TeamModel> _clienteTeams = new List<TeamModel>();
+    private List<TeamModel> _filteredTeams = new List<TeamModel>();
+    private TeamModel? _chosenTeam;
+    private string _filter = "";
+
+    private SfListBox<string[], TeamModel>? _list;
+    //private string[] _selectedValues;
+
+    private bool DisableOKButton { get { return _chosenTeam == null; } }
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private async Task OnSearchInput(InputEventArgs? e)
+    {
+        _filter = e?.Value ?? String.Empty;
+
+        //ricerca generica
+
+        string[] filters = _filter.Split(" ,;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+        if (filters == null || filters.Count() == 0)
+        {
+            _filteredTeams = _clienteTeams.OrderBy(g => g.Nome).ToList();
+        }
+        else
+        {
+            var filteredUsers = (from g in _clienteTeams
+                                 from f in filters
+                                 where (g.Nome.Contains(f, StringComparison.CurrentCultureIgnoreCase))
+                                 select g).Distinct().OrderBy(g => g.Nome).ToList();
+        }
+
+        StateHasChanged();
+
+    }
+
+
+    protected void OnValueChanged(ListBoxChangeEventArgs<string[], TeamModel> e)
+    {
+        if (e?.Value != null && e.Value.Length > 0)
+        {
+            _chosenTeam = _clienteTeams.Where(t => t.Id.ToString() == e.Value[0]).FirstOrDefault();
+        }
+        else
+        {
+            _chosenTeam = null;
+        }
+
+        StateHasChanged();
+    }
+
+
+    protected async override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (IsVisible)
+        {
+            _filter = string.Empty;
+            _chosenTeam = null;
+            _filteredTeams = new List<TeamModel>();
+            _clienteTeams = new List<TeamModel>();
+
+            var result = await _apiClient.JsonGetAsync<List<TeamModel>>("teams/get-by-cliente", query: new Dictionary<string, string>() { { "clienteId", ClienteId.ToString() } });
+            if (result.Success)
+            {
+                _clienteTeams = result.ResponseContentData.ToList();
+            }
+            else
+            {
+                //TODO errore
+            }
+
+            await OnSearchInput(null);
+        }
+    }
+
+
+    private void OkClick()
+    {
+        if(_chosenTeam == null)
+        {
+            Console.Error.WriteLine("FindGroupPopup - Errore - codice 2");
+            return;
+        }
+        if (OkCallback.HasDelegate)
+        {
+            OkCallback.InvokeAsync(_chosenTeam);
+            IsVisible = false;
+        }
+    } 
+
+    private void CancelClick()
+    {
+        if (CancelCallback.HasDelegate)
+        {
+            CancelCallback.InvokeAsync();
+        }
+        IsVisible = false;
+    }
+
+
+}

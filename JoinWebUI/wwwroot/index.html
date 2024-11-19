@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>JoinWeb</title>
+    <base href="/" />
+    <link rel="icon" type="image/x-icon" href="/images/logo-join.webp">
+    <link href="css/digicorp.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
+    <script src="_content/Syncfusion.Blazor/scripts/syncfusion-blazor.min.js" type="text/javascript"></script>
+
+
+    <link href="JoinWebUI.styles.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="css/icons.css" rel="stylesheet" />
+
+    <script type="importmap">
+        {
+            "imports": {
+                "@microsoft/dotnet-js-interop": "./scripts/lib/@microsoft/dotnet-js-interop",
+                "three": "./scripts/lib/three/build/three.module.js",
+                "@thatopen/components": "./scripts/lib/@thatopen/components/dist/index.mjs",
+                "@thatopen/components-front": "./scripts/lib/@thatopen/components-front/dist/index.js",
+                "@thatopen/fragments": "./scripts/lib/@thatopen/fragments/dist/index.mjs",
+                "web-ifc": "./scripts/lib/web-ifc/web-ifc-api.js",
+                "byte-base64": "./scripts/lib/byte-base64/lib.es6.js",
+                "pako": "./scripts/lib/pako/dist/pako.esm.mjs"
+            }
+        }
+    </script>
+
+    <style type="text/css">
+
+        @keyframes pulse {
+            0% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+
+            50% {
+                -webkit-transform: scale(1.05);
+                transform: scale(1.05);
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+        }
+
+        .splash-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column nowrap;
+            height: 100vh;
+            font-family: "Segoe UI",Roboto,"Helvetica Neue","-apple-system",BlinkMacSystemFont,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            font-size: .88rem;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+            .splash-screen .spinner-border {
+                border: .2em solid;
+                border-color: #F3A401 #002840 #002840 !important; /*#bfbfbf #bfbfbf;*/
+                width: 120px;
+                height: 120px;
+            }
+
+            .splash-screen .splash-screen-logo {
+                width: 150px;
+                height: 150px;
+                animation: pulse 1.5s linear infinite;
+            }
+
+        .splash-screen-caption {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            color: #002840 !important;
+        }
+
+        .splash-screen-text {
+            color: #002840 !important;
+            margin-top: .5rem;
+        }
+
+
+        .ifcjs-dimension-label {
+            background-color: black;
+            font-family: sans-serif;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            pointer-events: all;
+            transition: background-color 200ms ease-in-out;
+        }
+
+            .ifcjs-dimension-label:hover {
+                background-color: grey;
+            }
+
+        .ifcjs-dimension-preview {
+            background-color: #ffffff;
+            width: 2rem;
+            height: 2rem;
+            opacity: 0.3;
+            padding: 8px;
+            border-radius: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Auth0 -->
+    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
+    <!-- /Auth0 -->
+    <div id="app">
+        <script type="text/javascript">
+            if (/MSIE \d|Trident.*rv:|Edge\//.test(window.navigator.userAgent))
+                window.location.href = "browserNotSupported.html";
+        </script>
+        <div class="splash-screen">
+            <!--<div class="spinner-border"></div>-->
+            <div class="splash-screen-logo"><img src="/images/logo-join.webp" class="splash-screen-logo" /></div>
+            <div class="splash-screen-caption">JoinWeb</div>
+            <div class="splash-screen-text">Loading...</div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">X</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <!--<script type="module"  src="scripts/dist/thatOpen.js"></script>-->
+    <script>
+        window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+            const arrayBuffer = await contentStreamReference.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            anchorElement.click();
+            anchorElement.remove();
+            URL.revokeObjectURL(url);
+            delete blob;
+            delete arrayBuffer;
+            delete anchorElement;
+        }
+
+        window.downloadFileFromUrl = async (fileName, url) => {
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            document.body.appendChild(anchorElement);
+            anchorElement.click();
+            document.body.removeChild(anchorElement);
+            anchorElement.remove();
+        }
+    </script>
+    <script>
+        window.getElementDimensions = function (id) {
+            var element = document.getElementById(id);
+            if (element != null) {
+                return {
+                    width: element.clientWidth,
+                    height: element.clientHeight
+                };
+            }
+            return {
+                width: 0,
+                height: 0
+            };
+
+        };
+
+        window.getWindowDimensions = function () {
+            return {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        };
+
+    </script>
+    <script>
+        window.scrollToElement = async (el) => {
+            var element = document.getElementById(el);
+            if (element) {
+                element.scrollIntoView();
+            }
+        };
+
+
+        let leftSidebar;
+        let rightSidebar;
+        let leftOffset;
+        let rightOffset;
+
+        window.configResizers = async () => {
+            var leftResizer = document.getElementById('leftResizer');
+            if (leftResizer) {
+                leftSidebar = document.getElementById('leftSidebar');
+                leftResizer.addEventListener('mousedown', initLeftResize, false);
+                leftResizer.addEventListener('touchstart', initLeftResize, false);
+            }
+            var rightResizer = document.getElementById('rightResizer');
+            if (rightResizer) {
+                rightSidebar = document.getElementById('rightSidebar');
+                rightResizer.addEventListener('mousedown', initRightResize, false);
+                rightResizer.addEventListener('touchstart', initRightResize, false);
+
+            }
+        };
+
+        window.initLeftResize = (e) => {
+            let canvas = document.getElementById('wrapper');
+            leftOffset = leftSidebar.offsetLeft + canvas.offsetLeft + canvas.parentElement.offsetLeft;
+            window.addEventListener('mousemove', leftResize, false);
+            window.addEventListener('touchmove', leftResizeTouch, false);
+            window.addEventListener('mouseup', stopLeftResize, false);
+            window.addEventListener('touchend', stopLeftResize, false);
+        }
+
+        window.initRightResize = (e) => {
+            let canvas = document.getElementById('wrapper');
+            rightOffset = canvas.offsetWidth + canvas.offsetLeft + canvas.parentElement.offsetLeft;
+            window.addEventListener('mousemove', rightResize, false);
+            window.addEventListener('touchmove', rightResizeTouch, false);
+            window.addEventListener('mouseup', stopRightResize, false);
+            window.addEventListener('touchend', stopRightResize, false);
+        }
+
+        window.leftResize = (e) => {
+            leftSidebar.style.width = Math.max(48, e.clientX - leftOffset + 3) + 'px';
+        }
+
+        window.leftResizeTouch = (e) => {
+            leftSidebar.style.width = Math.max(48, e.touches[0].clientX - leftOffset + 3) + 'px';
+        }
+
+        window.rightResize = (e) => {
+            rightSidebar.style.width = Math.max(48, rightOffset - e.clientX + 3) + 'px';
+        }
+
+        window.rightResizeTouch = (e) => {
+            rightSidebar.style.width = Math.max(48, rightOffset - e.touches[0].clientX + 3) + 'px';
+        }
+
+        window.stopLeftResize = (e) => {
+            window.removeEventListener('mousemove', leftResize, false);
+            window.removeEventListener('touchmove', leftResizeTouch, false);
+            window.removeEventListener('mouseup', stopLeftResize, false);
+            window.removeEventListener('touchend', stopLeftResize, false);
+        }
+
+        window.stopRightResize = (e) => {
+            window.removeEventListener('mousemove', rightResize, false);
+            window.removeEventListener('touchmove', rightResizeTouch, false);
+            window.removeEventListener('mouseup', stopRightResize, false);
+            window.removeEventListener('touchend', stopRightResize, false);
+        }
+
+    </script>
+
+
+</body>
+
+</html>

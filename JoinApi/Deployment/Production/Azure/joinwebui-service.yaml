@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+    kompose.service.expose: joincloud.digicorp.it
+    kompose.service.type: NodePort
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: joinwebui
+  name: joinwebui
+spec:
+  ports:
+    - name: "443"
+      port: 443
+      targetPort: 5101
+      nodePort: 32475
+    - name: "5001"
+      port: 5001
+      targetPort: 5001
+      nodePort: 32476
+    - name: "80"
+      port: 80
+      targetPort: 80
+      nodePort: 32477
+  selector:
+    io.kompose.service: joinwebui
+  type: NodePort
+status:
+  loadBalancer: {}

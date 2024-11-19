@@ -1,0 +1,34 @@
+{
+  "name": "digicorpjoin3dviewer",
+  "description": "JOIN 3D Viewer",
+  "version": "2.0.0",
+  "author": "Digi Corp",
+  "contributors": [
+    {
+      "name": "Enrico Caberlotto"
+    }
+  ],
+  "license": "UNLICENSED",
+  "homepage": "https://www.digicorp.it",
+  "type": "module",
+  "main": "dist/thatOpen.js",
+  "files": [
+    "src"
+  ],
+  "packageManager": "npm@10.8.0",
+  "dependencies": {
+    "three": "0.168.0",
+    "@types/three": "0.168.0"
+  },
+  "scripts": {
+    "build": "npm run build:esm",
+    "build:lint": "eslint -c .eslintrc.json --ext .ts ./dist",
+    "build:esm": "node node_modules/typescript/bin/tsc --project ./tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2"
+  }
+}

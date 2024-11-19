@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Model.ComputoItemType" Collapsed="true">
+    <Position X="1" Y="7.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIBAAAAACAAAABAAAABAAAAAABA=</HashCode>
+      <FileName>ModelEntities\Computo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.DivisioneItemType" Collapsed="true">
+    <Position X="10" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAABAAAAABADAQACAAAAAAAAAAAAIAAABA=</HashCode>
+      <FileName>ModelEntities\Divisione.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.DivisioneItemParentType" Collapsed="true">
+    <Position X="10" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAABAAAAABADAQACAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>ModelEntities\Divisione.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.ElementiItemType" Collapsed="true">
+    <Position X="4.25" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIBAAAAACAAAABAAAABAAAAAABA=</HashCode>
+      <FileName>ModelEntities\Elementi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.PrezzarioItemType" Collapsed="true">
+    <Position X="7" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIBABAAACAAAABAAAAAAAIAAABA=</HashCode>
+      <FileName>ModelEntities\Prezzario.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.PrezzarioItemParentType" Collapsed="true">
+    <Position X="7" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABAAACAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>ModelEntities\Prezzario.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.EntityType" Collapsed="true">
+    <Position X="5.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.TreeEntityType" Collapsed="true">
+    <Position X="5.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

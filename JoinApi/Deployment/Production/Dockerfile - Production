@@ -1,0 +1,42 @@
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+#COPY ./JoinApi/Deployment/Production/nginx-selfsigned.crt /usr/local/share/ca-certificates/   #per sviluppo in locale
+#COPY ./JoinApi/Deployment/Production/nginx-selfsigned.key /usr/local/share/ca-certificates/	 #per sviluppo in locale
+COPY ./JoinApi/Deployment/Production/certificate.pem /usr/local/share/ca-certificates/
+COPY ./JoinApi/Deployment/Production/star.digicorp.it.key /usr/local/share/ca-certificates/
+#RUN chmod 644 /usr/local/share/ca-certificates/nginx-selfsigned.crt && update-ca-certificates   #per sviluppo in locale
+#RUN chmod 644 /usr/local/share/ca-certificates/nginx-selfsigned.key && update-ca-certificates   #per sviluppo in locale
+RUN chmod 644 /usr/local/share/ca-certificates/certificate.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/star.digicorp.it.key && update-ca-certificates
+WORKDIR /app
+EXPOSE 80
+EXPOSE 8080
+#EXPOSE 8081
+EXPOSE 5100
+EXPOSE 5000
+EXPOSE 44300
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=JoinApiDockerProduction
+#RUN dotnet dev-certs https
+#RUN dotnet dev-certs https --clean
+#RUN dotnet dev-certs https --trust
+RUN dotnet dev-certs https -ep /root/.dotnet/corefx/cryptography/x509stores/my/joinwebkestrel.pfx -p pierantonella
+WORKDIR /src
+COPY ["./JoinApi/JoinApi.csproj", "JoinApi/"]
+COPY ["./ModelData/ModelData.csproj", "ModelData/"]
+RUN dotnet restore "./JoinApi/JoinApi.csproj"
+RUN dotnet restore "./ModelData/ModelData.csproj"
+COPY . .
+WORKDIR "/src/JoinApi"
+RUN dotnet build "JoinApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "JoinApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/* /root/.dotnet/corefx/cryptography/x509stores/my/
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "JoinApi.dll"]

@@ -1,0 +1,263 @@
+﻿@page "/progetti/{ProgettoId:guid}"
+
+@using AutoMapper
+@using Blazored.LocalStorage
+@using BracketPipe
+@using JoinWebUI.Extensions
+@using JoinWebUI.Components
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using RtfPipe
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.RichTextEditor
+@using System.Text
+@using Syncfusion.DocIO
+@using Syncfusion.DocIO.DLS
+@using Syncfusion.Blazor.Spinner
+@using ModelData.Model;
+@inject Log Log
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navigation
+@inject IConfiguration _configuration
+@inject SfDialogService _dialogService
+@* @inject IJSRuntime _jsRuntime *@
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject ILocalStorageService LocalStorage
+@inject Log Log
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+
+<PageTitle>JoinWeb - Progetto @_progettoNome</PageTitle>
+
+<PageHeader Title=@(String.IsNullOrWhiteSpace(_progettoNome) ? "Dettaglio progetto" : _progettoNome)
+            ObjectType="Progetto"
+            ObjectName=@_progettoNome
+            Breadcrumbs=@_breadcrumbs
+            RequestError=@_requestError
+            RequestMessage=@_requestErrorMessage
+            ShowRightMenu=true
+            DataElementsMenu=@GetElencoElementi()
+            ShowAggiornaButton=true
+            InteractWithProjectDetails=@OnInteractWithProjectDetails
+            OnHamburgerItemSelectedMenu=@HamburgerItemSelected />
+
+<SfCard CssClass="project-card-info-computo-foglioelettronico" id="cardInfo" hidden="@(_pageSelected!=PageNames.None)">
+    <div class="@(_isDataLoading ? "spinnercontainer" : "d-none")">
+        <SfSpinner Size="30"
+                   Type="SpinnerType.Material"
+                   @bind-Visible="@_isDataLoading"
+                   Label="Attendere il caricamento dei dati..." />
+    </div>
+</SfCard>
+<CascadingValue Value="@OnInteractWithProjectDetails" Name="OnInteractWithProjectDetails">
+    <SfCard CssClass="project-card-info-computo-foglioelettronico" id="cardInfo" hidden="@(_pageSelected!=PageNames.Informazioni)">
+        <ModuloProgettoInformazioni ProgettoId="@ProgettoId" />
+    </SfCard>
+    <SfCard CssClass="project-card-info-computo-foglioelettronico" id="cardComputo" hidden="@(_pageSelected!=PageNames.Computo)">
+        <ModuloProgettoComputo ProgettoId="@ProgettoId" @ref=_computo OnShowIn3D=@ShowIn3D /> 
+    </SfCard>    
+    <SfCard CssClass="project-card-info-computo-foglioelettronico" id="cardFoglioElettronico" hidden="@(_pageSelected!=PageNames.FoglioElettronico)">
+        <ModuloProgettoFoglioDiCalcolo ProgettoId="@ProgettoId" />
+    </SfCard>
+    <SfCard CssClass="project-card-ifc" id="cardIfc" hidden="@(_pageSelected!=PageNames.Modello)">
+        <IfcViewerWrapper DivId="openBimViewer" OperaId=@(_operaId) ProgettoId=@(ProgettoId) Visible=@IfcVisible @ref=_3d OnShowInBoQ=@ShowInBoQ />
+    </SfCard>
+</CascadingValue>
+
+
+<style>
+
+    .project-card-ifc {
+        width: 100%;
+        height: calc(100% - 95px);
+        border-radius: 0px !important;
+        border: none;
+        overflow-y: auto;
+    }
+
+    .project-card-info-computo-foglioelettronico {
+        width: 100%;
+        height: max-content;
+        margin-bottom: 2rem;
+        border-radius: 5px !important;
+        border: none;
+        transform: none
+    }
+
+        .project-card-info-computo-foglioelettronico:empty {
+            display: none;
+        }
+
+    .spinnercontainer {
+        width: 25rem;
+        height: 10rem;
+        z-index: 20;
+        border-radius: 1px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+</style>
+
+
+@code {
+
+    [Parameter]
+    public Guid ProgettoId { get; set; }
+    private PageNames _pageSelected = PageNames.Informazioni;
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private string _progettoNome = "";
+    // private Guid _xktUploadId = Guid.Empty;
+    private Guid _operaId = Guid.Empty;
+    private DateTime _createdUTC;
+
+    private bool IfcVisible { get => _pageSelected == PageNames.Modello; }
+
+    private IfcViewerWrapper _3d;
+    private ModuloProgettoComputo _computo;
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+    private volatile bool _isDataLoading = true;
+    public List<Func<bool, Task<bool>>> OnInteractWithProjectDetails { get; set; } = new List<Func<bool, Task<bool>>>();
+
+    private int ID = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        if (_pageSelected.Equals(default(PageNames)) || _pageSelected.Equals(PageNames.Modello))
+        {
+            _pageSelected = PageNames.Informazioni;
+        }
+
+        _requestError = false;
+        _requestErrorMessage = "";
+        var progettoResult = await _apiClient.JsonGetAsync<ProgettoDto>("progetti", ProgettoId.ToString());
+        if (!progettoResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - progetto";
+            return;
+        }
+        _progettoNome = String.IsNullOrWhiteSpace(progettoResult.ResponseContentData?.Nome) ? "[nome sconosciuto]" : progettoResult.ResponseContentData!.Nome;
+
+
+        _operaId = new Guid(progettoResult.ResponseContentData!.OperaId);
+        var operaResult = await _apiClient.JsonGetAsync<OperaDto>("opere", _operaId.ToString());
+        if (!operaResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - opera";
+            return;
+        }
+        string _operaNome = String.IsNullOrWhiteSpace(operaResult.ResponseContentData?.Nome) ? "[nome sconosciuto]" : operaResult.ResponseContentData!.Nome;
+
+        _breadcrumbs = new List<(string, string)>()
+            {
+                ("Opere", "/opere"),
+                (_operaNome, "/opere/" + _operaId.ToString()),
+                (_progettoNome, "/progetti/" + ProgettoId.ToString())
+            };
+
+        _isDataLoading = false;
+        Log.Information("Accesso alla pagina di riepilogo dei progetti.");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (!firstRender)
+            {
+                _isDataLoading = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+            _isDataLoading = false;
+        }
+    }
+
+    private void HamburgerItemSelected(MenuEventArgs args)
+    {
+        try
+        {
+            Enum.TryParse<PageNames>(args.Item.Id, true, out _pageSelected);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    public enum PageNames
+    {
+        None = 0,
+        Informazioni = 1,
+        Computo = 2,
+        Modello = 3,
+        FoglioElettronico = 4,
+    }
+
+    public IEnumerable<(string pageName, int idNumber, string iconType, bool isSelected)> GetElencoElementi()
+    {
+        yield return (PageNames.Informazioni.ToString(), (int)PageNames.Informazioni, "e-icons icon-progetto", _pageSelected == PageNames.Informazioni);
+        yield return (PageNames.Computo.ToString(), (int)PageNames.Computo, "e-icons icon-computo", _pageSelected == PageNames.Computo);
+        yield return (PageNames.Modello.ToString(), (int)PageNames.Modello, "e-icons icon-modello-ifc", _pageSelected == PageNames.Modello);
+        // yield return ("Foglio di calcolo", (int)PageNames.FoglioElettronico, "e-icons icon-import-excel", _pageSelected == PageNames.FoglioElettronico);
+    }
+
+    /// <summary>
+    /// Funzione per visualizzare oggetti 3d nel computo
+    /// </summary>
+    /// <param name="selection"> Lista parametri ifc di input </param>
+    /// <returns></returns>
+    public async Task ShowInBoQ(List<GlobalIdPair> selection)
+    {
+        try
+        {
+            await _computo.OnFilterAggregatoShow(selection);
+            _pageSelected = PageNames.Computo;
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore nell'invocazione dell'Event Callback su Computo, dettaglio: {ex.Message}.");
+
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Funzione per mostrare nel modello 3d voci di computo
+    /// </summary>
+    /// <param name="selection"> Lista parametri ifc presi da voci di computo </param>
+    /// <returns></returns>
+    public async Task ShowIn3D(List<GlobalIdPair> selection)
+    {
+        try
+        {
+            await _3d.HighlightByGlobalIDs(selection);
+            _pageSelected = PageNames.Modello;
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore nell'invocazione dell'Event Callback su modello 3D, dettaglio: {ex.Message}.");
+            throw;
+        }
+    }
+
+}

@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose-azure-docker-linux-net8.yml convert
+    kompose.service.expose: joincloud.digicorp.it
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: joinwebui
+  name: joinwebui
+spec:
+  rules:
+    - host: joincloud.digicorp.it
+      http:
+        paths:
+          - backend:
+              service:
+                name: joinwebui
+                port:
+                  number: 443
+            path: /
+            pathType: Prefix
+status:
+  loadBalancer: {}

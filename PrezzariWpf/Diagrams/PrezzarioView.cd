@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.EntitiesTreeMasterDetailView" Collapsed="true">
+    <Position X="6.5" Y="3.5" Width="2.5" />
+    <NestedTypes>
+      <Class Name="MasterDetailView.EntitiesTreeMasterDetailView.TreeEntityViewInfo" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailView.EntitiesListMasterDetailView" Collapsed="true">
+    <Position X="6.5" Y="1.75" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeViewVirtualized" Collapsed="true">
+    <Position X="6.5" Y="5.25" Width="2.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PrezzariWpf.View.PrezzarioView">
+    <Position X="1.5" Y="8" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Prezzario\PrezzarioView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PrezzariWpf.View.PrezzarioItemsViewVirtualized" Collapsed="true">
+    <Position X="6" Y="8" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Prezzario\PrezzarioView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeView">
+    <Position X="1.5" Y="5" Width="2.5" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="ItemsView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailViewBase" Collapsed="true">
+    <Position X="1.5" Y="3.25" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

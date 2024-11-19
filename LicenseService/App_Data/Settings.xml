@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<settings licenseServiceType="0" projectFilePath="%AppDomainAppPath%App_Data\JoinVK1.netlicproj" logExceptions="false" serviceID="43d2536b-77d6-4ef7-9b16-3b9b907ea5ca" connectionstring="Provider=Microsoft.Jet.OLEDB.4.0;Data Source=|DataDirectory|\LicenseService.mdb" tablenameprefix="Join_" recordIPAddress="True">
+</settings>

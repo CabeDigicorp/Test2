@@ -1,0 +1,569 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MasterDetailWpf"
+                    xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+                    xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxre="http://schemas.devexpress.com/winfx/2008/xaml/richedit">
+    <commons:VisibilityConverter x:Key="VisibilityConverter"/>
+    <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+    <commons:InverseVisibilityHiddenConverter x:Key="InverseVisibilityHiddenConverter"/>
+    <commons:InverseConverter x:Key="InverseConverter"/>
+    <commons:ColorConverter x:Key="colorConverter"/>
+
+    <DataTemplate x:Key="templateTestoCollection">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding ItemsCount}" Grid.Column="0"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Column="1"
+                          Background="{Binding Background, Converter={StaticResource colorConverter}}"
+                          >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ItemsControl x:Name="itemsCollection" ItemsSource="{Binding Valori}" IsTabStop="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ToolTip="{Binding ToolTip}">
+                                <Grid Margin="2" Background="LightGray" Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Command="{Binding EditCommand}" Grid.Column="0" Background="Transparent" BorderThickness="0" Height="Auto" MinWidth="40">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Testo1}" Height="20" Width="Auto"/>
+                                            <TextBlock Text="{Binding Testo2}" Height="20" Width="Auto"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding RemoveCommand}" Grid.Column="1" Height="20" Width="20" Padding="0" BorderThickness="0" VerticalAlignment="Top"
+                                                Style="{StaticResource smallButtonStyle}"
+                                                Content="&#xe03a;"
+                                                Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}"
+                                                />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding AddCommand}" BorderThickness="0" Grid.Column="0" Style="{StaticResource smallButtonStyle}"
+                        Content="&#xe0a2;"
+                        Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}"
+                        />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateGuidCollection">
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding ItemsCount}" Grid.Column="0" Margin="0,0,5,0"/>
+            <TextBox Grid.Column="1" Visibility="{Binding IsItemsSelectionByFilter, Converter={StaticResource VisibilityConverter}}" Margin="0"
+                     TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0,0,0,1" Background="WhiteSmoke" Text="{Binding FilterAsString, Mode=OneWay}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Column="1"
+                          Background="{Binding Background, Converter={StaticResource colorConverter}}" Visibility="{Binding IsItemsSelectionByHand, Converter={StaticResource VisibilityConverter}}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ItemsControl x:Name="itemsCollection" ItemsSource="{Binding Valori}" IsTabStop="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ToolTip="{Binding ToolTip}">
+                                <Grid Margin="2" Background="LightGray" Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Command="{Binding EditCommand}" Grid.Column="0" Background="Transparent" BorderThickness="0" Height="Auto" MinWidth="20" MaxWidth="200">
+                                        <StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Testo1}" Height="20" Width="Auto"/>
+                                                <TextBlock Text="{Binding Testo2}" Height="20" Width="Auto"/>
+                                            </StackPanel>
+                                         </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding RemoveCommand}" Grid.Column="1" Height="20" Width="20" Padding="0" Background="Transparent" BorderThickness="0" VerticalAlignment="Top"
+                                                Style="{StaticResource smallButtonStyle}"
+                                                Content="&#xe03a;"
+                                                Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}"/>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding AddCommand}" Background="Transparent" BorderThickness="0" Grid.Column="0" Style="{StaticResource smallButtonStyle}"
+                        Content="&#xe0a2;"
+                        Visibility="{Binding AllowAddItems, Converter={StaticResource VisibilityConverter}}"
+                        />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateLinkCollection">
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding ItemsCount}" Grid.Column="0" Margin="0,0,5,0"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Column="1"
+                          Background="{Binding Background, Converter={StaticResource colorConverter}}" Visibility="{Binding IsItemsSelectionByHand, Converter={StaticResource VisibilityConverter}}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ItemsControl x:Name="itemsCollection" ItemsSource="{Binding Valori}" IsTabStop="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ToolTip="{Binding ToolTip}">
+                                <Grid Margin="2" Background="LightGray" Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Command="{Binding EditCommand}" Grid.Column="0" Background="Transparent" BorderThickness="0" Height="Auto" MinWidth="40" MaxWidth="200">
+                                        <StackPanel>
+                                            <TextBlock>
+                                                <local:HyperlinkCached Text="{Binding Testo1}" NavigationUrl="{Binding Link}" FileId="{Binding FileId}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding RemoveCommand}" Grid.Column="1" Height="20" Width="20" Padding="0" Background="Transparent" BorderThickness="0" VerticalAlignment="Top"
+                                                Style="{StaticResource smallButtonStyle}"
+                                                Content="&#xe03a;"
+                                                Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}"/>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding AddCommand}" Background="Transparent" BorderThickness="0" Grid.Column="0" Style="{StaticResource smallButtonStyle}"
+                        Content="&#xe0a2;"
+                        Visibility="{Binding AllowAddItems, Converter={StaticResource VisibilityConverter}}"
+                        />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateElenco">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+
+            <!--<ComboBox IsEditable="True" Text="{Binding Testo, Mode=TwoWay, UpdateSourceTrigger=LostFocus }" Grid.Column="0"
+                      ItemsSource="{Binding Items}" DisplayMemberPath="Text" Padding="0"
+                      Foreground="Black" VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"
+                      Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}"
+                      >
+            </ComboBox>-->
+            <!--IsReadOnly="{Binding IsReadOnly}"-->
+            <syncfusion:ComboBoxAdv IsEditable="True" Grid.Column="0"
+                      ItemsSource="{Binding Items}" DisplayMemberPath="Text" Padding="0"
+                      Foreground="Black" VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"
+                      Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}" BorderBrush="White" AllowMultiSelect="{Binding IsMultiSelection}"
+                      SelectedValueDelimiter="{Binding Delimiter}" SelectedItems="{Binding SelectedItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                      SelectedItem="{Binding SelectedItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding Testo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      >
+                
+                <!--SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"-->
+                <!--<i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>-->
+            </syncfusion:ComboBoxAdv>
+            
+            <TextBox Text="{Binding Testo}" IsReadOnly="True" 
+                     Visibility="{Binding IsReadOnly, Converter={StaticResource VisibilityConverter}}"
+                     Background="{Binding Background}" BorderThickness="0,0,0,1"
+                     >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateElencoFont">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+
+            <!--<syncfusion:SfTextBoxExt Grid.Column="0"
+                                     Text="{Binding Testo, Mode=TwoWay}"
+                                     AutoCompleteSource="{Binding Items}"
+                                     HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                     SearchItemPath="Text"
+                                     AutoCompleteMode="Suggest" SuggestionMode="StartsWith"
+                                     ShowSuggestionsOnFocus="True" TextHighlightMode="FirstOccurrence"
+                                     IsReadOnly="{Binding IsReadOnly}"
+                                     Background="{Binding Background}" BorderThickness="0,0,0,1" BorderBrush="LightGray"
+                                     Style="{StaticResource sfTextBoxExtStyle}"
+                                     
+                                     />-->
+            <ComboBox IsEditable="True"  Grid.Column="0" Text="{Binding Testo, Mode=TwoWay}"
+                       Padding="0"
+                      Foreground="Black" VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"
+                      ItemTemplate="{DynamicResource FontTemplate}"
+                      ItemsSource="{Binding Items}" DisplayMemberPath="Text"
+                      SelectedItem="{Binding SelectedItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+                <ComboBox.Resources>
+                    <Style x:Key="FontStyle">
+                        <Setter Property="Control.FontFamily" Value="{Binding Text}" />
+                        <Setter Property="Control.FontSize" Value="16" />
+                    </Style>
+                    <DataTemplate x:Key="FontTemplate">
+                        <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
+                            <TextBlock Style="{StaticResource FontStyle}"
+                                   Text="{Binding Text}"
+                                       Foreground="Black"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.Resources>
+            </ComboBox>
+
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateColore">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox ItemsSource="{Binding Items}" Padding="2" BorderThickness="0,0,0,1" SelectedItem="{Binding ColorSelected}" IsReadOnly="{Binding IsReadOnly}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="1,1,1,1" >
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Text="{Binding Text}" Width="Auto" />
+                            <TextBlock Text="{Binding HexValue}" Width="Auto" Margin="5,0,0,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <!--Text="{Binding Testo, Mode=TwoWay}"-->
+            <!--<ComboBox Text="{Binding Testo, Mode=TwoWay}" Grid.Column="0"
+                      ItemsSource="{Binding Items}" DisplayMemberPath="Text" Padding="2"
+                      Foreground="Black" VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"/>-->
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <!--<ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}"
+                                            Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>-->
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateCheckBox">
+        <Grid>
+            <CheckBox IsChecked="{Binding Check}" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateFormatoNumero">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox IsEditable="True" Text="{Binding Testo, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="0"
+                      ItemsSource="{Binding Items}" DisplayMemberPath="Format" Padding="2"
+                      Foreground="Black" VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnly}"
+                      Background="{Binding Background}" BorderThickness="0,0,0,1"
+                      HorizontalContentAlignment="Stretch"
+                      Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityConverter}}">
+
+            </ComboBox>
+            <TextBox Text="{Binding Testo}" IsReadOnly="True" 
+                     Visibility="{Binding IsReadOnly, Converter={StaticResource VisibilityConverter}}"
+                     Background="{Binding Background}" BorderThickness="0,0,0,1"
+                     >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="AddUnitaMisura" Grid.Column="0" Command="{Binding AddFormatoNumeroCommand}" 
+                        Style="{StaticResource detailListViewItemButtonStyle}" Content="&#xe0A2;" 
+                        IsTabStop="False" Height="20" 
+                        Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityHiddenConverter}}"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateTestoRtf">
+        <DataTemplate.Resources>
+            <dxre:RtfToContentConverter x:Key="rtfToContentConverter" />
+        </DataTemplate.Resources>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" BorderBrush="DarkGray" BorderThickness="0,0,0,1" >
+                <local:RichTextBoxCustom_devExpress x:Name="ShortRichTextBox" CommandBarStyle="Empty"
+                                                    Background="{Binding Background}" Foreground="Black" Margin="0"
+                                                    ActiveViewType="Simple" VerticalScrollBarVisibility="Collapsed" HorizontalScrollBarVisibility="Collapsed"
+                                                    MinHeight="0" Height="{Binding Height}"
+                                                    Content="{Binding Testo, Converter={StaticResource rtfToContentConverter}, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                    Unit="Centimeter"
+                                                    ReadOnly="{Binding IsReadOnly}"
+                                                    dx:ThemeManager.ThemeName="Win11Light"
+                                                    ShowBorder="false" 
+                                                    >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </local:RichTextBoxCustom_devExpress>
+            </Border>
+
+
+            <Grid Grid.Column="1" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="EditRtfButton" Grid.Column="0" Command="{Binding EditRtfCommand}" Style="{StaticResource detailListViewItemButtonStyle}" Content="&#xe040;" IsTabStop="False" Height="20" Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityHiddenConverter}}"/>
+                <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}"
+                                    Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}" ToolTip="{Binding PreviewButtonToolTip}"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="templateData">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="DarkGray"  HorizontalAlignment="Stretch" >
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding MultiText}" Visibility="{Binding IsMultiValore, Converter={StaticResource VisibilityConverter}}"/>
+                    <dxe:DateEdit Grid.Column="1"
+                                  EditValue="{Binding Data, Mode=TwoWay}"
+                                    Background="{Binding Background}" Foreground="{Binding Foreground}"
+                                    DisplayFormatString="{Binding FormatString}"
+                                    Mask="{Binding Mask}" 
+                                    MaskUseAsDisplayFormat="True"
+                                    VerticalAlignment="Top"
+                                    IsReadOnly="{Binding IsReadOnly}"
+                                    BorderThickness="0"
+                                    MaxWidth="{Binding MaxWidth}" HorizontalAlignment="Right"
+                                    ShowClearButton="False"
+                                    BorderBrush="Transparent"
+                                    dx:ThemeManager.Theme="Office2019Colorful"
+                                    
+                    >
+                        <!--DateTime="{Binding Data, Mode=TwoWay}"-->
+                        <dxe:DateEdit.StyleSettings>
+                            <dxe:DateEditNavigatorWithTimePickerStyleSettings GlyphKind="Arrow" />
+                        </dxe:DateEdit.StyleSettings>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </dxe:DateEdit>
+                </Grid>
+            </Border>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateGuid">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateTestoNew">
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding Result, Mode=OneWay}" Grid.Row="0" TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0"
+                           Visibility="{Binding IsResultVisible, Converter={StaticResource VisibilityConverter}}" Background="WhiteSmoke"
+                           ToolTip="{Binding Result}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding ResultMouseDoubleClickCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+                <commons:TextBoxValore Text="{Binding Testo, Mode=TwoWay}" Grid.Row="1" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap"
+                     IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1" Margin="0,3,0,0"
+                     Visibility="{Binding IsSourceVisible, Converter={StaticResource VisibilityConverter}}"
+                     ToolTip="{Binding Testo}"
+                     >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </commons:TextBoxValore>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False"
+                              Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}"
+                                        Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"
+                               ToolTip="{Binding PreviewButtonToolTip}"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateVariabile">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{Binding Testo, Mode=OneWay}" Grid.Column="0" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap"
+                     IsReadOnly="True" Background="Yellow" BorderThickness="0,0,0,1" Margin="0,3,0,0"
+                     ToolTip="{Binding Testo}"
+                     />
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="templateLink">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap" Grid.Column="0" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"/>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding EditLinkCommand}" IsTabStop="False" 
+                        Content="&#xe040;" Style="{StaticResource detailListViewItemButtonStyle}"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    <!--<DataTemplate x:Key="templateRealeNew">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{Binding Numero, Mode=OneWay}" Grid.Row="0" TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0"
+                           Visibility="{Binding IsResultVisible, Converter={StaticResource VisibilityConverter}}" Background="WhiteSmoke"
+                           ToolTip="{Binding Result}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding ResultMouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <commons:TextBoxValore Text="{Binding Formula, Mode=TwoWay}" Grid.Row="1" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap"
+                     IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1" Margin="0,3,0,0"
+                     Visibility="{Binding IsSourceVisible, Converter={StaticResource VisibilityConverter}}"
+                     ToolTip="{Binding Testo}"
+                     >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </commons:TextBoxValore>
+        </Grid>
+    </DataTemplate>-->
+
+</ResourceDictionary>
+
+

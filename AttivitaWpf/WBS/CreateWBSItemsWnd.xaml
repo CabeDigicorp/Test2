@@ -1,0 +1,155 @@
+﻿<Window x:Class="AttivitaWpf.CreateWBSItemsWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:syncfusion="http://schemas.syncfusion.com/wpf" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:syncfusion1="clr-namespace:Commons;assembly=DigiCorp.Commons"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="{lex:Loc GeneraWBS}"
+        Height="450" Width="800"
+        MinHeight="450" MinWidth="800">
+    <Window.DataContext>
+        <local:CreateWBSItemsView/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock Text="{lex:Loc GeneraWBS}" Grid.Column="0" VerticalAlignment="Center" Margin="5,0,0,0" Grid.Row="0" FontSize="30" Foreground="{StaticResource TitleColor}"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click" Width="100" Height="40" 
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="Collapsed">
+                <TextBlock Text="Alert"/>
+            </StackPanel>
+            <Grid Grid.Row="1" Margin="0,5,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{lex:Loc SezioneDiRiferimento}" VerticalAlignment="Bottom"/>
+                    <ComboBox Margin="10,0,0,0" Width="150" SelectedIndex="{Binding EntityTypeIndex}" IsEnabled="{Binding IsEntityTypeReadOnly, Converter={StaticResource InverseConverter}}">
+                        <ComboBoxItem Content="{lex:Loc Computo}" Tag="ComputoItem"/>
+                        <ComboBoxItem Content="{lex:Loc Elementi2}" Tag="ElementiItem"/>
+                    </ComboBox> 
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="2" Margin="0,10,0,0">
+                <!--<CheckBox Content="{lex:Loc AggiungiAttivitaDaElencoPrezzi}" IsChecked="{Binding IsAddAttivita}" IsEnabled="{Binding IsAddAttivitaEnabled}"/>-->
+            </Grid>
+            <Grid Grid.Row="3" Margin="0,20,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding AddLevelCommand}" Style="{StaticResource menuButtonStyle}" Margin="0" Width="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;"/>
+                            <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center" FontSize="16"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RemoveLevelCommand}" Style="{StaticResource menuButtonStyle}" Margin="0" Width="Auto"
+                            Visibility="{Binding IsAnyCurrentLevel, Converter={StaticResource VisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe03a;"/>
+                            <TextBlock Text="{lex:Loc Elimina}" VerticalAlignment="Center" FontSize="16"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="4" Margin="0,5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="400"/>
+                </Grid.ColumnDefinitions>
+                <syncfusion1:SfDataGridExt Name="Grid" Grid.Column="0" ItemsSource="{Binding LevelItems}"
+                                        ColumnSizer="Star" AllowResizingColumns="True" AllowEditing="True"
+                                        CurrentItem="{Binding CurrentLevel, Mode=TwoWay}"
+                                        SelectionUnit="Row" SelectionMode="Single"
+                                        AutoGenerateColumns="False"
+                                        AllowDraggingRows="True" AllowDrop="True" AllowSorting="False"
+                                        EditTrigger="OnTap"><!---->
+                    <syncfusion:SfDataGrid.Columns>
+                        <syncfusion:GridTextColumn HeaderText="{lex:Loc Livello}" MappingName="Level" AllowEditing="False" ColumnSizer="SizeToHeader" CellStyle="{StaticResource readOnlyCellStyle}"/>
+                        <syncfusion:GridComboBoxColumn HeaderText="{lex:Loc Attributo}" MappingName="Attributo" DisplayMemberPath="Name" ItemsSource="{Binding AttributoFilterView.AttributiItem}"  AllowEditing="True" CellStyle="{StaticResource cellStyle}"/>
+                        <syncfusion:GridTextColumn HeaderText="{lex:Loc Valori}" MappingName="Valori" AllowEditing="False" CellStyle="{StaticResource readOnlyCellStyle}"/>
+                    </syncfusion:SfDataGrid.Columns>
+                </syncfusion1:SfDataGridExt>
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0"  Margin="5">
+                        <TextBlock Grid.Column="0" Text="{lex:Loc Valori}" Foreground="{StaticResource TitleColor}" FontSize="16"/>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="5">
+                        <StackPanel>
+                            <CheckBox Content="{lex:Loc Automatici}" IsChecked="{Binding IsValoriAuto, Mode=TwoWay}"/>
+                            <CheckBox Content="{lex:Loc MantieniStruttura}" IsChecked="{Binding IsTreeInLevel, Mode=TwoWay}" IsEnabled="{Binding IsTreeInLevelEnabled }" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="2" Margin="5" IsEnabled="{Binding IsValoriAuto, Converter={StaticResource InverseConverter}}">
+                        <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{lex:Loc Trova}" Grid.Row="0" Foreground="Gray" Visibility="{Binding AttributoFilterView.IsPlaceholderVisible, Converter={StaticResource InverseVisibilityConverter}}" Margin="2,0,0,0"/>
+                                <TextBox Text="{Binding AttributoFilterView.TextSearched, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="0" Background="Transparent">
+                                    <!--<TextBox.InputBindings>
+                                        <KeyBinding Command="{Binding AttributoFilterView.SubmitEnterCommand}" Key="Enter"/>
+                                    </TextBox.InputBindings>-->
+                                </TextBox>
+                                <CheckBox Content="{lex:Loc Seleziona tutti}" IsThreeState="False" IsChecked="{Binding AttributoFilterView.IsAllChecked, Mode=TwoWay}" IsEnabled="{Binding AttributoFilterView.IsAllCheckedEnabled}"
+                              Background="{Binding AttributoFilterView.IsAllCheckedBackground}" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Margin="0,5,0,0"
+                              />
+                                <syncfusion:TreeViewAdv x:Name="ValoriFiltro" ItemsSource="{Binding AttributoFilterView.ValoriItem}" Grid.Row="2" Margin="0,5,0,0"
+                                                        Visibility="{Binding AttributoFilterView.IsTreeViewVisible, Converter={StaticResource VisibilityConverter}}">
+                                    <syncfusion:TreeViewAdv.ItemTemplate>
+                                        <HierarchicalDataTemplate ItemsSource="{Binding SubItems}" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox IsChecked="{Binding IsChecked}" Background="{Binding Background}"/>
+                                                <TextBlock>
+                                        <Run Text="{Binding TextArray[0], Mode=OneWay}"/><Run Text="{Binding TextArray[1], Mode=OneWay}" FontWeight="Bold"/><Run Text="{Binding TextArray[2], Mode=OneWay}" /><Run Text="{Binding TextArray[3], Mode=OneWay}"  FontWeight="Bold"/><Run Text="{Binding TextArray[4], Mode=OneWay}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </HierarchicalDataTemplate>
+                                    </syncfusion:TreeViewAdv.ItemTemplate>
+                                    <syncfusion:TreeViewAdv.ItemContainerStyle>
+                                        <Style TargetType="{x:Type syncfusion:TreeViewItemAdv}">
+                                            <Setter Property="IsExpanded" Value="{Binding IsExpanded,UpdateSourceTrigger=PropertyChanged}"/>
+                                            <Setter Property="IsSelected" Value="{Binding IsSelected,UpdateSourceTrigger=PropertyChanged}"/>
+                                            <Setter Property="IsEditable" Value="False"/>
+                                        </Style>
+                                    </syncfusion:TreeViewAdv.ItemContainerStyle>
+                                </syncfusion:TreeViewAdv>
+                            <TextBlock Text="{Binding AttributoFilterView.TreeViewPlaceholderText}" Grid.Row="2"  Visibility="{Binding AttributoFilterView.IsTreeViewVisible, Converter={StaticResource InverseVisibilityConverter}}"
+                                            VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray"/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,647 @@
+﻿@using System.Text
+@using System;
+@using System.Text.RegularExpressions
+@using Blazored.LocalStorage
+@using BracketPipe
+@using JoinWebUI.Utilities
+@using RtfPipe
+
+@typeparam TItem
+@inject ILocalStorageService LocalStorage
+@inject Log Log
+
+@if (FormattingType == FormattingTypes.WingdingsBoolean)
+{
+    <b>@($"{Label}: ")</b>
+    <div class="wingdings-font">
+        @DisplayDataToMarkupComponent(Data, FormattingType)
+    </div>
+}
+else
+{
+    <div class="default-font">
+        @if (_isLoading)
+        {
+            <p><em>Loading data...</em></p>
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(Label))
+            {
+                @DisplayDataToMarkupComponent(Data, FormattingType)
+            }
+            else
+            {
+                <b>@($"{Label}: ")</b>
+                @DisplayDataToMarkupComponent(Data, FormattingType)
+            }
+        }
+    </div>
+}
+
+<style>
+    .wingdings-font {
+        font-family: 'Wingdings';
+        white-space: nowrap;
+        font-size: 120% !important;
+        display: inline-block;
+    }
+
+    .default-font {
+        /* white-space: nowrap; */
+        display: inline-block;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public TItem? Data { get; set; }
+
+    [Parameter]
+    public FormattingTypes FormattingType { get; set; }
+
+    private string? _simplePreview = string.Empty;
+    private bool _isLoading = false;
+    private string _sSeparator = "~!@#$%^&*()_+";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                if (this.FormattingType == FormattingTypes.SimplePreview && this.Data != null)
+                {
+                    _isLoading = true;
+                    _simplePreview = await ApplySimplePreview(this.Data as string);
+                    _isLoading = false;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private MarkupString? DisplayDataToMarkupComponent(TItem? strings, FormattingTypes formattingType)
+    {
+        StringBuilder result = new StringBuilder();
+
+        try
+        {
+            switch (formattingType)
+            {
+                case FormattingTypes.None:
+                    {
+                        // string? formattedResult = (strings as string)?.Replace(_sSeparator, $"&nbsp;&nbsp;&nbsp;&nbsp;");
+                        string? formattedResult = (strings as string)?.Replace(_sSeparator, "<b>\\</b>");
+                        result.AppendLine(formattedResult);
+                    }
+                    break;
+                case FormattingTypes.NewLineOnSemicolon:
+                    {
+                        if (strings is List<string>)
+                        {
+                            foreach (var str in strings as List<string> ?? new())
+                            {
+                                string? formattedData = ApplyNewLineOnSemicolon(str);
+                                result.AppendLine(formattedData);
+                            }
+                        }
+                        else
+                        {
+                            result.AppendLine(ApplyNewLineOnSemicolon(strings as string));
+                        }
+                    }
+                    break;
+                case FormattingTypes.WingdingsBoolean:
+                    {
+                        string? formattedData = ApplyWingdingsBoolean(strings as string);
+                        result.AppendLine(formattedData);
+                    }
+                    break;
+                case FormattingTypes.RealValue:
+                    {
+                        string? formattedData = ApplyRealValue(strings as string);
+                        result.AppendLine(formattedData);
+                    }
+                    break;
+                case FormattingTypes.ColonNewLineTextList:
+                    {
+                        string? formattedData = ApplyColonNewLineTextList(strings as string);
+                        result.AppendLine(formattedData);
+                    }
+                    break;
+                case FormattingTypes.BoldColonNewLineTextList:
+                    {
+                        string? formattedData = ApplyBoldColonNewLineTextList(strings as string);
+                        result.AppendLine(formattedData);
+                    }
+                    break;
+                case FormattingTypes.SimplePreview:
+                    {
+                        if (!string.IsNullOrEmpty(_simplePreview))
+                        {
+                            result.AppendLine((_simplePreview ?? "").Replace("\n", "").Replace("\r", ""));
+                        }
+                    }
+                    break;
+                case FormattingTypes.ElementSequence:
+                    {
+                        result.AppendLine(ApplyElementSequence(strings as string));
+                    }
+                    break;
+                case FormattingTypes.Attachments:
+                    {
+                        result.AppendLine(ApplyAttachments(strings as string));
+                    }
+                    break;
+                default:
+                    {
+
+                    }
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+
+        return (MarkupString)result.ToString();
+    }
+
+    private string? ApplyNewLineOnSemicolon(string? input = "")
+    {
+        try
+        {
+            return input?.Replace(@":", "<br />");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private string? ApplyWingdingsBoolean(string? input = "")
+    {
+        try
+        {
+            return input?.ToLower() == "false" ? "&#x6F;" : "&#xFE;";
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private string? ApplyRealValue(string? input = "")
+    {
+        try
+        {
+            string formattedHtml = string.Empty;
+            string[] parts = Regex.Split(input ?? "", "\t");
+
+            switch (parts)
+            {
+                case var expression when (expression.Length > 2):
+                    {
+                        formattedHtml = $"<b>{parts[0]}</b>: <br /> <b>{parts[1]}</b>; <br /> {parts[2].Replace("\n", ".<br />")}";
+                    }
+                    break;
+                case var expression when (expression.Length > 1):
+                    {
+                        formattedHtml = $"<b>{parts[0]}</b>: <br /> {parts[1].Replace("\n", ".<br />")}";
+                    }
+                    break;
+                case var expression when (expression.Length > 0 && expression.Contains(_sSeparator)):
+                    {
+                        formattedHtml = $"<b>{parts[0]}.</b><br />";
+                    }
+                    break;
+                case var expression when (!string.IsNullOrEmpty(input)):
+                    {
+                        formattedHtml = $"{input.Replace(_sSeparator, ".<br>")}";
+                    }
+                    break;
+                default:
+                    {
+                        formattedHtml = $"<b>Nessun elemento disponibile da presentare.</b> <br />";
+                    }
+                    break;
+            }
+            return formattedHtml;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    public string ApplyElementSequence(string? input = "")
+    {
+        try
+        {
+            var elements = input?.Split(_sSeparator);
+            StringBuilder risultato = new StringBuilder();
+            foreach (string? element in elements ?? Enumerable.Empty<string>())
+            {
+                var parts = element.Split('\n');
+
+                if (parts.Length == 2)
+                {
+                    risultato.AppendLine($"{parts[0]}: {parts[1]}; ");
+                }
+                else
+                {
+                    risultato.AppendLine($"{parts[0]}");
+                }
+            }
+            return risultato.ToString();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    public string ApplyAttachments(string? input = "")
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+
+            var elements = input?.Split(_sSeparator);
+            StringBuilder risultato = new StringBuilder();
+            foreach (string? element in elements ?? Enumerable.Empty<string>())
+            {
+                var parti = element.Split('\n');
+
+                if (parti.Length >= 2)
+                {
+                    string nome = parti[0];
+                    string link = parti[1];
+                    risultato.AppendLine($"<a href={link} onclick=\"OpenFile('{link}')\">{nome}</a>; ");
+                }
+                else
+                {
+                    string nome = parti[0];
+                    string link = "#";
+                    risultato.AppendLine($"<a href={link} onclick=\"OpenFile('{link}')\">{nome}</a>;");
+                }
+            }
+            return risultato.ToString().TrimEnd(';', ' ');
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private async Task<string?> ApplySimplePreview(string? input = "")
+    {
+        try
+        {
+            string? firstElement = input?.Split(_sSeparator).FirstOrDefault() ?? input;
+            string? data = await GetDataSimplePreview(firstElement);
+            // return GetFirstFiveWords(ExtractTextFromHtml(data));
+            if (string.IsNullOrEmpty(firstElement))
+            {
+                return "Nessun dato da visualizzare";
+            }
+
+            if (string.IsNullOrEmpty(data))
+            {
+                return "< immagine >";
+            }
+
+            return GetFirstParagraph(ExtractTextFromHtml(data));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private string? ApplyColonNewLineTextList(string? input = "")
+    {
+        try
+        {
+            if (input.Contains('¦'))
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return "Nessun elemento disponibile da presentare.";
+                }
+
+                string[] rootSections = input.Split(new string[] { ", ~!@#$%^&*()_+" }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (rootSections.Length == 0)
+                {
+                    return "Nessun elemento disponibile da presentare.";
+                }
+
+                Dictionary<string, List<string>> treeStructure = new Dictionary<string, List<string>>();
+
+                foreach (string section in rootSections)
+                {
+                    string[] levels = section.Split('¦');
+
+                    string parentKey = string.Join("¦", levels, 0, levels.Length - 1).Trim();
+
+                    string child = levels[levels.Length - 1].Trim();
+
+                    if (!treeStructure.ContainsKey(parentKey))
+                    {
+                        treeStructure[parentKey] = new List<string>();
+                    }
+
+                    treeStructure[parentKey].Add(child);
+                }
+
+                string html = "";
+
+                foreach (var entry in treeStructure)
+                {
+                    string[] parentLevels = entry.Key.Split('¦');
+                    int levelDepth = 0;
+
+                    foreach (var level in parentLevels)
+                    {
+                        html += $"<div style='margin-left: {levelDepth * 20}px;'>{level}</div>\n";
+                        levelDepth++;
+                    }
+
+                    foreach (var child in entry.Value)
+                    {
+                        html += $"<div style='margin-left: {levelDepth * 20}px;'>{child}</div>\n";
+                    }
+
+                    html += "<div style='margin-left: 0px;'>;</div>\n";
+                }
+
+                html += "<br>...";
+
+                return html;
+            }
+            else
+            {
+                var elements = input?.Split(_sSeparator);
+                StringBuilder risultato = new StringBuilder();
+                foreach (string? element in elements ?? Enumerable.Empty<string>())
+                {
+                    risultato.AppendLine($"{element}<br>");
+                }
+                return risultato.ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private string? ApplyBoldColonNewLineTextList(string? input = "")
+    {
+        try
+        {
+            var elements = input?.Split(_sSeparator);
+            StringBuilder risultato = new StringBuilder();
+            foreach (string? element in elements ?? Enumerable.Empty<string>())
+            {
+                var parti = element.Split('\n');
+
+                if (parti.Length == 2)
+                {
+                    risultato.AppendLine($"<b>{parti[0]}</b>: <br /> {parti[1]}.<br /><br />");
+                }
+                else
+                {
+                    risultato.AppendLine($"<b>{parti[0]}</b>: <br /><br />");
+                }
+            }
+            return risultato.ToString();
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    string ExtractTextFromHtml(string? html = "")
+    {
+        try
+        {
+            string HtmlString = ExtractBodyContent(html);
+            var sanitizer = HtmlString.Replace("\r\n", "");
+            return Regex.Replace(sanitizer, "<.*?>", string.Empty);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    public string ExtractBodyContent(string? html)
+    {
+        try
+        {
+            if ((html ?? "").Contains("<html") && (html ?? "").Contains("<body"))
+            {
+                return (html ?? "").Remove(0, (html ?? "").IndexOf("<body>") + 6).Replace("</body></html>", "");
+            }
+            return (html ?? "");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+
+    string GetFirstFiveWords(string? input)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            var words = input.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            int wordsToTake = Math.Min(5, words.Length);
+            return string.Join(" ", words.Take(wordsToTake).Append("..."));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    string GetFirstParagraph(string? input)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            string[] paragraphs = input.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (paragraphs.Length > 0)
+            {
+                return paragraphs[0];
+            }
+
+            return string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private async Task<string?> GetDataSimplePreview(string? sValore)
+    {
+
+        try
+        {
+            string? sContentData = string.Empty;
+            string sKey = GenerateKey(sValore ?? "");
+            if (await LocalStorage.ContainKeyAsync(sKey))
+            {
+                DataPersistence dataPersistence = await LocalStorage.GetItemAsync<DataPersistence>(sKey) ?? new();
+                sContentData = dataPersistence.TextData;
+            }
+            else
+            {
+                sContentData = await ConvertRtfToHtml(sValore ?? "", sKey);
+            }
+            return sContentData;
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private async Task<string> ConvertRtfToHtml(string rtfContent, string? key)
+    {
+        try
+        {
+            string sHtml = string.Empty;
+            System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(ppp);
+            sHtml = Rtf.ToHtml(rtfContent);
+
+            string plainText = string.Empty;
+            using (var w = new System.IO.StringWriter())
+            using (var md = new PlainTextWriter(w))
+            {
+                Rtf.ToHtml(rtfContent, md);
+                md.Flush();
+                plainText = w.ToString();
+            }
+
+            DataPersistence dataPersistence = new();
+            dataPersistence.HashCode = key;
+            dataPersistence.HtmlData = sHtml == string.Empty ? "" : sHtml;
+            dataPersistence.TextData = plainText == string.Empty ? "" : plainText;
+            dataPersistence.RtfData = rtfContent;
+
+            if (!string.IsNullOrEmpty(sHtml) && !string.IsNullOrEmpty(key))
+            {
+                await LocalStorage.SetItemAsync(key, dataPersistence);
+            }
+
+            return (string.IsNullOrEmpty(sHtml) ? string.Empty : sHtml);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private string GenerateKey(string? input)
+    {
+        try
+        {
+            int hashcode = 0;
+
+            if (!string.IsNullOrEmpty(input))
+                hashcode = GetDeterministicHashCode(input);
+            if (hashcode != 0)
+                return $"rtf_{hashcode}";
+            else
+                return string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private int GetDeterministicHashCode(string str)
+    {
+        try
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < str.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return 0;
+        }
+    }
+
+    public enum FormattingTypes
+    {
+        None,
+        NewLineOnSemicolon,
+        Attachments,
+        WingdingsBoolean,
+        SimplePreview,
+        ElementSequence,
+        RealValue,
+        ColonNewLineTextList,
+        BoldColonNewLineTextList,
+    }
+}

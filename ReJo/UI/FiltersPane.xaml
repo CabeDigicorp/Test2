@@ -1,0 +1,111 @@
+﻿<Page x:Class="ReJo.UI.FiltersPane"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ReJo.UI"
+      mc:Ignorable="d"
+      xmlns:utility="clr-namespace:ReJo.Utility"
+      xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+      lex:LocalizeDictionary.OutputMissingKeys="True"
+      lex:LocalizeDictionary.DesignCulture="en"
+      lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+      lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="{lex:Loc Filtri e regole}"
+      >
+    <Page.DataContext>
+        <local:FiltersPaneView/>
+    </Page.DataContext>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.Rejo;component/Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <utility:VisibilityConverter x:Key="VisibilityConverter"/>
+            <utility:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+            <utility:InverseConverter x:Key="InverseConverter"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <WrapPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Command="{Binding CheckAllFiltersCommand}" Content="&#xe09a;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Seleziona tutto}"/>
+            <Button Command="{Binding UncheckAllFiltersCommand}" Content="&#xe0af;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Deseleziona tutto}"/>
+            <Border BorderThickness="2,0,0,0" BorderBrush="Gray"/>
+            <Button Command="{Binding SelectElementsCommand}" Content="&#xe06c;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Seleziona}"/>
+            <Button Command="{Binding IsolateElementsCommand}" Content="&#xe05e;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Isola}"/>
+            <Button Command="{Binding HideElementsCommand}" Content="&#xe064;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Nascondi}"/>
+            <Button Command="{Binding RestoreElementsCommand}" Content="&#xe147;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Ripristina}"/>
+            <Border BorderThickness="2,0,0,0" BorderBrush="Gray"/>
+            <Button Command="{Binding RemoveRulesCommand}" Content="&#xe14e;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Elimina regole}"/>
+            <Button Command="{Binding CreateFiltersCommand}" Content="&#xe14f;" Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Crea filtri}"/>
+            <Button Command="{Binding UpdateCommand}" Content="&#xe0ca;"  Margin="2,0,2,0" Style="{StaticResource fontButtonStyle}" ToolTip="{lex:Loc Aggiorna}"/>
+        </WrapPanel>
+        <Grid Grid.Row="1" Margin="5,5,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{lex:Loc TAG}" VerticalAlignment="Bottom" />
+            <syncfusion:ComboBoxAdv Grid.Column="1" x:Name="TagCmb" AllowMultiSelect="True"
+                                    ItemsSource="{Binding TagCmbItems}" DisplayMemberPath="Name"
+                                    SelectedItems="{Binding TagCmbSelectedItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="5,0,0,0"/>
+            <Button Name="OpenFiltersTagWnd" Grid.Column="2" Click="OpenFiltersTagWnd_Click" Margin="5,0,0,0" Content="&#xe0a9;" Style="{StaticResource fontButtonStyle}"/>
+        </Grid>
+        <Grid Grid.Row="2" Margin="5,0,5,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" BorderThickness="1" BorderBrush="LightGray" Margin="0,5,0,0">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0" VerticalContentAlignment="Center">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding SearchEnterCommand}" Key="Enter"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Grid.Column="1" Command="{Binding ClearSearchTextCommand}" Content="&#xe037;" Style="{StaticResource fontButtonStyle}"/>
+                    <!--<Button Grid.Column="2" Command="{Binding UpdateCommand}" Content="&#xe0ca;" Style="{StaticResource fontButtonStyle}"/>-->
+                </Grid>
+            </Border>
+            <ListView Grid.Row="1" Margin="0,5,0,0" ItemsSource="{Binding FilterItems}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Name="ListViewItem" Height="20"  VerticalAlignment="Top">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0" ToolTip="{Binding Name}" Foreground="{Binding FilterNameColor}"/>
+                            <Button Grid.Column="2" Name="OpenRulesWndMouseOver" Click="OpenRulesWnd_Click" Content="&#xe06b;" HorizontalAlignment="Right" Style="{StaticResource listViewItemButtonStyleMouseOver}" Visibility="{Binding HasRules, Converter={StaticResource InverseVisibilityConverter}}"/>
+                            <Button Grid.Column="2" Name="OpenRulesWnd" Click="OpenRulesWnd_Click" Content="&#xe06b;" HorizontalAlignment="Right" Style="{StaticResource listViewItemButtonStyle}" Foreground="{Binding HasRulesColor}" Visibility="{Binding HasRules, Converter={StaticResource VisibilityConverter}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+
+        </Grid>
+    </Grid>
+</Page>

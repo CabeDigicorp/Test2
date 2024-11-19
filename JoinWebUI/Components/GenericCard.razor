@@ -1,0 +1,97 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using System.Collections.ObjectModel
+@using System.Collections.Specialized;
+
+<div class="col my-3" style="min-width:@(Width);max-width:@(Width);height:@Height;min-height:@MinHeight">
+    <SfCard CssClass="e-card">
+        <CardHeader Title="@Title">
+            <div>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" hidden="@HideNew" Disabled="@IsNewDisabled" OnClick="ClickNew"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-edita" IconPosition="IconPosition.Left" hidden="@HideEdit" Disabled="@IsEditDisabled" OnClick="ClickEdit"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-download-file" IconPosition=IconPosition.Left hidden="@HideDownload" Disabled="@IsDownloadDisabled" OnClick=@ClickDownload></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" hidden="@HideDelete" Disabled="@IsDelDisabled" OnClick="ClickDelete"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" OnClick="ClickRefresh"></SfButton>
+            </div>
+        </CardHeader>
+        <CardContent>
+           @Content
+        </CardContent>
+    </SfCard>
+</div>
+
+@code {
+    [Parameter] public RenderFragment Content { get; set; }
+
+    [Parameter] public EventCallback OnClickNew { get; set; }
+    [Parameter] public bool DisableNew { get; set; } = false;
+    [Parameter] public bool HideNew { get; set; } = false;
+    [Parameter] public EventCallback OnClickEdit { get; set; }
+    [Parameter] public bool DisableEdit { get; set; } = false;
+    [Parameter] public bool HideEdit { get; set; } = false;
+    [Parameter] public EventCallback OnClickDownload { get; set; }
+    [Parameter] public bool DisableDownload { get; set; } = false;
+    [Parameter] public bool HideDownload { get; set; } = false;
+    [Parameter] public EventCallback OnClickDelete { get; set; }
+    [Parameter] public bool DisableDelete { get; set; } = false;
+    [Parameter] public bool HideDelete { get; set; } = false;
+    [Parameter] public EventCallback OnClickRefresh { get; set; }
+    [Parameter] public bool DisableRefresh { get; set; } = false;
+    [Parameter] public bool HideRefresh { get; set; } = false;
+
+    [Parameter] public string Title { get; set; } = "[Titolo]";
+
+    [Parameter] public string Width { get; set; }
+    [Parameter] public string Height { get; set; }
+    [Parameter] public string MinHeight { get; set; }
+
+
+    private bool IsNewDisabled { get { return HideNew || DisableNew; } }
+    private bool IsEditDisabled { get { return HideEdit || DisableEdit; } }
+    private bool IsDownloadDisabled { get { return HideDownload || DisableDownload; } }
+    private bool IsDelDisabled { get { return HideDelete || DisableDelete ; } }
+
+
+    private async Task ClickNew()
+    {
+        if (OnClickNew.HasDelegate) await OnClickNew.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickEdit()
+    {
+        if (OnClickEdit.HasDelegate) await OnClickEdit.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickDownload()
+    {
+        if (OnClickDownload.HasDelegate) await OnClickDownload.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task ClickDelete()
+    {
+        if (OnClickDelete.HasDelegate) await OnClickDelete.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task ClickRefresh()
+    {
+        if (OnClickRefresh.HasDelegate) await OnClickRefresh.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+
+    }
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+
+</style>

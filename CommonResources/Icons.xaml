@@ -1,0 +1,118 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+    xmlns:local="clr-namespace:CommonResources"
+
+    >
+
+    <!-- Created with Ai->XAML Export Plug-In Version 0.3 (PC/64) -->
+    <!-- By Mike Swanson (http://blog.mikeswanson.com/)           -->
+
+    <Viewbox x:Key="JoinIcon" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Canvas Width="480.835" Height="512.000">
+            <Canvas>
+                <Canvas>
+                    <!-- Livello 1/<Gruppo>/<Tracciato> -->
+                    <Path Data=" M 429.635,106.852 L 291.617,0.000 L 146.922,20.035 L 0.000,102.400 L 0.000,407.374 L 149.148,489.739 L 289.391,512.000 L 427.409,405.148 L 480.835,258.226 L 429.635,106.852 Z">
+                        <Path.Fill>
+                            <LinearGradientBrush MappingMode="Absolute" StartPoint="-247.824,140.772" EndPoint="203.826,-119.989">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Offset="0.00" Color="#fff6a500"/>
+                                    <GradientStop Offset="0.25" Color="#ff7b661f"/>
+                                    <GradientStop Offset="0.99" Color="#ff00273f"/>
+                                </LinearGradientBrush.GradientStops>
+                                <LinearGradientBrush.Transform>
+                                    <MatrixTransform Matrix="1.000,0.000,-0.000,-1.000,240.417,256.000" />
+                                </LinearGradientBrush.Transform>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+
+                    <!-- Livello 1/<Gruppo>/<Tracciato composto> -->
+                    <Path Opacity="0.2" Fill="#ffffffff" Data=" M 77.891,260.964 L 157.874,376.854 L 294.133,336.228 L 296.270,191.733 L 160.100,146.655 L 77.891,260.964 Z M 149.126,489.472 L 136.526,483.306 L 147.679,386.538 L 65.202,267.019 L 0.000,254.464 L 0.000,240.685 L 66.426,253.151 L 150.862,135.725 L 133.053,28.383 L 146.432,21.037 L 164.597,133.521 L 302.659,179.222 L 429.390,108.499 L 433.619,120.365 L 310.183,190.887 L 308.001,337.631 L 431.883,393.461 L 426.986,405.793 L 299.809,349.006 L 161.235,390.322 L 149.126,489.472 Z"/>
+
+                    <Canvas>
+                        <!-- Livello 1/<Gruppo>/<Gruppo>/<Tracciato composto> -->
+                        <Path Fill="#ffffffff" Data="F1 M 250.973,268.776 C 250.973,289.880 249.103,302.436 244.829,312.319 C 240.822,320.601 233.075,329.148 225.061,334.225 C 213.574,341.972 199.950,345.444 187.394,345.444 C 178.846,345.444 134.769,342.506 126.488,297.627 C 125.686,293.620 125.419,289.078 125.152,284.537 L 167.626,284.537 C 167.626,286.407 167.894,288.010 168.161,289.880 C 171.100,302.702 179.114,310.449 189.265,310.449 C 200.217,310.182 206.094,304.305 208.498,297.627 C 210.903,291.482 211.170,284.537 211.170,278.393 L 211.170,144.024 L 250.973,144.024 L 250.973,268.776 Z"/>
+                    </Canvas>
+                </Canvas>
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+
+
+    <!-- Created with Ai->XAML Export Plug-In Version 0.3 (PC/64) -->
+    <!-- By Mike Swanson (http://blog.mikeswanson.com/)           -->
+
+    <Viewbox x:Key="Model3dIcon" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Canvas Width="227.596" Height="256.046">
+
+            <Canvas>
+
+                <Canvas>
+
+                    <!-- Livello 1/<Gruppo>/<Tracciato composto> -->
+                    <Path Fill="#ff000000" Data="F1 M 210.089,188.205 L 210.089,76.459 L 122.552,120.363 L 122.552,232.111 L 210.089,188.205 Z M 113.798,19.696 L 28.313,62.370 L 113.798,105.045 L 199.284,62.370 L 113.798,19.696 Z M 17.507,188.205 L 105.045,232.111 L 105.045,120.363 L 17.507,76.459 L 17.507,188.205 Z M 227.596,57.036 L 227.596,199.010 L 113.798,256.046 L 0.000,199.010 L 0.000,57.036 L 113.798,0.000 L 227.596,57.036 Z"/>
+
+                </Canvas>
+
+                <!-- Livello 1/<Tracciato> -->
+                <Path Visibility="hidden" Fill="#ff000000" Data="F1 M 65.118,141.606 L 65.054,256.046 L 74.427,256.046 L 74.491,141.825 L 99.241,166.502 L 105.831,159.912 L 69.731,123.811 L 33.631,159.912 L 40.221,166.502 L 65.118,141.606 Z"/>
+
+                <!-- Livello 1/<Tracciato> -->
+                <Path Data="F1 M 122.728,120.046 L 209.728,76.046 L 209.728,188.046 L 122.728,232.046 L 122.728,120.046 Z">
+                    <Path.Fill>
+                        <LinearGradientBrush MappingMode="Absolute" StartPoint="141.750,-115.250" EndPoint="219.250,-192.750">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Offset="0.00" Color="#fff0a201"/>
+                                <GradientStop Offset="0.54" Color="#ff786520"/>
+                                <GradientStop Offset="1.00" Color="#ff00273f"/>
+                            </LinearGradientBrush.GradientStops>
+                            <LinearGradientBrush.Transform>
+                                <MatrixTransform Matrix="1.000,0.000,-0.000,-1.000,-14.272,0.046" />
+                            </LinearGradientBrush.Transform>
+                        </LinearGradientBrush>
+                    </Path.Fill>
+                </Path>
+
+                <!-- Livello 1/<Tracciato> -->
+                <Path Data="F1 M 113.728,20.046 L 199.728,62.046 L 113.728,105.046 L 28.728,62.046">
+                    <Path.Fill>
+                        <LinearGradientBrush MappingMode="Absolute" StartPoint="85.750,-19.250" EndPoint="171.250,-104.750">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Offset="0.00" Color="#fff0a201"/>
+                                <GradientStop Offset="0.54" Color="#ff786520"/>
+                                <GradientStop Offset="1.00" Color="#ff00273f"/>
+                            </LinearGradientBrush.GradientStops>
+                            <LinearGradientBrush.Transform>
+                                <MatrixTransform Matrix="1.000,0.000,-0.000,-1.000,-14.272,0.046" />
+                            </LinearGradientBrush.Transform>
+                        </LinearGradientBrush>
+                    </Path.Fill>
+                </Path>
+
+                <!-- Livello 1/<Tracciato> -->
+                <Path Data="F1 M 17.728,76.046 L 104.728,120.046 L 104.728,232.046 L 17.728,188.046">
+                    <Path.Fill>
+                        <LinearGradientBrush MappingMode="Absolute" StartPoint="14.750,-93.250" EndPoint="136.250,-214.750">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Offset="0.00" Color="#fff0a201"/>
+                                <GradientStop Offset="0.54" Color="#ff786520"/>
+                                <GradientStop Offset="1.00" Color="#ff00273f"/>
+                            </LinearGradientBrush.GradientStops>
+                            <LinearGradientBrush.Transform>
+                                <MatrixTransform Matrix="1.000,0.000,-0.000,-1.000,-14.272,0.046" />
+                            </LinearGradientBrush.Transform>
+                        </LinearGradientBrush>
+                    </Path.Fill>
+                </Path>
+
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+
+
+</ResourceDictionary>
+    
+    

@@ -1,0 +1,192 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>DigiCorp.ReJo</AssemblyName>
+    <Configurations>Debug;Release;Release NoObfuscator</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- Copia tutti gli assembly dei pacchetti e atro nella cartella di destinazione -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0-windows7.0' ">
+    <RevitVersion>ReJo2025</RevitVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Forcibly set platform to 'x64' and ignore architecture-related problems -->
+    <!--<PlatformTarget>x64</PlatformTarget>-->
+    <!--<Platforms>x64</Platforms>-->
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+
+    <!-- Force the project to use the legacy debugger engine -->
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
+
+    <!-- Invert the behavior of new .csproj format - exclude files by default -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
+
+    <!-- Define handy symbols to use in the code in order to accommodate different Revit versions,
+    e.g. by wrapping legacy / deprecated API calls with #if REVIT2014 | REVIT2015 -->
+    <DefineConstants>REVIT$(RevitVersion)</DefineConstants>
+    <PreprocessorDefinitions>$(DefineConstants)</PreprocessorDefinitions>
+
+    <!-- Multiple targets can cause obj folder locking by concurrent builds -->
+    <BuildInParallel>false</BuildInParallel>
+
+    <!-- Override 'OutputPath' to Debug/Release + Revit version -->
+
+    <!-- <OutputPath>..\bin\$(Configuration)\$(RevitVersion)</OutputPath> -->
+    <OutputPath>..\bin\$(Configuration)</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\Output\Debug</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>..\Output\Release</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release NoObfuscator|AnyCPU'">
+    <DebugType>none</DebugType>
+    <OutputPath>..\Output\Release NoObfuscator</OutputPath>
+  </PropertyGroup>
+
+  
+
+
+  <ItemGroup>
+    <Compile Remove="Reference\**" />
+    <EmbeddedResource Remove="Reference\**" />
+    <None Remove="Reference\**" />
+    <Page Remove="Reference\**" />
+  </ItemGroup>
+  
+
+
+  <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="Commands\CmdCheckRules.cs" />
+    <Compile Include="Commands\CmdApplyRules.cs" />
+    <Compile Include="Commands\CmdInit.cs" />
+    <Compile Include="Commands\CmdFilters.cs" />
+    <Compile Include="Commands\CmdTest.cs" />
+    <Compile Include="Events.cs" />
+    <Compile Include="RvtCalculator.cs" />
+    <Compile Include="UI\FiltersTagView.cs" />
+    <Compile Include="UI\FiltersTagWnd.xaml.cs" />
+    <Compile Include="UI\ResultWnd.xaml.cs" />
+    <Compile Include="UI\RulesView.cs" />
+    <Compile Include="UI\WindowManager.cs" />
+    <Compile Include="Utility\Converters.cs" />
+    <Compile Include="ReJoSettings.cs" />
+    <Compile Include="UI\FiltersPane.xaml.cs" />
+    <Compile Include="ModificationUpdater.cs" />
+    <Compile Include="JoinService.cs" />
+    <Compile Include="ExternalEvents.cs" />
+    <Compile Include="UI\FiltersPaneView.cs" />
+    <Compile Include="UI\RulesWnd.xaml.cs" />
+    <Compile Include="UI\ViewModelHelpers.cs" />
+    <Compile Include="Utility\FilterElementConverter.cs" />
+    <Compile Include="Utility\ReJoLog.cs" />
+    <Compile Include="Utility\RulesCalculator.cs" />
+    <Compile Include="Utility\Utils.cs" />
+    <Compile Include="Utility\WindowHelper.cs" />
+  </ItemGroup>
+  
+
+
+  <ItemGroup>
+    <Content Include="Resources\ReJo\CollegaJoinOn_L.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\CollegaJoinOn_S.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\FiltriJoin_S.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+
+
+  <ItemGroup>
+    <Content Include="Resources\ReJo\CollegaJoin_L.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\CollegaJoin_S.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\FiltriJoin_L.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\GeneraComputo_L.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\GeneraComputo_S.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autodesk.Revit.SDK" Version="2025.0.2.419" />
+    <PackageReference Include="Log4NetCoreEx" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Syncfusion.SfGrid.WPF" Version="27.1.55" />
+    <PackageReference Include="WPFLocalizeExtension" Version="3.9.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Resources\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\FiltersPane.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\FiltersTagWnd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ResultWnd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\RulesWnd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\IfcViewer\Main\XbimWindowsUI-master\3DModelExchange\3DModelExchange.csproj">
+      <Private></Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DigiCorp.CommonResources">
+      <HintPath>..\Output\Release\DigiCorp.CommonResources.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <!--  <Exec Command="mkdir &quot;$(SolutionDir)MainApp\$(RevitVersion)&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)$(OutDir)*.dll&quot; &quot;$(SolutionDir)MainApp\$(RevitVersion)&quot;&#xD;&#xA;" />  -->
+    <Exec Command="xcopy /y &quot;$(ProjectDir)$(OutDir)DigiCorp.ReJo.dll&quot; &quot;$(SolutionDir)MainApp\Resources\ReJo\&quot;&#xD;&#xA;" />
+  </Target>
+
+
+</Project>

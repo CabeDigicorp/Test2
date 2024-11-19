@@ -1,0 +1,168 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:syncfusion="http://schemas.syncfusion.com/wpf"		
+                    xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF"
+                    xmlns:utility="clr-namespace:ReJo.Utility"
+                    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/DigiCorp.CommonResources;component/Fonts.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--Button-->
+
+    <Style TargetType="{x:Type Button}" x:Key="listViewItemButtonStyleMouseOver">
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource digicorpFontFamilyKey}"  />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="Transparent" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver, ElementName=ListViewItem}" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" x:Key="listViewItemButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource digicorpFontFamilyKey}"  />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+
+    <Style  TargetType="Button" x:Key="fontButtonStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Name="Border" Background="{TemplateBinding Background}"
+                                BorderBrush="LightGray"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="AliceBlue"/>
+                            <Setter Property="BorderBrush" Value="DodgerBlue" TargetName="Border"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource digicorpFontFamilyKey}"  />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Height" Value="25"/>
+    </Style>
+    
+
+    <Style  TargetType="Button" x:Key="buttonStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Name="Border" Background="{TemplateBinding Background}"
+                                BorderBrush="LightGray"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="AliceBlue"/>
+                            <Setter Property="BorderBrush" Value="DodgerBlue" TargetName="Border"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Height" Value="25"/>
+    </Style>
+
+    <!--ToggleButton-->
+    <Style  TargetType="ToggleButton" x:Key="fontToggleButtonStyle">
+        <!--<Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Name="Border" Background="{TemplateBinding Background}"
+                                BorderBrush="LightGray"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="AliceBlue"/>
+                            <Setter Property="BorderBrush" Value="DodgerBlue" TargetName="Border"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>-->
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource digicorpFontFamilyKey}"  />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Height" Value="25"/>
+    </Style>
+
+    <!--TextBlock-->
+    <Style  TargetType="TextBlock" x:Key="fontTextBlockStyle">
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource digicorpFontFamilyKey}"  />
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style  TargetType="TextBlock" x:Key="titleTextBlockStyle">
+        <Setter Property="Foreground" Value="Gray"/>
+    </Style>
+
+
+    <Style TargetType="{x:Type GridSplitter}" x:Key="gridSplitterStyle">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+    </Style>
+
+    <!--syncfusionGrid-->
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="cellStyle">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="cellStyleDigicorpFont">
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource digicorpFontFamilyKey}"/>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+
+
+    <!--<Style x:Key="parameterGridRowstyle" TargetType="syncfusion:VirtualizingCellsControl">
+        <Setter Property="Foreground" Value="{Binding UpdateSourceTrigger=PropertyChanged,Converter={StaticResource ParametriGridRowStyleConverter}}" />
+    </Style>-->
+
+
+</ResourceDictionary>

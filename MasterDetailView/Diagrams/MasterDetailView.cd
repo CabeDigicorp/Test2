@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.EntityView" Collapsed="true">
+    <Position X="10.75" Y="6" Width="1.75" />
+    <AssociationLine Name="Entity" Type="MasterDetailModel.Entity" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.125" Y="6.691" />
+        <Point X="12.125" Y="7.531" />
+        <Point X="14.75" Y="7.531" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="DetailAttributiView" Type="MasterDetailView.DetailAttributoView" FixedToPoint="true">
+      <Path>
+        <Point X="12.5" Y="6.375" />
+        <Point X="14.5" Y="6.375" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>3P8fQQEA77+Acjj/DAMECIH/PwMw/0DgnzH/f6AQzQI=</HashCode>
+      <FileName>ViewModel\EntityView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Entity" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="DetailAttributiView" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MultiDetailAttributiView" Collapsed="true">
+    <Position X="10.5" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQgQACAACCCAGAAAJCAAAAAQAAAAAAgRAgFAYAAAA=</HashCode>
+      <FileName>ViewModel\DetailAttributoView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.DetailAttributoView" Collapsed="true">
+    <Position X="14.5" Y="6" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>BpIQEQBNBACEAoCIAEAgABABAQIAAABAiAHAAgEAEAU=</HashCode>
+      <FileName>ViewModel\DetailAttributoView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="EntityAttributo" />
+      <Property Name="ValoreView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.EntitiesListMasterDetailView">
+    <Position X="6.5" Y="6" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="MasterDetailView.EntitiesListMasterDetailView.EntityViewMasterInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ViewModel\EntitiesListMasterDetailView.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <AssociationLine Name="AttributiEntities" Type="MasterDetailView.MultiDetailAttributiView" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.75" Y="6" />
+        <Point X="7.75" Y="4.346" />
+        <Point X="10.5" Y="4.346" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>Z7V0+jk+4K4vgryuTIpPJudWXNGZ6u7Pm587GyJD3cY=</HashCode>
+      <FileName>ViewModel\EntitiesListMasterDetailView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="AttributiEntities" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="EntitiesViewCached" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.EntityAttributo" Collapsed="true">
+    <Position X="18" Y="7" Width="1.5" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Valore" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.Entity" Collapsed="true">
+    <Position X="14.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailView.EntitiesTreeMasterDetailView" Collapsed="true">
+    <Position X="15" Y="17.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>RBMQiICAYCgHACTUgAIZKCAiGABB4EiGAIASACJCIwA=</HashCode>
+      <FileName>ViewModel\EntitiesTreeMasterDetailView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.TreeEntityView" Collapsed="true">
+    <Position X="15.75" Y="8.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CQAYEQEAgCgAQALAAAAEAAAABAAAAAAgAgAAAAJABAA=</HashCode>
+      <FileName>ViewModel\TreeEntityView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeItemView">
+    <Position X="15.25" Y="9.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\MasterDetailTreeView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailGridItemView">
+    <Position X="9" Y="8.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\MasterDetailGridView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailListItemView">
+    <Position X="12" Y="8.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\MasterDetailListView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailGridView" Collapsed="true">
+    <Position X="11.5" Y="18" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQQACAAAAAAAAAAAAggACMAABBQAICIAAgmAATggAA=</HashCode>
+      <FileName>ViewModel\MasterDetailGridView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ItemsView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailGridItemsViewVirtualized" Collapsed="true">
+    <Position X="7.5" Y="18" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>QEQAhACAAAAIAAgGAIAKBAAACAEAAAAEDIAAAwAADAA=</HashCode>
+      <FileName>ViewModel\MasterDetailGridView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailListView">
+    <Position X="22" Y="17.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>ViewModel\MasterDetailListView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ItemsView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailListViewVirtualized" Collapsed="true">
+    <Position X="18" Y="17.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AEEEgACAAAAIAAAGAIAIBAAAAAAAAAAEFAACAwAADAA=</HashCode>
+      <FileName>ViewModel\MasterDetailListView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeView" Collapsed="true">
+    <Position X="18.5" Y="20" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>ViewModel\MasterDetailTreeView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ItemsView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeViewVirtualized" Collapsed="true">
+    <Position X="14.5" Y="20" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AEAEgAAAAAAIAAAGAIAIBAAAAAABAAAEFAACAwAADAA=</HashCode>
+      <FileName>ViewModel\MasterDetailTreeView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="MasterDetailView.ValoreView" Collapsed="true">
+    <Position X="20" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAgAAAQAAAAAAAAAUAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ValoreView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MasterDetailModel.Valore" Collapsed="true">
+    <Position X="22" Y="7" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

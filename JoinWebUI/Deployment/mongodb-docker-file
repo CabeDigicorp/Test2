@@ -1,0 +1,23 @@
+FROM mongo:7.0.12
+
+RUN mkdir -p /etc/ssl/mongodb/
+
+COPY ./Mongodb/mongodb.pem /usr/local/share/ca-certificates/
+COPY ./Mongodb/mongodb.pem /etc/ssl/mongodb/mongodb.pem
+COPY ./Mongodb/fullchain.pem /usr/local/share/ca-certificates/
+COPY ./Mongodb/fullchain.pem /etc/ssl/mongodb/fullchain.pem
+COPY ./Mongodb/certificate.pem /usr/local/share/ca-certificates/
+COPY ./Mongodb/certificate.pem /etc/ssl/mongodb/certificate.pem
+COPY ./Mongodb/cabundle.pem /usr/local/share/ca-certificates/
+COPY ./Mongodb/cabundle.pem /etc/ssl/mongodb/cabundle.pem
+COPY ./Mongodb/mongod.conf /etc/
+
+RUN chmod -R 777 /etc/ssl/mongodb/
+
+EXPOSE 27017
+
+RUN chmod 644 /usr/local/share/ca-certificates/mongodb.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/cabundle.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/fullchain.pem && update-ca-certificates
+
+CMD ["mongod", "--config", "/etc/mongod.conf"]

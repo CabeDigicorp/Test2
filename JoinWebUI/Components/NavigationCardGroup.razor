@@ -1,0 +1,125 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using System.Collections.ObjectModel
+@using JoinWebUI.Shared
+
+@inject NavigationManager _navigation
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+
+@implements IDisposable
+
+<div class="control-section row mx-0" id="cardGroup">
+    @foreach (var i in NavigationCards)
+    {
+        <div class="col my-3" style="min-width:@(CardWidthString);max-width:@(CardWidthString);min-height:@(CardHeight);max-height:@(CardHeight)">
+            <SfCard CssClass="e-card mouse-hover" @onclick="@(e => Click(i))">
+                <CardHeader Title="@(i.Title)" />
+                <CardContent>
+                    <div class="mx-0 my-0 d-flex align-content-start align-items-center">
+                        @if (!string.IsNullOrWhiteSpace(i.Image))
+                        {
+                            <img src=@(i.Image) width="120" height="120">
+                        }
+                        @if (!string.IsNullOrWhiteSpace(i.Description))
+                        {
+                            <span class="ms-4">@(i.Description)</span>
+                        }
+                    </div>
+                </CardContent>
+            </SfCard>
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter] public List<NavigationComponentInfo> NavigationCards { get; set; } = new List<NavigationComponentInfo>();
+
+    [Parameter] public string? CardWidth { get; set; } = null;
+    [Parameter] public string? CardHeight { get; set; } = "auto";
+
+    private const int CARDMINWIDTH = 240;
+    private const int CARDMAXWIDTH = 640;
+    private string CardWidthString { get; set; } = CARDMINWIDTH.ToString() + "px";
+
+    private async Task ComputeCardWidthAsync()
+    {
+        if (CardWidth != null) return;
+
+        try
+        {
+            BrowserWindowSize size = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getElementDimensions", "cardGroup");
+            CardWidthString = NavigationComponentInfo.ComputeWidthAsync(CARDMINWIDTH,
+                                                                        CARDMAXWIDTH,
+                                                                        size.Width,
+                                                                        NavigationCards.Count);
+       
+        }
+        catch (Exception ex)
+        {
+            
+        }
+       
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ComputeCardWidthAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            _listener.OnResized += WindowResized;
+            ComputeCardWidthAsync();
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        _listener.OnResized -= WindowResized;
+
+    }
+
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await ComputeCardWidthAsync();
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+
+    }
+
+    private void Click(NavigationComponentInfo i)
+    {
+        _navigation.NavigateTo(i.LinkUrl);
+    }
+
+}
+
+<style>
+    .e-custom {
+        border-radius: 8px !important;
+        height: 100% !important;
+        width: 100% !important;
+        background-color: var(--bs-join-grey-medium) !important;
+        color: var(--bs-primary) !important;
+    }
+
+        .e-custom:hover, .e-custom:focus, .e-custom:active {
+            border: none !important;
+        }
+
+    .img {
+        filter: invert(11%) sepia(74%) saturate(1470%) hue-rotate(176deg) brightness(96%) contrast(102%);
+    }
+
+</style>

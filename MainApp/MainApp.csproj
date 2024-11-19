@@ -1,0 +1,363 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>DigiCorp.Join</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>C:\Join\JoinInstall\v0_0\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>\\PC-COMPILE4\JoinInstall\v0_0\</InstallUrl>
+    <ProductName>Join</ProductName>
+    <PublisherName>Digi Corp</PublisherName>
+    <SuiteName>Join</SuiteName>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>60</ApplicationRevision>
+    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>True</UseWindowsForms>
+    <UseWPF>True</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Configurations>Debug;Release;Release NoObfuscator</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EazfuscatorIntegration>MSBuild</EazfuscatorIntegration>
+    <EazfuscatorActiveConfiguration>Release</EazfuscatorActiveConfiguration>
+    <EazfuscatorCompatibilityVersion>2021.4</EazfuscatorCompatibilityVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\Output\Debug\</OutputPath>
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>..\Output\Release\</OutputPath>
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release NoObfuscator|AnyCPU'">
+    <DebugType>none</DebugType>
+    <OutputPath>..\Output\Release NoObfuscator\</OutputPath>
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>Internet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>JoinIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LogicNP.CryptoLicensing">
+      <HintPath>..\Commons\CryptoLicense\LogicNP.CryptoLicensing.dll</HintPath>
+    </Reference>
+    <Reference Include="Xbim.Geometry.Engine32">
+      <HintPath>..\References\Xbim\Xbim.Geometry.Engine32.dll</HintPath>
+    </Reference>
+    <Reference Include="Xbim.Geometry.Engine64">
+      <HintPath>..\References\Xbim\Xbim.Geometry.Engine64.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="de\DevExpress.Office.v24.1.Core.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.RichEdit.v24.1.Core.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Spreadsheet.v24.1.Core.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Xpf.Core.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Xpf.Gantt.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Xpf.NavBar.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Xpf.Printing.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Xpf.RichEdit.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="de\DevExpress.Xpf.Spreadsheet.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dictionaries\de_DE_frami.aff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dictionaries\de_DE_frami.dic">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dictionaries\en_US.aff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dictionaries\en_US.dic">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dictionaries\it_IT.aff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dictionaries\it_IT.dic">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Office.v24.1.Core.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.RichEdit.v24.1.Core.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Spreadsheet.v24.1.Core.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Xpf.Core.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Xpf.Gantt.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Xpf.NavBar.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Xpf.Printing.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Xpf.RichEdit.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="it\DevExpress.Xpf.Spreadsheet.v24.1.resources.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\DragDropAttributi.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\DigiCorp.ReJo.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ReJo\RevitAddInUtility.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\RtfEditor\AnteprimaCampi16.png">
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\RtfEditor\Correttore16.png" />
+    <Resource Include="Resources\RtfEditor\Correttore64.png" />
+    <Resource Include="Resources\RtfEditor\icons8-germania-16.png" />
+    <Resource Include="Resources\RtfEditor\icons8-gran-bretagna-16.png" />
+    <Resource Include="Resources\RtfEditor\icons8-italia-16.png" />
+    <Resource Include="Resources\RtfEditor\Lingua16.png" />
+    <Resource Include="Resources\RtfEditor\Lingua64.png" />
+    <Resource Include="Resources\RtfEditor\SvuotaAppunti16.png" />
+    <Resource Include="Resources\RtfEditor\InserisciNomeFile16.png" />
+    <Resource Include="Resources\RtfEditor\InserisciNumeroDiPagine16.png" />
+    <Resource Include="Resources\RtfEditor\InserisciNumeroPagina16.png" />
+    <Resource Include="Resources\RtfEditor\Campi.png" />
+    <Resource Include="Resources\RtfEditor\AnteprimaCampi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\IfcViewer\Main\XbimWindowsUI-master\XbimWindow\XbimWindow.csproj" />
+    <ProjectReference Include="..\AttivitaWpf\AttivitaWpf.csproj" />
+    <ProjectReference Include="..\CommonResources\CommonResources.csproj" />
+    <ProjectReference Include="..\Commons\Commons.csproj" />
+    <ProjectReference Include="..\ComputoWpf\ComputoWpf.csproj" />
+    <ProjectReference Include="..\ContattiWpf\ContattiWpf.csproj" />
+    <ProjectReference Include="..\DatiGeneraliWpf\DatiGeneraliWpf.csproj" />
+    <ProjectReference Include="..\DivisioniWpf\DivisioniWpf.csproj" />
+    <ProjectReference Include="..\ElementiWpf\ElementiWpf.csproj" />
+    <ProjectReference Include="..\FogliDiCalcoloWpf\FogliDiCalcoloWpf.csproj" />
+    <ProjectReference Include="..\JReport\JReport.csproj" />
+    <ProjectReference Include="..\MasterDetailModel\MasterDetailModel.csproj" />
+    <ProjectReference Include="..\MasterDetailView\MasterDetailView.csproj" />
+    <ProjectReference Include="..\MasterDetailWpf\MasterDetailWpf.csproj" />
+    <ProjectReference Include="..\Model\Model.csproj" />
+    <ProjectReference Include="..\PrezzariWpf\PrezzariWpf.csproj" />
+    <ProjectReference Include="..\ReJo\ReJo.csproj">
+      <ExcludeAssets>RevitAddInUtility.dll</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\StampeWpf\StampeWpf.csproj" />
+    <ProjectReference Include="..\WebServiceProvider\WebServiceClient.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Visual.C++.14.0.x64">
+      <Visible>False</Visible>
+      <ProductName>Visual C++ "14" Runtime Libraries %28x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\JoinIcon.ico" />
+    <Resource Include="Resources\JoinLoginSfondo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="JoinIcon.ico" />
+    <Resource Include="Resources\IconSelectAll.png" />
+    <Resource Include="Resources\RtfEditor\IncollaCampo16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="DevExpress.Wpf.SpellChecker" Version="24.1.3" />
+    <PackageReference Include="DevExpress.Wpf.Themes.Win11Light" Version="24.1.3" />
+    <PackageReference Include="Log4NetCoreEx" Version="1.0.3" />
+    <PackageReference Include="protobuf-net" Version="3.2.30" />
+    <PackageReference Include="SharpToken" Version="1.0.28" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="4.8.1" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Telerik.UI.for.Wpf.NetCore.Xaml" Version="2023.2.718" />
+    <PackageReference Include="ToggleSwitch" Version="1.2.0" />
+    <PackageReference Include="WPFLocalizeExtension" Version="3.9.4" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ControlzEx" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+    <PackageReference Include="Syncfusion.DocIO.Wpf" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.Gantt.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfGrid.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfInput.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfProgressBar.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfShared.WPF" Version="18.2.0.56" />
+    <PackageReference Include="Syncfusion.Themes.Metro.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.Tools.WPF" Version="27.1.55" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="BIMViewerWindow.xaml.cs" />
+    <Compile Remove="LicenseConfig.cs" />
+    <Compile Remove="LicenseHelper.cs" />
+    <Compile Remove="Windows\EditRtfWindow.xaml.cs" />
+    <Compile Remove="Windows\RichTextEditorCtrl_devExpress.xaml.cs" />
+    <Compile Remove="Windows\RichTextEditorCtrl_telerik.xaml.cs" />
+    <EmbeddedResource Remove="Resources\Syncfusion.SfRichTextBoxAdv.WPF.en.resx" />
+    <EmbeddedResource Remove="Resources\Syncfusion.SfRichTextBoxAdv.WPF.it.resx" />
+    <EmbeddedResource Remove="Resources\Syncfusion.SfRichTextBoxAdv.WPF.resx" />
+    <EmbeddedResource Remove="Resources\Syncfusion.SfRichTextRibbon.WPF.en.resx" />
+    <EmbeddedResource Remove="Resources\Syncfusion.SfRichTextRibbon.WPF.it.resx" />
+    <EmbeddedResource Remove="Resources\Syncfusion.SfRichTextRibbon.WPF.resx" />
+    <None Remove="App.config" />
+    <None Remove="app.manifest" />
+    <None Remove="de\DevExpress.Office.v24.1.Core.resources.dll" />
+    <None Remove="de\DevExpress.RichEdit.v24.1.Core.resources.dll" />
+    <None Remove="de\DevExpress.Spreadsheet.v24.1.Core.resources.dll" />
+    <None Remove="de\DevExpress.Xpf.Core.v24.1.resources.dll" />
+    <None Remove="de\DevExpress.Xpf.Gantt.v24.1.resources.dll" />
+    <None Remove="de\DevExpress.Xpf.NavBar.v24.1.resources.dll" />
+    <None Remove="de\DevExpress.Xpf.Printing.v24.1.resources.dll" />
+    <None Remove="de\DevExpress.Xpf.RichEdit.v24.1.resources.dll" />
+    <None Remove="de\DevExpress.Xpf.Spreadsheet.v24.1.resources.dll" />
+    <None Remove="Dictionaries\de_DE_frami.aff" />
+    <None Remove="Dictionaries\de_DE_frami.dic" />
+    <None Remove="Dictionaries\en_US.aff" />
+    <None Remove="Dictionaries\en_US.dic" />
+    <None Remove="Dictionaries\it_IT.aff" />
+    <None Remove="Dictionaries\it_IT.dic" />
+    <None Remove="it\DevExpress.Office.v23.2.Core.resources.dll" />
+    <None Remove="it\DevExpress.Office.v24.1.Core.resources.dll" />
+    <None Remove="it\DevExpress.RichEdit.v23.2.Core.resources.dll" />
+    <None Remove="it\DevExpress.RichEdit.v24.1.Core.resources.dll" />
+    <None Remove="it\DevExpress.Spreadsheet.v23.2.Core.resources.dll" />
+    <None Remove="it\DevExpress.Spreadsheet.v24.1.Core.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Core.v23.2.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Core.v24.1.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Gantt.v23.2.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Gantt.v24.1.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.NavBar.v23.2.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.NavBar.v24.1.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Printing.v23.2.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Printing.v24.1.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.RichEdit.v23.2.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.RichEdit.v24.1.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Spreadsheet.v23.2.resources.dll" />
+    <None Remove="it\DevExpress.Xpf.Spreadsheet.v24.1.resources.dll" />
+    <None Remove="Resources\DragDropAttributi.gif" />
+    <None Remove="Resources\FastReport\German.frl" />
+    <None Remove="Resources\FastReport\Italian.frl" />
+    <None Remove="Resources\log4net.config" />
+    <None Remove="Resources\ReJo\DigiCorp.ReJo.dll" />
+    <None Remove="Resources\ReJo\RevitAddInUtility.dll" />
+    <None Remove="Resources\RtfEditor\AnteprimaCampi16.png" />
+    <None Remove="Resources\RtfEditor\Correttore16.png" />
+    <None Remove="Resources\RtfEditor\Correttore64.png" />
+    <None Remove="Resources\RtfEditor\icons8-germania-16.png" />
+    <None Remove="Resources\RtfEditor\icons8-gran-bretagna-16.png" />
+    <None Remove="Resources\RtfEditor\icons8-italia-16.png" />
+    <None Remove="Resources\RtfEditor\Lingua16.png" />
+    <None Remove="Resources\RtfEditor\Lingua64.png" />
+    <None Remove="Resources\TeamViewer.exe" />
+    <None Remove="RevitAddInUtility.dll" />
+    <Page Remove="BIMViewerWindow.xaml" />
+    <Page Remove="Windows\EditRtfWindow.xaml" />
+    <Page Remove="Windows\RichTextEditorCtrl_devExpress.xaml" />
+    <Page Remove="Windows\RichTextEditorCtrl_telerik.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="JoinIcon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FastReport\German.frl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FastReport\Italian.frl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TeamViewer.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>REM Eazfuscator.NET is integrated with this project at MSBuild level: https://www.gapotchenko.com/eazfuscator.net/kb/100036</PostBuildEvent>
+    <BaseOutputPath>..\Output\</BaseOutputPath>
+    <Version>$(VersionPrefix)</Version>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,213 @@
+﻿<UserControl x:Class="MainApp.ProjectModelCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MainApp"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+             xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+             lex:LocalizeDictionary.OutputMissingKeys="True"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800">
+    
+    <UserControl.DataContext>
+        <local:ProjectModelView/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <Style TargetType="ToggleButton" x:Key="editNotaToggleBtnStyle" BasedOn="{StaticResource smallToggleButtonStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsNotaInEditMode}" Value="True">
+                    <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditingNoteTextBox}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="ToggleButton" x:Key="tagToggleButtonStyle" BasedOn="{StaticResource smallToggleButtonStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsFilterVisible}" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsFilterVisible}" Value="False">
+                    <Setter Property="Foreground" Value="Transparent"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" MinWidth="100" MaxWidth="500"/>
+            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{lex:Loc Tag}" FontSize="20" Margin="5"/>
+            <StackPanel Grid.Row="1" Style="{StaticResource menuStackPanelStyle}">
+                <Button Command="{Binding AddTagCommand}" ToolTip="{lex:Loc AggiungiTag}"
+                        Style="{StaticResource menuButtonStyle}" Content="&#xe02d;"/>
+                <Button Name="SelectAllBtn" ToolTip="{lex:Loc SelezionaTutto}" Click="SelectAllBtn_Click"
+                            Style="{StaticResource menuButtonStyle}" Content="&#xE09A;"/>
+                <Button Command="{Binding RemoveTagsCommand}" ToolTip="{lex:Loc RimuoviTag}"
+                        Style="{StaticResource menuButtonStyle}" Content="&#xe03a;"/>
+            </StackPanel>
+            <syncfusion:SfDataGrid x:Name="TagsGrid" SelectionMode="Extended" ItemsSource="{Binding TagsView, Mode=TwoWay}" Grid.Row="2"
+                      SelectedItem="{Binding CurrentTag}"
+                      AllowDraggingRows="True" AllowDrop="True"
+                      Margin="5" BorderThickness="0"
+                      AutoGenerateColumns="False"
+                      AllowEditing="True"
+                      HeaderRowHeight="0"
+                      VerticalAlignment="Stretch"
+                      CellStyle="{StaticResource cellStyle}"
+                      >
+
+                <syncfusion:SfDataGrid.Columns>
+                    <syncfusion:GridTemplateColumn MappingName="IsFiltered" syncfusion:FocusManagerHelper.WantsKeyInput="True" Width="30" AllowFocus="False"
+                                                   ColumnSizer="Auto">
+                        <syncfusion:GridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ToggleButton Name="FilterBtn" Content="&#xe033;" IsChecked="{Binding IsFiltered}"
+                                              Style="{StaticResource tagToggleButtonStyle}"
+                                              >
+                                </ToggleButton>
+                            </DataTemplate>
+                        </syncfusion:GridTemplateColumn.CellTemplate>
+                    </syncfusion:GridTemplateColumn>
+                    <syncfusion:GridTextColumn HeaderText="Order ID" MappingName="Name" ColumnSizer="Star"/>
+                </syncfusion:SfDataGrid.Columns>
+
+            </syncfusion:SfDataGrid>
+        </Grid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="Auto" MinHeight="50" MaxHeight="200"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{lex:Loc Modelli}" FontSize="20" Margin="5"/>
+            <StackPanel Grid.Row="1" Style="{StaticResource menuStackPanelStyle}">
+                <Button Name="DownloadModelsBtn" Click="DownloadModelsBtn_Click" ToolTip="{lex:Loc DownloadModelli}"
+                        Style="{StaticResource menuButtonStyle}" Content="&#xe0bf;"
+                        IsEnabled="{Binding IsConnectionFailedVisible, Converter={StaticResource InverseConverter}}"/>
+                <!--<Button Command="{Binding SelectAllModelsCommand}" ToolTip="{lex:Loc SelezionaTutto}" 
+                            Style="{StaticResource menuButtonStyle}" Content="&#xE09A;"/>-->
+                <Button Command="{Binding RemoveModelCommand}" ToolTip="{lex:Loc RimuoviModello}"
+                        Style="{StaticResource menuButtonStyle}" Content="&#xe03a;"/>
+                <Button Command="{Binding OpenFolderCommand}" ToolTip="{lex:Loc ApriCartellaModelli}"
+                        Style="{StaticResource menuButtonStyle}" Content="&#xe03b;"/>
+                <ToggleButton IsChecked="{Binding IsTagVisible}" ToolTip="{lex:Loc VisualizzaTag}"
+                        Style="{StaticResource menuToggleButtonStyle }" Content="&#xe0a9;"/>
+            </StackPanel>
+            <StackPanel Grid.Row="1" HorizontalAlignment="Right">
+                <TextBlock Name="ConnectionFailed" Text="&#xE0C9;" Height="40" Style="{StaticResource menuTextBlockStyle}"
+                       Visibility="{Binding IsConnectionFailedVisible, Converter={StaticResource VisibilityConverter}}"
+                       Foreground="{StaticResource AlertColor}" Padding="0,15,0,0"/>
+                <!---->
+            </StackPanel>
+            <ListView Name="ModelliList" Grid.Row="2" ItemsSource="{Binding ModelloInfoViewItems}"
+                          SelectionMode="Single" SelectedItem="{Binding CurrentModello}"
+                          HorizontalContentAlignment="Stretch" BorderThickness="0"
+                          KeyboardNavigation.TabNavigation="Cycle"
+                      >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Name="ModelliListItem" Height="50" AllowDrop="True"  Drop="ModelliListItem_Drop">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="22"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="&#xE0CA;" Command="{Binding UpdateModelloCommand}"
+                                        Style="{StaticResource smallButtonStyle}" Foreground="{StaticResource AlertColor}" FontWeight="Bold"
+                                        Visibility="{Binding IsUpdateAvaliable, Converter={StaticResource VisibilityConverter}}"
+                                        ToolTip="{lex:Loc AggiornaModello}"/>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding UserName}" Grid.Row="0" FontWeight="Bold" ToolTip="{Binding UserName}" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Focusable="False" Background="Transparent"
+                                    Visibility="{Binding IsTagVisible, Converter={StaticResource VisibilityConverter}}">
+                                    <TextBlock  VerticalAlignment="Center" Foreground="Gray" >
+                                        <Run Text="{lex:Loc Tag}"/><Run Text=":"/>
+                                    </TextBlock>
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                              Focusable="False">
+                                        <ItemsControl x:Name="itemsCollection" ItemsSource="{Binding TagsView}" IsTabStop="False">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="2" Background="LightGray" Height="20">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="20"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding Name}" Height="20" Grid.Column="0" Margin="2" Width="Auto"/>
+                                                        <Button Command="{Binding RemoveTagCommand}" Grid.Column="1" Height="20" Width="20" Padding="0"
+                                                                BorderThickness="0" VerticalAlignment="Top"
+                                                            Style="{StaticResource smallButtonStyle}"
+                                                            Content="&#xe03a;"
+                                                            />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                    <TextBlock Text="{lex:Loc TrascinaQuiIlTag}" VerticalAlignment="Center" Foreground="Gray"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding ClientLastWriteDate}" Grid.Row="0" FontSize="10" ToolTip="{lex:Loc DataLocale}"/>
+                                <TextBlock Text="{Binding ServiceLastWriteDate}" Grid.Row="1" FontSize="10" ToolTip="{lex:Loc DataService}" Visibility="{Binding IsUpdateAvaliable, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+            <Grid Name="Note" Grid.Row="4" Background="WhiteSmoke">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding CurrentModelloNote}" Grid.Column="0" Height="100" 
+                           Visibility="{Binding IsNotaInEditMode, Converter={StaticResource InverseVisibilityConverter}}"
+                           TextWrapping="Wrap"/>
+                <TextBox Name="EditingNoteTextBox" Text="{Binding CurrentModelloNote}" Grid.Column="0" Height="100"
+                         AcceptsReturn="True"
+                         AcceptsTab="True"
+                         Visibility="{Binding IsNotaInEditMode, Converter={StaticResource VisibilityConverter}}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding LostFocusCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox> 
+                <!--Style="{StaticResource smallToggleButtonStyle}"-->
+                <ToggleButton Name="EditNota" IsChecked="{Binding IsNotaInEditMode}" Grid.Column="1"
+                        Height="20" VerticalAlignment="Top" Content="&#xe040;" Style="{StaticResource editNotaToggleBtnStyle}">
+                </ToggleButton>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

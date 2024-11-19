@@ -1,0 +1,23 @@
+﻿<Window x:Class="StampeWpf.PreviewWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:frpreview="clr-namespace:FastReport.Preview;assembly=FastReport"
+        xmlns:local="clr-namespace:StampeWpf" 
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        Title="{lex:Loc AnteprimaReport}" Height="970" Width="1850">
+
+    <Grid>
+        <!--<FRControls:Viewer Name="Viewer1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/> ion demos fast report wpfviewer-->
+        <WindowsFormsHost x:Name="WindowsFormsHostControl">
+            <!--<frpreview:PreviewControl x:Name="PreviewControl"/>-->
+        </WindowsFormsHost>
+    </Grid>
+
+</Window>

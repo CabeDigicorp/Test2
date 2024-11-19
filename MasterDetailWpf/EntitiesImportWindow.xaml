@@ -1,0 +1,125 @@
+﻿<Window x:Class="MasterDetailWpf.EntitiesImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterDetailWpf"
+        mc:Ignorable="d"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:masterdetailview="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        Title="{lex:Loc Importa}" Height="450" Width="800"
+        MinHeight="300" MinWidth="400"
+        FontSize="14"
+        >
+    <Window.DataContext>
+        <masterdetailview:EntitiesImportView/>
+    </Window.DataContext>
+    <Window.Resources>
+        <Style TargetType="ToggleButton" x:Key="localToggleButtonKey">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+    </Window.Resources>
+    <Grid Height="400" VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{lex:Loc Importa}" Grid.Column="0" FontSize="20" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click" Width="100" Height="40" Margin="2,0,0,0" Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+            </StackPanel >
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,0,0">
+            <TextBlock Text="{Binding ImportText}" />
+            <TextBlock Text="{Binding SourceEntityTypeName}" FontWeight="Bold" Margin="5,0,0,0"/>
+            <TextBlock Text="{lex:Loc di}" Margin="5,0,0,0"/>
+            <TextBlock Text="{Binding SourceName}" FontWeight="Bold" Margin="5,0,0,0"/>
+        </StackPanel>
+        <TextBlock Grid.Row="2"/>
+        <!--<StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,0,0">
+            <TextBlock Text="{lex:Loc Origine}"/>
+            <TextBlock Text="{Binding SourceEntityTypeName}" FontWeight="Bold" Margin="5,0,0,0"/>
+        </StackPanel>-->
+        <StackPanel Grid.Row="3" Margin="10,0,0,0" Orientation="Horizontal">
+            <TextBlock Text="{lex:Loc LaDestinazione}"/>
+            <TextBlock Text="{Binding TargetEntityTypeName}" FontWeight="Bold" Margin="5,0,0,0"/>
+            <TextBlock Text="{lex:Loc contieneGia}" Margin="5,0,0,0"/>
+            <TextBlock Text="{Binding EntityKey}" FontWeight="Bold" Margin="5,0,0,0"/>
+        </StackPanel>
+        <!--<Grid Grid.Row="4" Margin="10,10,0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>-->
+        <StackPanel Grid.Row="4" Margin="10,10,10,10">
+            <ToggleButton Style="{StaticResource localToggleButtonKey}" IsChecked="{Binding IsIgnoreAllSectionItems}"
+                          Visibility="{Binding IsIgnoreAllSectionItemsVisible, Converter={StaticResource VisibilityConverter}}"
+                          Margin="0,15,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xe0b0;"  Style="{StaticResource menuTextBlockStyle}"/>
+                    <TextBlock Text="{Binding IgnoreAllSectionItems}" Margin="5,0,0,0"/>
+                </StackPanel>
+            </ToggleButton>
+            <ToggleButton Style="{StaticResource localToggleButtonKey}" IsChecked="{Binding IsOverwriteAllSectionItems}" Visibility="{Binding IsOverwriteAllSectionItemsVisible, Converter={StaticResource VisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xe0b1;"  Style="{StaticResource menuTextBlockStyle}"/>
+                    <TextBlock Text="{Binding OverwriteAllSectionItems}" Margin="5,0,0,0"/>
+                </StackPanel>
+            </ToggleButton>
+            <ToggleButton Content="{lex:Loc AltreOpzioni}" Foreground="{StaticResource PrimaryColor}" IsChecked="{Binding IsOtherOptionsOpen}" Margin="20" Height="Auto" Style="{StaticResource smallToggleButtonStyle}"
+                          HorizontalAlignment="Left" Padding="5"/>
+            <StackPanel Margin="20,0,0,0" Visibility="{Binding IsOtherOptionsOpen, Converter={StaticResource VisibilityConverter}}">
+                <ToggleButton Style="{StaticResource localToggleButtonKey}" IsChecked="{Binding IsIgnoreSectionItems}"
+                          Visibility="{Binding IsIgnoreSectionItemsVisible, Converter={StaticResource VisibilityConverter}}"
+                          Margin="0,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xe0b0;" FontSize="18" Style="{StaticResource menuTextBlockStyle}"/>
+                        <TextBlock Text="{Binding IgnoreSectionItems}" FontSize="12" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource localToggleButtonKey}" IsChecked="{Binding IsOverwriteSectionItems}" Visibility="{Binding IsOverwriteSectionItemsVisible, Converter={StaticResource VisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xe0b1;" FontSize="18" Style="{StaticResource menuTextBlockStyle}"/>
+                        <TextBlock Text="{Binding OverwriteSectionItems}" FontSize="12" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource localToggleButtonKey}" IsChecked="{Binding IsIgnoreItem}"
+                              Margin="0,15,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xe0b0;" FontSize="18" Style="{StaticResource menuTextBlockStyle}"/>
+                        <TextBlock Text="{Binding IgnoreItem}" FontSize="12" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton Style="{StaticResource localToggleButtonKey}" IsChecked="{Binding IsOverwriteItem}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xe0b1;" FontSize="18" Style="{StaticResource menuTextBlockStyle}"/>
+                        <TextBlock Text="{Binding OverwriteItem}" FontSize="12" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </ToggleButton>
+            </StackPanel>
+
+        </StackPanel>
+        <!--</Grid>-->
+
+    </Grid>
+</Window>

@@ -1,0 +1,954 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:syncfusion="http://schemas.syncfusion.com/wpf"		
+    xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF"
+    xmlns:ExtendedWPFToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=DotNetProjects.Wpf.Extended.Toolkit"
+    xmlns:lex="http://wpflocalizeextension.codeplex.com"
+    xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+    xmlns:chart="clr-namespace:Syncfusion.Windows.Controls.Gantt;assembly=Syncfusion.Gantt.Wpf"
+    >
+    <!---->
+    <!---->
+    <!--xmlns:chart="clr-namespace:Syncfusion.Windows.Controls.Gantt.Chart;assembly=Syncfusion.Gantt.Wpf"-->
+    <!--xmlns:syncfusion="http://schemas.syncfusion.com/wpf"-->
+
+    <!--Colors-->
+    <!--Colore della selezione di Windows (azzurrino)-->
+    <SolidColorBrush x:Key="SelectedColor">#BCDDEE</SolidColorBrush>
+    <!--Colore del background delle entità selezionate nella griglia-->
+    <SolidColorBrush x:Key="EntitySelectionColor">LightGray</SolidColorBrush>
+    <!--Colore di un titolo in una finestra-->
+    <SolidColorBrush x:Key="TitleColor">DarkGray</SolidColorBrush>
+    <!--Colore di allerta-->
+    <SolidColorBrush x:Key="AlertColor">Orange</SolidColorBrush>
+    <!--Colore di errore-->
+    <SolidColorBrush x:Key="ErrorColor">Red</SolidColorBrush>
+    <!--Colore delle parti private-->
+    <SolidColorBrush x:Key="AdvancedModeColor">LightYellow</SolidColorBrush>
+    <!--Colore principale Join-->
+    <SolidColorBrush x:Key="PrimaryColor">SteelBlue</SolidColorBrush>
+
+    <SolidColorBrush x:Key="DisabledColor">DarkGray</SolidColorBrush>
+    
+    <SolidColorBrush x:Key="ButtonForegroundColor">SteelBlue</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonBackgroundColor">Gainsboro</SolidColorBrush>
+
+    <SolidColorBrush x:Key="TileForegroundColor">SteelBlue</SolidColorBrush>
+    <SolidColorBrush x:Key="TileBackgroundColor">Gainsboro</SolidColorBrush>
+
+    <SolidColorBrush x:Key="RightPanesBackgroundColor">AliceBlue</SolidColorBrush>
+
+
+
+
+    <!--Title Bar-->
+    <Style TargetType="{x:Type Grid}" x:Key="titleBarGridStyle">
+        <Setter Property="Background" Value="DarkGray"/>
+    </Style>
+
+    <!--StackPanel-->
+    <Style TargetType="{x:Type StackPanel}" x:Key="menuStackPanelStyle">
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="FlowDirection" Value="LeftToRight"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
+    <Style TargetType="{x:Type StackPanel}" x:Key="listaFilterItemStyle">
+        <Setter Property="Background" Value="LightGray"/>
+    </Style>
+    <Style TargetType="{x:Type StackPanel}" x:Key="listaSortItemStyle">
+        <Setter Property="Background" Value="LightGray"/>
+    </Style>
+    <Style TargetType="{x:Type StackPanel}" x:Key="listaGroupItemStyle">
+        <Setter Property="Background" Value="LightGray"/>
+    </Style>
+
+    <!--Button-->
+    <Style TargetType="{x:Type Button}" x:Key="menuButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="Button" x:Key="menuButtonExtStyle" BasedOn="{StaticResource menuButtonStyle}">
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="10"/>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="smallButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="titleButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="46"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="FontSize" Value="17"/>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="detailListViewItemButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="Transparent" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver, ElementName=DetailListViewItem}" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="acceptButtonStyle" BasedOn="{StaticResource menuButtonStyle}">
+        <Setter Property="Background" Value="LightGreen"/>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="loadModel3dButtonStyle" BasedOn="{StaticResource menuButtonStyle}">
+        <Setter Property="Background" Value="DodgerBlue"/>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="nothingCheckedToggleButtonStyle">
+        <Setter Property="Background" Value="LightGray"/>
+    </Style>
+
+    <!--ToggleButton-->
+    <Style TargetType="{x:Type ToggleButton}" x:Key="menuToggleButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="{x:Type ToggleButton}" x:Key="smallToggleButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <!--<Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>-->
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="{x:Type ToggleButton}" x:Key="dropDownToggleContentButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style TargetType="{x:Type ToggleButton}" x:Key="detailListViewItemToggleButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="Transparent" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver, ElementName=DetailListViewItem}" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsPreviewMode}" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="{x:Type ToggleButton}" x:Key="filterToggleButtonStyle">
+        <Setter Property="Background" Value="{StaticResource RightPanesBackgroundColor}"/>
+    </Style>
+    <Style TargetType="{x:Type ToggleButton}" x:Key="sortToggleButtonStyle">
+        <Setter Property="Background" Value="{StaticResource RightPanesBackgroundColor}"/>
+    </Style>
+    <Style TargetType="{x:Type ToggleButton}" x:Key="groupToggleButtonStyle">
+        <Setter Property="Background" Value="{StaticResource RightPanesBackgroundColor}"/>
+    </Style>
+
+    <!--TextBlock-->
+    <Style TargetType="{x:Type TextBlock}" x:Key="menuTextBlockStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0,0,0,0"/>
+    </Style>
+    <Style TargetType="{x:Type TextBlock}" x:Key="mainMenuTextBlockStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0,10,0,0"/>
+    </Style>
+    <Style TargetType="{x:Type TextBlock}" x:Key="smallTextBlockStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0,0,0,0"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style TargetType="{x:Type TextBlock}" x:Key="highlightedMenuTextBlockStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding FilesChanged}" Value="true">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard x:Name="sb1">
+                        <Storyboard AutoReverse="True" RepeatBehavior="Forever">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.FontSize)">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="30" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="40"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="sb1"/>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--SfDatasGrid Styles-->
+
+    <!--<Style TargetType="syncfusion:GridCell" x:Key="DataGridCellStyleAllowEditing">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style TargetType="syncfusion:GridCell" x:Key="DataGridCellStyleNotAllowEditing">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="LightSlateGray"/>
+        </Style>-->
+    <!--<Style TargetType="syncfusion:GridCaptionSummaryCell" x:Key="customCaptionSummaryCell">
+            <Setter Property="Foreground" Value="DarkBlue"/>
+            <Setter Property="FontSize" Value="14"/>
+    </Style>-->
+
+    <Style TargetType="{x:Type syncfusionGrid:SfDataGrid}" x:Key="sfDataGridStyle">
+        <Setter Property="HeaderRowHeight" Value="26"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="cellStyle">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="readOnlyCellStyle" BasedOn="{StaticResource cellStyle}">
+        <Setter Property="Foreground" Value="Gray" />
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="cellGroupedStyle">
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="Transparent"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="cellNotGroupedStyle">
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridCell}" x:Key="cellIconStyle">
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <!--<Style TargetType="syncfusion:GridHeaderCellControl" x:Key="dataGridHeaderStyle">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style TargetType="syncfusion:GridHeaderCellControl" x:Key="dataGridHeaderFrozenStyle">
+            <Setter Property="Background" Value="LightGray"/>
+    </Style>-->
+    <Style TargetType="{x:Type syncfusionGrid:GridCaptionSummaryCell}" x:Key="captionSummaryCellStyle">
+        <!--<Setter Property="HorizontalContentAlignment" Value="Right"/>-->
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridTableSummaryCell}" x:Key="tableSummaryCellStyle">
+        <!--<Setter Property="HorizontalContentAlignment" Value="Right"/>-->
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:TableSummaryRowControl}" x:Key="tableSummaryRowStyle">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:CaptionSummaryRowControl}" x:Key="captionSummaryRowStyle">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="0,0,0,0"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:UnBoundRowControl}" x:Key="unBoundRowStyle">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridUnBoundRowCell}" x:Key="gridUnBoundRowCellStyle">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridIndentCell}" x:Key="indentCellStyle">
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:VirtualizingCellsControl}" x:Key="alternatingRowStyle">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style TargetType="{x:Type syncfusionGrid:GridExpanderCellControl}">
+        <!--x:Key="expanderCellControl"-->
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type syncfusion:GridExpanderCellControl}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True"
+                            >
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="ExpansionStates">
+                                <VisualState x:Name="Collapsed"/>
+                                <VisualState x:Name="Expanded">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                                        Duration="00:00:00"
+                                                                        Storyboard.TargetName="PART_GridExpanderCellPath"
+                                                                        Storyboard.TargetProperty="RenderTransform">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <RotateTransform Angle="45" CenterX="0" CenterY="10" />
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Polygon x:Name="PART_GridExpanderCellPath"
+                                 Points="0,0 5,5 0,10"
+                                 Stroke="{TemplateBinding Foreground}"
+                                 Fill="{TemplateBinding Foreground}"
+                                 SnapsToDevicePixels="True"
+                                 UseLayoutRounding="False"
+                                 Stretch="Uniform"
+                                 />
+                        <!--<TextBlock Name="PART_GridExpanderCellPath" FontFamily="Resources/#digicorp" Text="&#xe087;" VerticalAlignment="Center"/>-->
+                    </Border>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!--Expander-->
+    <Style x:Key="ExpanderHeaderFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border>
+                        <Rectangle Margin="0" SnapsToDevicePixels="true" Stroke="Black" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Border Padding="{TemplateBinding Padding}">
+                        <Grid Background="Transparent" SnapsToDevicePixels="False">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="arrow" FontFamily="Resources/#digicorp" Text="&#xE087;" VerticalAlignment="Center" Foreground="Gray"/>
+                            <ContentPresenter Grid.Column="1" HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter TargetName="arrow" Property="Text" Value="&#xE088;"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style  TargetType="{x:Type Expander}" x:Key="expanderStyle">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Expander}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3" SnapsToDevicePixels="true">
+                        <DockPanel>
+                            <ToggleButton x:Name="HeaderSite" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}" Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" MinWidth="0" MinHeight="0" Padding="{TemplateBinding Padding}" Style="{StaticResource ExpanderDownHeaderStyle}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <ContentPresenter x:Name="ExpandSite" DockPanel.Dock="Bottom" Focusable="false" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </DockPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="true">
+                            <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--Tab Control-->
+    <Style TargetType="{x:Type TabItem}" x:Key="tabItemStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Grid x:Name="Panel">
+                        <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="HeaderTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Grid x:Name="headerGrid" Height="40">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock x:Name="textBlock" Grid.Row="0" Text="{TemplateBinding Content}" Width="Auto"/>
+                                <Line Grid.Row="1" Width="{Binding ActualWidth, ElementName=headerGrid}" Stretch="Uniform" StrokeThickness="3" Stroke="SteelBlue" X1="0" Y1="0" X2="1" Y2="0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="False">
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="HeaderTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Grid Height="40">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{TemplateBinding Content}" Width="Auto" />
+                            </Grid>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--Grid-->
+    <Style TargetType="{x:Type Grid}" x:Key="messageBarStyle">
+        <Setter Property="Background" Value="{StaticResource AlertColor}"/>
+    </Style>
+    <Style TargetType="{x:Type GridSplitter}" x:Key="gridSplitterStyle">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+    </Style>
+    <Style TargetType="{x:Type Grid}" x:Key="templateFilterStyle">
+        <Setter Property="Background" Value="{StaticResource RightPanesBackgroundColor}"/>
+    </Style>
+    <Style TargetType="{x:Type Grid}" x:Key="templateSortStyle">
+        <Setter Property="Background" Value="{StaticResource RightPanesBackgroundColor}"/>
+    </Style>
+    <Style TargetType="{x:Type Grid}" x:Key="templateGroupStyle">
+        <Setter Property="Background" Value="{StaticResource RightPanesBackgroundColor}"/>
+    </Style>
+
+    <Style TargetType="{x:Type Grid}" x:Key="mainGridStyle">
+        <Setter Property="Background" Value="White"/>
+    </Style>
+    <Style TargetType="{x:Type Grid}" x:Key="rightSplitGridStyle">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+    </Style>
+    <Style TargetType="{x:Type Grid}" x:Key="menuGridStyle">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+    </Style>
+    <Style TargetType="syncfusion:AddNewRowControl">
+        <Setter Property="Foreground" Value="Gray" />
+        <Setter Property="BorderBrush" Value="Gray" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="syncfusion:AddNewRowControl">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="AddNewRowStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Edit">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_AddNewRowTextBorder" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+
+                            <VisualStateGroup x:Name="BorderStates">
+                                <VisualState x:Name="NormalRow" />
+
+                                <VisualState x:Name="FooterRow">
+                                    <Storyboard BeginTime="0">
+                                        <ThicknessAnimationUsingKeyFrames BeginTime="0"
+                                                                          Duration="1"
+                                                                          Storyboard.TargetName="PART_AddNewRowBorder"
+                                                                          Storyboard.TargetProperty="BorderThickness">
+                                            <EasingThicknessKeyFrame KeyTime="0" Value="0, 1, 0, 0" />
+                                        </ThicknessAnimationUsingKeyFrames>
+                                        <ThicknessAnimationUsingKeyFrames BeginTime="0"
+                                                                          Duration="1"
+                                                                          Storyboard.TargetName="PART_AddNewRowBorder"
+                                                                          Storyboard.TargetProperty="Margin">
+                                            <EasingThicknessKeyFrame KeyTime="0" Value="0, -1, 0, 0" />
+                                        </ThicknessAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Rectangle x:Name="PART_CurrentFocusRow"
+                                   Margin="2,2,0,2"
+                                   HorizontalAlignment="Right"
+                                   Stroke="DarkGray"
+                                   StrokeDashArray="2,2"
+                                   StrokeThickness="1"
+                                   Visibility="{TemplateBinding CurrentFocusRowVisibility}" />
+
+                        <Border Background="{TemplateBinding RowSelectionBrush}"
+                                Clip="{TemplateBinding SelectionBorderClipRect}"
+                                Visibility="{TemplateBinding SelectionBorderVisiblity}" />
+                        <Border x:Name="PART_AddNewRowBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter />
+                        </Border>
+<!--BorderThickness="0,0,1,1"-->
+                        <Border x:Name="PART_AddNewRowTextBorder"
+                                Background="#FFE5E5E5"
+                                BorderBrush="Transparent"
+                                
+                                Clip="{TemplateBinding TextBorderClip}"
+                                IsHitTestVisible="False">
+                            <ContentPresenter Margin="{TemplateBinding TextMargin}"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Content="{lex:Loc Click qui per aggiungere}"
+                                              />
+                        </Border>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--DropDownButton-->
+    <Style TargetType="{x:Type ExtendedWPFToolkit:DropDownButton}" x:Key="dropDownButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
+    <Style TargetType="{x:Type Button}" x:Key="dropDownContentButtonStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp" />
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!--HorizontalToggleSwitch-->
+    <Style TargetType="{x:Type toggleswitch:HorizontalToggleSwitch}"  x:Key="horizontalToggleSwitchStyle">
+        <Setter Property="TextElement.FontFamily" Value="Resources/#digicorp"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="70"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="CheckedBackground" Value="White"/>
+        <Setter Property="UncheckedBackground" Value="White"/>
+        <Setter Property="CheckedForeground" Value="Black"/>
+        <Setter Property="UncheckedForeground" Value="Black"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="Light"/>
+    </Style>
+
+    <!--GANTT STYLE-->
+
+
+    <LinearGradientBrush EndPoint="0.5,1"
+                             x:Key="DefaultBackground"
+                             StartPoint="0.5,0">
+        <GradientStop Color="#FF6BE6ED"
+                          Offset="0.432" />
+        <GradientStop Color="#FF5ED1D7"
+                          Offset="0.447" />
+        <GradientStop Color="#FF5ED1D7"
+                          Offset="0.553" />
+        <GradientStop Color="#FF4EBBC1"
+                          Offset="0.568" />
+        <GradientStop Color="#FF4EBBC1"
+                          Offset="0.669" />
+        <GradientStop Color="#FF3DA5AA"
+                          Offset="0.683" />
+        <GradientStop Color="#FF3DA5AA"
+                          Offset="0.784" />
+        <GradientStop Color="#FF2D8F94"
+                          Offset="0.798" />
+        <GradientStop Color="#FF2D8F94"
+                          Offset="0.899" />
+        <GradientStop Color="#FF1C797D"
+                          Offset="0.914" />
+    </LinearGradientBrush>
+
+     <!--Header Node style-->
+    <Style x:Key="HeaderTaskNode" TargetType="{x:Type chart:HeaderNode}">
+        <Setter Property="MaxHeight" Value="24"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="chart:HeaderNode">
+                    <Border Background="{TemplateBinding Background}" Name="PART_HeaderBorder" 
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0">
+                        <Grid Width="{TemplateBinding Width}" VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle HorizontalAlignment="Left" Grid.Column="1" Height="6.4" 
+                                       VerticalAlignment="Top" 
+                                       Width="{TemplateBinding Width}" 
+                                       Stroke="#FF111111"
+                                       Fill="#FF111111">
+
+                            </Rectangle>
+                            <Path Data="M0.3,0.3 L9.834909,0.30036073 9.8351226,5.9832297 5.0695471,10.734966 0.32096295,5.9863821 z"
+                                  HorizontalAlignment="Left"
+                                  Grid.Column="0"
+                                  Height="11.435"
+                                  Stretch="Fill"
+                                  Stroke="#FF111111"
+                                  VerticalAlignment="Top"
+                                  Width="10.135"
+                                  Fill="#FF111111">
+
+                            </Path>
+                            <Path Data="M0.3,0.3 L9.834909,0.30036073 9.8351226,5.9832297 5.0695471,10.734966 0.32096295,5.9863821 z"
+                                  HorizontalAlignment="Left"
+                                  Grid.Column="2"
+                                  Height="11.435"
+                                  Stretch="Fill"
+                                  Stroke="#FF111111"
+                                  VerticalAlignment="Top"
+                                  Width="10.135"
+                                  Fill="#FF111111">
+
+                            </Path>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Task Node style-->
+    <Style TargetType="chart:GanttNode" x:Key="TaskNode">
+        <Setter Property="HorizontalAlignment"
+                    Value="Left" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="chart:GanttNode">
+                    <Canvas Height="20">
+                        <Ellipse Cursor="Hand"
+                                     x:Name="PART_LeftTouchPoint"
+                                     Height="10"
+                                     Width="10"
+                                     Canvas.Left="-20"
+                                     Canvas.Top="5"
+                                     Fill="Black"
+                                     Visibility="Hidden"></Ellipse>
+                        <Ellipse Cursor="Hand"
+                                     x:Name="PART_RightTouchPoint"
+                                     Height="10"
+                                     Width="10"
+                                     Canvas.Right="-20"
+                                     Canvas.Top="5"
+                                     Fill="Black"
+                                     Visibility="Hidden"></Ellipse>
+                        <!--Canvas.Top="0.5"-->
+                        <Border Name="PART_Border"
+                                    Height="20"
+                                    Width="{TemplateBinding Width}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    SnapsToDevicePixels="True"
+                                    BorderThickness="0,0.4,0,0.4"
+                                    BorderBrush="Black"
+                                    Background="{Binding NodeColor}">
+                            <!--Height="11"-->
+                            <!--<Canvas Height="11">-->
+                            <!--Background="{StaticResource DefaultBackground}"-->
+
+                            <Grid Height="{TemplateBinding Height}"
+                                      Width="{TemplateBinding Width}"
+                                      Margin="-0.4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="10*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="10*" />
+                                </Grid.ColumnDefinitions>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip x:Name="PART_MouseOverTooltip"
+                                                 Content="{TemplateBinding DataContext}"
+                                                 ContentTemplate="{TemplateBinding ToolTipTemplate}">
+                                    </ToolTip>
+                                </ToolTipService.ToolTip>
+
+                                <Thumb Cursor="SizeAll"
+                                           x:Name="PART_DragDropThumb"
+                                           Grid.Column="0"
+                                           Grid.ColumnSpan="3">
+                                    <Thumb.Template>
+                                        <ControlTemplate>
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+
+                                <Border x:Name="ProgressBorder"
+                                            Height="3"
+                                            BorderThickness="0"
+                                            SnapsToDevicePixels="True"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Width="{TemplateBinding ProgressWidth}"
+                                            Background="{TemplateBinding ProgressIndicatorBackground}"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="3">
+                                    <Thumb Cursor="SizeWE"
+                                               x:Name="PART_ProgressThumb"
+                                               Height="3"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right">
+                                        <Thumb.Template>
+                                            <ControlTemplate>
+                                                <Border HorizontalAlignment="Right"
+                                                            Width="5"
+                                                            BorderThickness="0"
+                                                            Background="{Binding ElementName=ProgressBorder,Path=Background}" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Border>
+
+                                <Thumb Cursor="ScrollE"
+                                           MaxWidth="6"
+                                           Grid.Column="2"
+                                           HorizontalAlignment="Right"
+                                           x:Name="PART_RightThumb"
+                                           SnapsToDevicePixels="True">
+                                    <Thumb.Template>
+                                        <ControlTemplate>
+                                            <Border Background="Transparent"
+                                                        HorizontalAlignment="Right"
+                                                        BorderBrush="Transparent"
+                                                        BorderThickness="0">
+                                                <Path Data="M0,0 L5,0 5,12 0,12 0,9.75 2.75,9.75 2.75,2.25 0,2.25 z"
+                                                          Stretch="Fill"
+                                                          Stroke="{Binding NodeColor}"
+                                                          HorizontalAlignment="Right"
+                                                          StrokeThickness="0.5"
+                                                          SnapsToDevicePixels="True"
+                                                      Fill="{Binding NodeColor}">
+                                                    <!--<Path.Fill>
+                                                        <LinearGradientBrush EndPoint="0.5,0"
+                                                                                 StartPoint="0,1">
+                                                            <GradientStop Color="#FF7F7F7F"
+                                                                              Offset="1" />
+                                                            <GradientStop Color="#FF2B2B2B" />
+                                                            <GradientStop Color="DimGray"
+                                                                              Offset="0.71" />
+                                                        </LinearGradientBrush>
+                                                    </Path.Fill>-->
+                                                </Path>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+
+                                <Thumb Cursor="ScrollW"
+                                           MaxWidth="6"
+                                           Grid.Column="0"
+                                           HorizontalAlignment="left"
+                                           x:Name="PART_LeftThumb"
+                                           IsHitTestVisible="False"
+                                           SnapsToDevicePixels="True">
+                                    <Thumb.Template>
+                                        <ControlTemplate>
+                                            <Border Background="Transparent"
+                                                        HorizontalAlignment="Left"
+                                                        BorderBrush="Transparent"
+                                                        BorderThickness="0">
+                                                <Path Data="M0,0 L5,0 5,2.25 2.25,2.25 2.25,9.75 5,9.75 5,12 0,12 z"
+                                                          Stretch="Fill"
+                                                          Stroke="{Binding NodeColor}"
+                                                          HorizontalAlignment="Left"
+                                                          SnapsToDevicePixels="True"
+                                                          StrokeThickness="0.5"
+                                                      Fill="{Binding NodeColor}">
+                                                    <!--<Path.Fill>
+                                                        <LinearGradientBrush EndPoint="0.5,0"
+                                                                                 StartPoint="0,1">
+                                                            <GradientStop Color="#FF7F7F7F"
+                                                                              Offset="1" />
+                                                            <GradientStop Color="#FF2B2B2B" />
+                                                            <GradientStop Color="DimGray"
+                                                                              Offset="0.71" />
+                                                        </LinearGradientBrush>
+                                                    </Path.Fill>-->
+                                                </Path>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+
+                            </Grid>
+                        </Border>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="FlowDirection"
+                                     Value="RightToLeft">
+                            <Setter TargetName="PART_RightThumb"
+                                        Property="Cursor"
+                                        Value="ScrollW" />
+                            <Setter TargetName="PART_LeftThumb"
+                                        Property="Cursor"
+                                        Value="ScrollE" />
+                        </Trigger>
+                        <Trigger Property="FlowDirection"
+                                     Value="LeftToRight">
+                            <Setter TargetName="PART_RightThumb"
+                                        Property="Cursor"
+                                        Value="ScrollE" />
+                            <Setter TargetName="PART_LeftThumb"
+                                        Property="Cursor"
+                                        Value="ScrollW" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    
+
+    <!--Milestone style-->
+    <Style x:Key="MileStone" TargetType="chart:MileStone">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="chart:MileStone">
+                    <Grid>
+                        <Path Stretch="Fill" 
+                              Data="F1 M 551.156,416.878L 552.734,419.766L 555.621,421.344L 552.734,422.922L 551.156,425.81L 549.577,422.922L 546.69,421.344L 549.577,419.766L 551.156,416.878 Z" 
+                              HorizontalAlignment="Left" 
+                              Height="19" Width="19"
+                              VerticalAlignment="Center" 
+                              Stroke="#FFD26202">
+                            <Path.Fill>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="#FFFEB300" Offset="0"/>
+                                    <GradientStop Color="#FFFE7600" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!--SfTextBoxExt--><!--
+    <Style TargetType="{x:Type syncfusion:SfTextBoxExt}" x:Key="sfTextBoxExtStyle">
+        <Setter Property="HighlightedTextColor" Value="DodgerBlue"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>-->
+
+
+    <Style x:Key="sectionButtonsStyle" TargetType="{x:Type ListViewItem}">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0,0,0,0"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <!--TextBox-->
+    <Style x:Key="WaterMarkStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Grid>
+                        <Border Background="White" BorderBrush="#FF7D8683" BorderThickness="1"/>
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <Label Margin="5,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center"
+                               Visibility="Collapsed" Foreground="Gray" FontFamily="Arial"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value=""/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible"/>
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="DimGray"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

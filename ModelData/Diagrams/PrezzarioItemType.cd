@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ModelData.Model.PrezzarioItemType" Collapsed="true">
+    <Position X="1" Y="6" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Prezzario.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.PrezzarioItemParentType" Collapsed="true">
+    <Position X="4.25" Y="6" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Prezzario.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.TreeEntityType" Collapsed="true">
+    <Position X="3.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\TreeEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.EntityType">
+    <Position X="3" Y="0.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAABADAAAAAAACAAQAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\EntityType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Attributi" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ModelData.Model.Attributo">
+    <Position X="8.5" Y="0.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAIABhgQFCAAAAAACACBAAIBAQgAgACgAAAAAAE=</HashCode>
+      <FileName>Model\Attributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ValoreAttributo" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="ModelData.Model.ValoreAttributo" Collapsed="true">
+    <Position X="12.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

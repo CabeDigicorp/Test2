@@ -1,0 +1,115 @@
+﻿<Window x:Class="MainApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+        xmlns:local="clr-namespace:MainApp"
+        mc:Ignorable="d"
+        Title="{Binding Title, Mode=TwoWay}" Height="800" Width="1100"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing"
+        WindowStyle="None"
+        MinWidth="400" MinHeight="300"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+		lex:LocalizeDictionary.DesignCulture="en"
+		lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+		lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        Name="JoinWindow"
+        LocationChanged="JoinWindow_LocationChanged"
+        Activated="JoinWindow_Activated"
+       
+        >
+    <Window.DataContext>
+        <local:MainView/>
+    </Window.DataContext>
+    <Window.Resources>
+        <commons:GlyphConverter x:Key="maximizeGlyphConverter" Glyph1="&#xe07c;" Glyph2="&#xe07b;"/>
+    </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}"/>
+    </WindowChrome.WindowChrome>
+    <DockPanel LastChildFill="True">
+        <!--Per il ridimensionamento corretto a pieno schermo-->
+        <DockPanel.Style>
+            <Style TargetType="{x:Type DockPanel}">
+                <Setter Property="Margin" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}, Path=WindowState}" Value="Maximized">
+                        <Setter Property="Margin" Value="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Style>
+        <Border Background="White" DockPanel.Dock="Top" Height="30" x:Name="titlebar">
+            <Grid Style="{StaticResource titleBarGridStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Border Name="JoinIcon" Width="40" Height="30" Padding="5">
+                        <ContentControl Content="{StaticResource JoinIcon}"/>
+                    </Border>
+                    <Button Name="LoadModel3dButton" Command="{Binding ProjectModel3dLoadCommand}" IsEnabled="{Binding IsProjectModel3dLoadEnabled}" Content="{Binding ProjectModel3dLoadIcon}" Style="{StaticResource titleButtonStyle}" ToolTip="{lex:Loc Visualizza il modello IFC}"/>
+                    <Rectangle VerticalAlignment="Stretch" Width="1" Margin="0,5,0,5" Stroke="Black"/>
+                    <Button Name="SaveButton" Command="{Binding ProjectSaveCommand}" IsEnabled="{Binding IsProjectSavable, Mode=TwoWay}" Content="{Binding SaveIconKey}" Style="{StaticResource titleButtonStyle}" ToolTip="{lex:Loc Salva il progetto}"/>
+                    <Button Name="UndoButton" Command="{Binding ProjectUndoCommand}" IsEnabled="{Binding AnyToUndo}"
+                            Content="&#xe136;" ToolTip="{Binding UndoToolTip}" Style="{StaticResource titleButtonStyle}"
+                            Visibility="{Binding IsUndoActive, Converter={StaticResource VisibilityConverter} }"
+                            HorizontalContentAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="{Binding Title, RelativeSource={RelativeSource FindAncestor,AncestorType=Window},FallbackValue=Title}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center">
+                </TextBlock>
+                <StackPanel WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Orientation="Horizontal">
+                    <Button Name="WebUserInfoButton" Command="{Binding WebUserInfoCommand}" Width="Auto" Visibility="{Binding IsWebUserInfoEnabled, Converter={StaticResource VisibilityConverter}}" 
+                            Background="Transparent" BorderThickness="0" Padding="5,0,5,0" MinWidth="46">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding UserName}" Margin="0,0,5,0" Visibility="{Binding IsLogged, Converter={StaticResource VisibilityConverter}}"/>
+                            <TextBlock Text="{Binding UserIcon}" Style="{StaticResource smallTextBlockStyle}" FontSize="17"/>
+                        </StackPanel>
+                    </Button>
+                    <dxe:FlyoutControl IsOpen="{Binding IsUserInfoPopupOpen}" 
+								       PlacementTarget="{Binding ElementName=WebUserInfoButton}"
+                                       Style="{StaticResource flyoutControlStyle}">
+                        <dxe:FlyoutControl.Settings>
+                            <dxe:FlyoutSettings ShowIndicator="True" Placement="Bottom" IndicatorHorizontalAlignment="Center">
+                            </dxe:FlyoutSettings>
+                        </dxe:FlyoutControl.Settings>
+                        <TextBlock>
+                            <Run Text="{Binding UserFullName, Mode=OneWay}"/><LineBreak/>
+                            <Run Text="{Binding UserEmail, Mode=OneWay}"/><LineBreak/>
+                            <LineBreak/>
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Right">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xe055;" Style="{StaticResource smallTextBlockStyle}" Margin="0" Padding="0" VerticalAlignment="Center"/>
+                                    <dxe:HyperlinkEdit AllowAutoNavigate="True" Text="{lex:Loc Profilo utente}" NavigationUrl="{Binding UserProfileWebUILink}" Padding="0" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </TextBlock><LineBreak/>
+                            <Button Command="{Binding LogoutCommand}" Visibility="{Binding IsLogged, Converter={StaticResource VisibilityConverter}}" BorderThickness="0" Background="Transparent" Padding="0">
+                               <StackPanel Orientation="Horizontal">
+                                   <TextBlock Text="&#xe12a;" Style="{StaticResource smallTextBlockStyle}" Margin="0" Padding="0" VerticalAlignment="Center"/>
+                                   <TextBlock Text="{lex:Loc Logout}" Margin="5,0,0,0"/>
+                               </StackPanel>
+                            </Button><LineBreak/>
+                        </TextBlock>
+                    </dxe:FlyoutControl>
+                    <Button Name="HelpButton" Content="&#xe057;" Click="HelpButton_Click" Style="{StaticResource titleButtonStyle}"/>
+                    <Button Name="MinimizeButton" Content="&#xe07d;" Click="Minimize_Click" Style="{StaticResource titleButtonStyle}"/>
+                    <Button Name="MaximizeButton" Click="Maximize_Click" Style="{StaticResource titleButtonStyle}" Content="{Binding Path=IsMaximized, Mode=TwoWay, Converter={StaticResource maximizeGlyphConverter}}"/>
+                    <Button Name="CloseButton" Content="&#xe037;" Click="Close_Click" Style="{StaticResource titleButtonStyle}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Border BorderBrush="LightGray" BorderThickness="0" Padding="0">
+            <Grid>
+                <local:MainMenuCtrl x:Name="MainMenuCtrl"/>
+            </Grid>
+        </Border>
+    </DockPanel>
+
+</Window>

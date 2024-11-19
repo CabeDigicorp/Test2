@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailModel.Entity" Collapsed="true">
+    <Position X="5.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.EntityCollection" Collapsed="true">
+    <Position X="3.25" Y="12" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.TreeEntity" Collapsed="true">
+    <Position X="5.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Model.DivisioneItem" Collapsed="true">
+    <Position X="4.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ModelEntities\Divisione.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.PrezzarioItem" Collapsed="true">
+    <Position X="6.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAIgAAAACAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ModelEntities\Prezzario.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.ComputoItem" Collapsed="true">
+    <Position X="2.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAQAAAAAAAAAACAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>ModelEntities\Computo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.ElementiItem" Collapsed="true">
+    <Position X="8.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ModelEntities\Elementi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.ComputoItemCollection" Collapsed="true">
+    <Position X="1.25" Y="13.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ModelEntities\Computo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.ElementiItemCollection" Collapsed="true">
+    <Position X="4.5" Y="13.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ModelEntities\Elementi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

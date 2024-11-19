@@ -1,0 +1,522 @@
+﻿@page "/opere"
+@using AutoMapper
+@using JoinWebUI.Components
+@using ModelData.Dto
+@using ModelData.Utilities
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Buttons
+
+
+@implements IDisposable
+@inject NavigationManager _navigation
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Gestione opere</PageTitle>
+
+<PageHeader Title="Clienti"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+<div class="my-4 d-flex justify-content-between align-items-center" id="mainDiv">
+    <SfIcon IconCss="e-inherit e-icons e-normal-icon pe-sm-3 icon-cerca-filtra" />
+    <SfTextBox ID="SearchBox" Placeholder="Cerca opera..." Input="@OnSearchInput" FloatLabelType="FloatLabelType.Never" ShowClearButton="true" />
+    <div class="ms-4 d-flex justify-content-between align-items-right" style="width:140px">
+        <label>Mostra tag</label>
+        <SfSwitch @bind-Checked="_showTags" TChecked="bool" />
+    </div>
+</div>
+
+<div id="clientsList">
+
+    <ul class="list-group list-group-flush">
+
+        @foreach (var clienteSettori in _clientiSettori)
+        {
+            <li class="list-group-item mx-0 mb-3 px-0">
+
+                @{
+                    
+                    string operaCreateUrl = "/opere/create?" + OperaEdit.CLIENTE_ID_PARAM_NAME +"=" + clienteSettori.Item1.IdString;
+                    string tagListUrl = "/clienti/" + clienteSettori.Item1.IdString + "/tag";
+                    string dropdownPositionTargetId = $"cliente-{clienteSettori.Item1.IdString}-dropdown-position-target";
+                    string dropdownPositionTarget = $"#{dropdownPositionTargetId}";
+                    bool disableButtons = false; //TODO
+                }
+
+                <div class="control-section row bg-primary mx-0 my-2 px-2 py-2 d-flex justify-content-between">
+                    <div class="col pt-1 d-flex justify-content-start">
+                        <h4 class="text-white fw-bold">@clienteSettori.Item1.Info</h4>
+                    </div>
+                    <div id="@dropdownPositionTargetId" class="col d-flex justify-content-end">
+                        <SfButton CssClass="e-btn-grey ms-2" IconCss="e-icons icon-nuovo" IconPosition="IconPosition.Left" Disabled="disableButtons" OnClick="() => _navigation.NavigateTo(operaCreateUrl)"></SfButton>
+                        <SfButton CssClass="e-btn-grey ms-2" IconCss="e-icons icon-tag" IconPosition="IconPosition.Left" Disabled="disableButtons" OnClick="() => _navigation.NavigateTo(tagListUrl)"></SfButton>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush">
+                    @foreach (var settore in clienteSettori.Item2)
+                    {
+                        <li class="list-group-item mx-0 mb-3 px-0">
+                            <div class="h5 text-primary fw-bold px-3">
+                                @settore.Nome
+                            </div>
+                            <div class="control-section row">
+                                @foreach (var item in _filteredItems.Where(i => i.SettoreId == settore.Id))
+                                {
+                                    string operaDropdownPositionTargetId = "opera-" + item.Id.ToString() + "-dropdown-position-target";
+                                    string operaOpenBtnId = "open:" + item.Id;
+                                    string operaDeleteBtnId = "delete:" + item.Id;
+
+                                    <div class="col my-3" style="min-width:@(_cardWidth.ToString())px;max-width:@(_cardWidth.ToString())px;height:@CardHeight">
+                                        <SfCard CssClass="e-card mouse-hover" @onclick=@(args => ActionSelected(operaOpenBtnId))>
+                                            <CardHeader Title="@item.Nome">
+                                                <div id="@operaDropdownPositionTargetId" @onclick:stopPropagation=true>
+                                                    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" OnClick=@(args => ActionSelected(operaDeleteBtnId))></SfButton>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div>
+                                                    @(String.IsNullOrWhiteSpace(item.Descrizione) ? "[senza descrizione]" : item.Descrizione)
+                                                    <br><br>
+                                                </div>
+                                            </CardContent>
+                                            @if (_showTags)
+                                            {
+                                                <CardFooter>
+                                                    @foreach (var id in item.TagIds)
+                                                    {
+                                                        var tag = _tags.Find(t => t.Id == id);
+                                                        if (tag != null)
+                                                        {
+                                                            <span class="badge badge-tag me-2">
+                                                                @tag.Nome
+                                                            </span>
+                                                        }
+                                                    }
+                                                </CardFooter>
+                                            }
+                                        </SfCard>
+                                    </div>
+
+                                }
+                            </div>
+
+                        </li>
+                    }
+                </ul>
+
+            </li>
+        }
+
+    </ul>
+
+</div>
+
+<SfDialog @bind-Visible="@_deletePopupVisible"
+          ShowCloseIcon=true
+          Width="400px"
+          IsModal="true">
+    <DialogTemplates>
+        <Header>Elimina opera</Header>
+        <Content>Sei sicuro di eliminare l'opera &ldquo;@_deleteItem?.Nome&rdquo; e tutti i progetti in essa contenuti?</Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" Content="OK" Type="ButtonType.Submit" OnClick="@DeleteConfirmAsync"></DialogButton>
+        <DialogButton CssClass="e-btn-blue" Content="Annulla" Type="ButtonType.Reset" IsPrimary=true OnClick="@ResetDeleteOpera"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+
+@code {
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private int _maxOperePerCliente = 0;
+    private const int CARDMINWIDTH = 350;
+    private const int CARDMAXWIDTH = 1200;
+    private int _cardWidth = CARDMINWIDTH;
+    private string CardHeight { get { return _showTags ? "170px" : "108px"; } }
+    private bool _showTags = false;
+
+    private async Task ComputeCardWidth()
+    {
+        _maxOperePerCliente = 0;
+        foreach (var cliente in _clientiSettori)
+        {
+            foreach (var settore in cliente.Item2)
+            {
+                _maxOperePerCliente = Math.Max(_maxOperePerCliente, _filteredItems.Where(i => i.SettoreId == settore.Id).Count());
+            }
+        }
+
+        BrowserWindowSize size = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getElementDimensions", "clientsList");
+
+        int cardsPerRow = 0;
+        int maxCardsPerRow = Math.Min(_maxOperePerCliente, 5);
+        int pixel = CARDMINWIDTH;
+        do
+        {
+            cardsPerRow++;
+            pixel += (CARDMINWIDTH + 24);
+        }
+        while (pixel < size.Width && cardsPerRow < maxCardsPerRow);
+
+        _cardWidth = (size.Width + 24) / cardsPerRow;
+        _cardWidth = Math.Min(_cardWidth, CARDMAXWIDTH);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    private List<OperaModel> _filteredItems = new List<OperaModel>();
+
+    private HashSet<OperaModel> _items = new HashSet<OperaModel>();
+
+    private List<TagModel> _tags = new List<TagModel>();
+
+    private List<Tuple<ClienteModel, List<SettoreModel>>> _clientiSettori = new List<Tuple<ClienteModel, List<SettoreModel>>>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private bool _menuDropdownOpen = false;
+
+    private bool _deletePopupVisible;
+    private OperaModel? _deleteItem;
+
+    private void ResetDeleteOpera()
+    {
+        _deletePopupVisible = false;
+        _deleteItem = null;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs = new List<(string, string)>()
+            {
+                ("Opere", "/opere")
+            };
+
+        // await DownloadAsync();
+        // await ComputeCardWidth();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        await DownloadAsync();
+        await ComputeCardWidth();
+    }
+    
+
+    private async Task DownloadAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        var resultOpere = await _apiClient.JsonGetAsync<List<OperaDto>>("opere");
+
+        if (!resultOpere.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - Opere";
+            return;
+        }
+
+        var opere = _mapper.Map<IEnumerable<OperaModel>>(resultOpere.ResponseContentData);
+
+        var resultTags = await _apiClient.JsonGetAsync<List<TagDto>>("tags");
+
+        if (!resultTags.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - Tags";
+            return;
+        }
+
+        _tags = _mapper.Map<List<TagModel>>(resultTags.ResponseContentData!);
+        
+        _clientiSettori.Clear();
+
+        foreach (var operaDto in resultOpere.ResponseContentData!)
+        {
+            var opera = opere.Single(o => o.Id == operaDto.Id);
+            //opera.Tags = _mapper.Map<IEnumerable<TagModel>>(resultTags.ResponseContentData!.Where(t => operaDto.TagIds.Contains(t.Id)));
+            //opera.TagNames = tags.Select(t => t.Nome!);
+
+            var cItem = _clientiSettori.Where(x => x.Item1.Id == operaDto.ClienteId).SingleOrDefault();
+            if (cItem == null)
+            {
+                var resultCliente = await _apiClient.JsonGetAsync<ClienteDto>("clienti/" + operaDto.ClienteId.ToString());
+                if (!resultCliente.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore scaricamento dati - Cliente";
+                    return;
+                }
+                var cm = _mapper.Map<ClienteModel>(resultCliente.ResponseContentData);
+                cItem = new Tuple<ClienteModel, List<SettoreModel>>(cm, new List<SettoreModel>());
+                _clientiSettori.Add(cItem);
+            }
+
+            if (!cItem.Item2.Where(y => y.Id == opera.SettoreId).Any())
+            {
+                var resultSettore = await _apiClient.JsonGetAsync<SettoreDto>("settori/" + opera.SettoreId.ToString());
+                if (!resultSettore.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore scaricamento dati - Settore";
+                    return;
+                }
+
+                var sm = _mapper.Map<SettoreModel>(resultSettore.ResponseContentData);
+                cItem.Item2.Add(sm);
+            }
+
+        }
+
+        _items = opere.ToHashSet();
+
+        var resultClienti = await _apiClient.JsonGetAsync<IEnumerable<ClienteDto>>("clienti/get-by-teams");
+        if (!resultClienti.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore scaricamento dati - Clienti";
+            return;
+        }
+
+        //foreach (ClienteInfoDto cliente in resultClienti.ResponseContentData!)
+        //{
+        //    var cItem = _clientiSettori.Where(x => x.Item1.Id == cliente.Id).SingleOrDefault();
+        //    if (cItem == null)
+        //    {
+        //        var cm = _mapper.Map<ClienteModel>(cliente);
+        //        cItem = new Tuple<ClienteModel, List<SettoreModel>>(cm, new List<SettoreModel>());
+        //    }
+
+        //    //var resultSettori = await _apiClient.JsonGetAsync<IEnumerable<SettoreInfoDto>>("settori/get-by-cliente", query: new Dictionary<string, string>() { { "clienteId", cItem.Item1.IdString } });
+        //    //if (!resultSettori.Success)
+        //    //{
+        //    //    _requestError = true;
+        //    //    _requestErrorMessage = "Errore scaricamento dati - Settori";
+        //    //    return;
+        //    //}
+
+        //    //foreach (SettoreInfoDto settore in resultSettori.ResponseContentData!)
+        //    //{
+        //    //    if (!cItem.Item2.Where(y => y.Id == settore.Id).Any())
+        //    //    {
+        //    //        var sm = _mapper.Map<SettoreModel>(settore);
+        //    //        cItem.Item2.Add(sm);
+        //    //    }
+        //    //}
+
+        //}
+
+        foreach (ClienteDto cliente in resultClienti.ResponseContentData!)
+        {
+            var cItem = _clientiSettori.Where(x => x.Item1.Id == cliente.Id).SingleOrDefault();
+            if (cItem == null)
+            {
+                var cm = _mapper.Map<ClienteModel>(cliente);
+                cItem = new Tuple<ClienteModel, List<SettoreModel>>(cm, new List<SettoreModel>());
+                _clientiSettori.Add(cItem);
+            }
+
+        }
+
+        OnSearchInput(null);
+    }
+
+    private void Delete(OperaModel item)
+    {
+        _deleteItem = item;
+        _deletePopupVisible = true;
+    }
+
+    //private void Navigate(MenuEventArgs args)
+    //{
+    //    _navigation.NavigateTo(args.Item.Id);
+    //}
+
+    //private void Navigate(string url)
+    //{
+    //    _navigation.NavigateTo(url);
+    //}
+
+    private void ActionSelected(string action)
+    {
+        string[] info = action.Split(':');
+        string url = string.Empty;
+        switch (info[0])
+        {
+            case "open":
+                url = "/opere/" + info[1].ToString();
+                _navigation.NavigateTo(url);
+                break;
+            //case "edit":
+            //    url = "/opere/" + info[1].ToString() + "/edit"
+            //    _navigation.NavigateTo(url);
+            //    break;
+            case "delete":
+                _deleteItem = _items.Where(i => i.Id.ToString() == info[1]).First();
+                _deletePopupVisible = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+    //private void ActionSelected(MenuEventArgs args)
+    //{
+    //    ActionSelected(args.Item.Id);
+    //}
+
+    private async Task DeleteConfirmAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        var result = await _apiClient.JsonDeleteAsync("opere", _deleteItem!.IdString);
+
+        if (!result.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore eliminazione dato";
+            ResetDeleteOpera();
+            return;
+        }
+
+        _items.Remove(_deleteItem);
+        ResetDeleteOpera();
+        OnSearchInput(null);
+    }
+
+    private string[] filter = { string.Empty };
+    //private string Filter { get; set; } = string.Empty;
+    private void OnSearchInput(InputEventArgs? args)
+    {
+        if (args != null)
+        {
+            filter = args.Value.Split(" ,;".ToCharArray());
+        }
+
+        if (filter == null || filter.Count() == 0) //string.IsNullOrWhiteSpace(_filter))
+        {
+            _filteredItems = _items.OrderBy(i => i.Nome).ToList();
+        }
+        else
+        {
+            //_filteredItems = _items.Where(i => i.Nome!.Contains(_filter, StringComparison.CurrentCultureIgnoreCase) ||
+            //    i.TagNames!.Any(n => n.Contains(_filter, StringComparison.CurrentCultureIgnoreCase))
+
+            List<string> tagFilter = filter.Where(f => f.Contains("tag:", StringComparison.CurrentCultureIgnoreCase) || !f.Contains(":"))
+                                           .Select(f => f.Replace("tag:", "", StringComparison.CurrentCultureIgnoreCase))
+                                           .ToList();
+
+            List<string> nameFilter = filter.Where(f => f.Contains("nome:", StringComparison.CurrentCultureIgnoreCase) || !f.Contains(":"))
+                                            .Select(f4 => f4.Replace("nome:", "", StringComparison.CurrentCultureIgnoreCase))
+                                            .ToList();
+
+
+            var filteredByName = (from i in _items
+                                  from nf in nameFilter
+                                  where (i.Nome!.Contains(nf, StringComparison.CurrentCultureIgnoreCase))
+                                  select i);
+
+            var filteredByTag = (from i in _items
+                                 from t in _tags
+                                 from tf in tagFilter
+                                 where i.TagIds.Contains(t.Id) &&
+                                       (t.Nome.Contains(tf, StringComparison.CurrentCultureIgnoreCase))
+                                 select i);
+
+
+            _filteredItems = filteredByName.Union(filteredByTag)
+                             .Distinct().OrderBy(i => i.Nome).ToList();
+        }
+
+        StateHasChanged();
+
+    }
+
+    private void ToggleTags()
+    {
+
+    }
+
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            _listener.OnResized += WindowResized;
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        _listener.OnResized -= WindowResized;
+
+    }
+
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await ComputeCardWidth();
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+
+    }
+
+    //private class ClienteSettore : IEquatable<ClienteSettore>
+    //{
+    //    public ClienteSettore(Guid clienteId, string clienteInfo, Guid settoreId, string settoreNome)
+    //    {
+    //        ClienteId = clienteId;
+    //        ClienteInfo = clienteInfo;
+    //        SettoreId = settoreId;
+    //        SettoreNome = settoreNome;
+
+    //    }
+    //    public Guid ClienteId;
+    //    public string ClienteInfo;
+    //    public Guid SettoreId;
+    //    public string SettoreNome;
+
+    //    public bool Equals(ClienteSettore other)
+    //    {
+    //        return (other != null && this.ClienteId.Equals(other.ClienteId) && this.SettoreId.Equals(other.SettoreId));
+    //    }
+
+    //    public override int GetHashCode()
+    //    {
+
+    //        //Get hash code for the Name field if it is not null.
+    //        int hashClienteId = ClienteId.ToString().GetHashCode();
+
+    //        //Get hash code for the Code field.
+    //        int hashSettoreId = SettoreId.ToString().GetHashCode();
+
+    //        //Calculate the hash code for the product.
+    //        return hashClienteId ^ hashSettoreId;
+    //    }
+
+    //}
+
+}

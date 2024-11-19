@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "@microsoft/dotnet-js-interop@8.0.0",
+      "destination": "wwwroot/scripts/lib/@microsoft/dotnet-js-interop"
+    },
+    //{
+    //  "library": "openbim-components@1.5.1",
+    //  "destination": "wwwroot/scripts/lib/openbim-components/"
+    //},
+    {
+    "library": "three@0.170.0",
+    "destination": "wwwroot/scripts/lib/three/"
+    },
+    {
+      "library": "web-ifc@0.0.61",
+      "destination": "wwwroot/scripts/lib/web-ifc/"
+    },
+    {
+      "library": "byte-base64@latest",
+      "destination": "wwwroot/scripts/lib/byte-base64"
+    },
+    {
+      "library": "pako@latest",
+      "destination": "wwwroot/scripts/lib/pako/"
+    },
+    {
+      "library": "@thatopen/components@2.3.18",
+      "destination": "wwwroot/scripts/lib/@thatopen/components/"
+    },
+    {
+      "library": "@thatopen/fragments@2.3.0",
+      "destination": "wwwroot/scripts/lib/@thatopen/fragments/"
+    },
+    {
+      "library": "@thatopen/components-front@2.3.13",
+      "destination": "wwwroot/scripts/lib/@thatopen/components-front/"
+    }
+  ]
+}

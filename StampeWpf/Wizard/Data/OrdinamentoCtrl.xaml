@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="StampeWpf.Wizard.OrdinamentoCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StampeWpf.Wizard" xmlns:local1="clr-namespace:StampeWpf"
+             mc:Ignorable="d" 
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="32"/>
+            <ColumnDefinition Width="32"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <ToggleButton x:Name="AZButtonCresc" Content="&#xe0d2;" IsChecked="{Binding IsOrdineCrescente}" ToolTip="{lex:Loc Utilizza ordinamento crescente}">
+            <ToggleButton.Style>
+                <Style TargetType="ToggleButton" BasedOn="{StaticResource menuToggleButtonStyle}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Style.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" Value="SteelBlue"/>
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+        </ToggleButton>
+
+            <ToggleButton x:Name="AZButtonDecres" Content="&#xe0d4;" IsChecked="{Binding IsOrdineDecrescente}" ToolTip="{lex:Loc Utilizza ordinamento decrescente}" Grid.Column="1">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton" BasedOn="{StaticResource menuToggleButtonStyle}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="FontSize" Value="20" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background" Value="SteelBlue"/>
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+
+        <local1:TextBoxItemCtrl DataContext="{Binding TextBoxItemViewOrdinamento}" IsEnabled="{Binding IsTextBoxItemViewOrdinamentoEnable}" Grid.Column="2" VerticalAlignment="Center"/>
+
+    </Grid>
+</UserControl>

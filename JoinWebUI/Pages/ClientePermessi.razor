@@ -1,0 +1,1089 @@
+﻿@page "/clienti/{ClienteId:guid}/permessi"
+@using AutoMapper
+@using Syncfusion.Blazor.Navigations
+@*@using Syncfusion.Blazor.DropDowns*@
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.TreeGrid
+@using Syncfusion.Blazor.Buttons
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Data
+
+@implements IDisposable
+@inject NavigationManager _navigation
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+@*@inject SfDialogService DialogService*@
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Gestione permessi</PageTitle>
+
+<PageHeader Title="Gestione permessi"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+<div class="mb-4 d-flex justify-content-between align-items-center" style="max-width:1280px " id="mainDiv">
+    <SfIcon IconCss="e-inherit e-icons e-normal-icon pe-sm-3 icon-filtri" />
+    <SfTextBox @ref="@_userBox" CssClass="e-input me-1" Placeholder="Filtra per utente" FloatLabelType="FloatLabelType.Never" Readonly="true" />
+    <SfButton CssClass="e-btn-blue mx-1" IconCss="e-icons icon-chiudi " IconPosition="IconPosition.Left" OnClick="@ClearUser"></SfButton>
+    <SfButton CssClass="e-btn-blue mx-1" IconCss="e-icons icon-trova " IconPosition="IconPosition.Left" OnClick="@SearchUsers"></SfButton>
+    @*    <div class="ms-4 d-flex justify-content-between align-items-right" style="width:140px">
+    <label>Mostra tag</label>
+    <SfSwitch @bind-Checked="_showTags" TChecked="bool" />
+    </div>*@
+</div>
+<div style="height:stretch">
+    <SfTab ID="tab" @ref="_tabs" HeaderPlacement="HeaderPosition.Top" CssClass="e-fill" Height="100%">
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Vis. per Soggetti" />
+                </ChildContent>
+                <ContentTemplate>
+                    <div id="oggetti" class="control-section row" style="height:stretch">
+                        <GenericCard Title="Soggetti di permesso"
+                                     HideNew="true"
+                                     HideEdit="true"
+                                     HideDelete="true"
+                                     OnClickRefresh="@OnClickSoggettiRefresh">                                                                          
+                            <Content>
+                                <SfTreeGrid @ref="_treeGridSoggetti" TValue="EntitaPermessiModel" DataSource="@_soggettiTopLevel"
+                                            ChildMapping="SoggettiChildren" TreeColumnIndex="0"
+                                            AllowPaging="false" AllowSelection="true"
+                                            Width="100%">
+                                    <TreeGridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                    <TreeGridEvents TValue="EntitaPermessiModel" RowSelected="@OnSelectedSoggettiChanged" OnDataBound="@OnDataBoundSoggetti" />
+                                    <TreeGridColumns>
+                                        <TreeGridColumn HeaderText="Nome" Width="70%" AllowEditing="false">
+                                            <Template>
+                                                @{
+                                                    var sogg = (context as EntitaPermessiModel);
+                                                    if (sogg.IsContainerOnly || sogg.IsMemberOnly)
+                                                    {
+                                                        <div><span class="fst-italic">@(sogg.Info)</span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@(sogg.Info)</div>
+                                                    }
+                                                    foreach(var m in sogg.SoggettiMembers)
+                                                    {
+                                                        <div><span class="fs-small fst-italic">&nbsp;&nbsp;&nbsp;@(m.Info)</span></div>
+                                                        foreach (var sm in m.SoggettiMembers)
+                                                        {
+                                                            <div><span class="fs-small fst-italic">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@(sm.Info)</span></div>
+                                                        }
+                                                    }
+                                                }
+                                            </Template>
+                                        </TreeGridColumn>
+                                        <TreeGridColumn HeaderText="Tipo" Width="30%" AllowEditing="false">
+                                            <Template>
+                                                @{
+                                                    var sogg = (context as EntitaPermessiModel);
+                                                    if (sogg.IsContainerOnly || sogg.IsMemberOnly)
+                                                    {
+                                                        <div><span class="fst-italic">@(sogg.TypeDescription)</span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@(sogg.TypeDescription)</div>
+                                                    }
+                                                }
+                                            </Template>
+                                        </TreeGridColumn>
+                                    </TreeGridColumns>
+                                </SfTreeGrid>
+                            </Content>
+                        </GenericCard>
+                        <GenericCard Title="Oggetti su cui il soggetto selezionato ha permessi"
+                                     DisableNew="@DisableNewPermessoSoggetto"
+                                     OnClickNew="@OnClickPermessiSoggettoNew"
+                                     DisableEdit="@DisableEditPermessoSoggetto"
+                                     OnClickEdit="@OnClickPermessiSoggettoEdit"
+                                     DisableDelete="@DisableDeletePermessoSoggetto"
+                                     OnClickDelete="@OnClickPermessiSoggettoDelete"
+                                     DisableRefresh="@DisableNewPermessoSoggetto"
+                                     OnClickRefresh="@OnClickPermessiSoggettoRefresh">
+                            <Content>
+                                <SfTreeGrid @ref="@_treeGridPermessiSoggetto" TValue="PermessiTreeNode" DataSource="@_permessiSoggetto"
+                                            ChildMapping="Children" TreeColumnIndex="0"
+                                            AllowPaging="false" AllowSelection="true"
+                                            Width="100%">
+                                    <TreeGridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                    <TreeGridEvents TValue="PermessiTreeNode" RowSelected="@OnSelectedPermessiSoggettoChanged" />
+                                    <TreeGridColumns>
+                                        <TreeGridColumn Field="Oggetto.Info" HeaderText="Nome" Width="45%" AllowEditing="false" />
+                                        <TreeGridColumn Field="Oggetto.TypeDescription" HeaderText="Tipo" Width="15%" AllowEditing="false" />
+                                        @foreach (var ruolo in _ruoli)
+                                        {
+                                            <TreeGridColumn HeaderText="@(ruolo.Name)" Width="8%" AllowEditing="false">
+                                                <Template>
+                                                    @{
+                                                        EntitaPermessiModel? sogg;
+
+                                                        string IconCss = "e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick ";
+                                                        string color = ""; //"color-card";
+                                                        try
+                                                        {
+                                                            sogg = (context as PermessiTreeNode)?.Soggetto;
+
+                                                            if (sogg != null && !(sogg.IsContainerOnly || sogg.IsMemberOnly)
+                                                            && ((context as PermessiTreeNode)?.Ruoli?.ContainsKey(ruolo.Id) ?? false))
+                                                            {
+                                                                RuoloValues perm = (context as PermessiTreeNode)!.Ruoli![ruolo.Id];
+                                                                if (perm == RuoloValues.Inheritable || perm == RuoloValues.NotInheritable)
+                                                                {
+                                                                    color = "color-green";
+                                                                    <div><SfIcon IconCss="@(IconCss + color)" /></div>
+                                                                }
+                                                                else if (perm == RuoloValues.Inherited)
+                                                                {
+                                                                    color = "color-secondary";
+                                                                    <div><SfIcon IconCss="@(IconCss + color)" /></div>
+                                                                }
+                                                            }
+                                                        }
+                                                        catch { }
+                                                        //finally
+                                                        //{
+                                                        //    <div><SfIcon IconCss="@(IconCss + color)" /></div>
+                                                        //}
+
+                                                    }
+                                                </Template>
+                                            </TreeGridColumn>
+                                        }
+                                    </TreeGridColumns>
+                                </SfTreeGrid>
+
+                            </Content>
+                        </GenericCard>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Vis. per Oggetti" />
+                </ChildContent>
+                <ContentTemplate>
+                    <div id="oggetti" class="control-section row" style="height:stretch">
+                        <GenericCard Title="Oggetti di permesso"
+                                     HideNew="true"
+                                     HideEdit="true"
+                                     HideDelete="true"
+                                     OnClickRefresh="@OnClickOggettiRefresh">
+                            <Content>
+                                <SfTreeGrid @ref="_treeGridOggetti" TValue="EntitaPermessiModel" DataSource="@_oggettiTopLevel"
+                                            ChildMapping="OggettiChildren" TreeColumnIndex="0"
+                                            AllowPaging="false" AllowSelection="true"
+                                            Width="100%" Height="100%">
+                                    <TreeGridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                    <TreeGridEvents TValue="EntitaPermessiModel" RowSelected="@OnSelectedOggettiChanged" OnDataBound="@OnDataBoundOggetti" />
+                                    <TreeGridColumns>
+                                        <TreeGridColumn Field="Info" HeaderText="Nome" Width="70%" AllowEditing="false" />
+                                        <TreeGridColumn Field="TypeDescription" HeaderText="Tipo" Width="30%" AllowEditing="false" />
+                                    </TreeGridColumns>
+                                </SfTreeGrid>
+                            </Content>
+                        </GenericCard>
+                        <GenericCard Title="Soggetti con permessi sull'oggetto selezionato"
+                                     DisableNew="@DisableNewPermessoOggetto"
+                                     OnClickNew="@OnClickPermessiOggettoNew"
+                                     DisableEdit="@DisableEditPermessoOggetto"
+                                     OnClickEdit="@OnClickPermessiOggettoEdit"
+                                     DisableDelete="@DisableDeletePermessoOggetto"
+                                     OnClickDelete="@OnClickPermessiOggettoDelete"
+                                     DisableRefresh="@DisableNewPermessoOggetto"
+                                     OnClickRefresh="@OnClickPermessiOggettoRefresh">
+                            <Content>
+                                <SfTreeGrid @ref="@_treeGridPermessiOggetto" TValue="PermessiTreeNode" DataSource="@_permessiOggetto"
+                                            ChildMapping="Children" TreeColumnIndex="0"
+                                            AllowPaging="false" AllowSelection="true"
+                                            Width="100%" Height="100%">
+                                    <TreeGridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                    <TreeGridEvents TValue="PermessiTreeNode" RowSelected="@OnSelectedPermessiOggettoChanged" />
+                                    <TreeGridColumns>
+                                        <TreeGridColumn HeaderText="Nome" Width="45%" AllowEditing="false">
+                                            <Template>
+                                                @{
+                                                    var sogg = (context as PermessiTreeNode).Soggetto;
+                                                    if (sogg.IsContainerOnly || sogg.IsMemberOnly)
+                                                    {
+                                                        <div><span class="fst-italic">@(sogg.Info)</span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@(sogg.Info)</div>
+                                                    }
+                                                    foreach (var m in sogg.SoggettiMembers)
+                                                    {
+                                                        <div><span class="fs-small fst-italic">&nbsp;&nbsp;&nbsp;@(m.Info)</span></div>
+                                                        foreach (var sm in m.SoggettiMembers)
+                                                        {
+                                                            <div><span class="fs-small fst-italic">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@(sm.Info)</span></div>
+                                                        }
+                                                    }
+                                                }
+                                            </Template>
+                                        </TreeGridColumn>
+                                        <TreeGridColumn HeaderText="Tipo" Width="15%" AllowEditing="false">
+                                            <Template>
+                                                @{
+                                                    var sogg = (context as PermessiTreeNode).Soggetto;
+                                                    if (sogg.IsContainerOnly || sogg.IsMemberOnly)
+                                                    {
+                                                        <div><span class="fst-italic">@(sogg.TypeDescription)</span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@(sogg.TypeDescription)</div>
+                                                    }
+                                                }
+                                            </Template>
+                                        </TreeGridColumn>
+                                        @foreach (var ruolo in _ruoli)
+                                        {
+                                            <TreeGridColumn HeaderText="@(ruolo.Name)" Width="8%" AllowEditing="false">
+                                                <Template>
+                                                    @{
+                                                        EntitaPermessiModel? sogg;
+
+                                                        string IconCss = "e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick ";
+                                                        string color = ""; //"color-card";
+                                                        try
+                                                        {
+                                                            sogg = (context as PermessiTreeNode)?.Soggetto;
+
+
+                                                            if (sogg != null && !(sogg.IsContainerOnly || sogg.IsMemberOnly)
+                                                                && ((context as PermessiTreeNode)?.Ruoli?.ContainsKey(ruolo.Id) ?? false))
+                                                            {
+                                                                RuoloValues perm = (context as PermessiTreeNode)!.Ruoli![ruolo.Id];
+                                                                if (perm == RuoloValues.Inheritable || perm == RuoloValues.NotInheritable)
+                                                                {
+                                                                    color = "color-green";
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                }
+                                                                else if (perm == RuoloValues.Inherited)
+                                                                {
+                                                                    color = "color-secondary";
+                                                                    <SfIcon IconCss="@(IconCss + color)" />
+                                                                }
+                                                            }
+                                                        }
+                                                        catch { }
+                                                        //finally
+                                                        //{
+                                                        //    <div><SfIcon IconCss="@(IconCss + color)" /></div>
+                                                        //}
+                                                    }
+                                                </Template>
+                                            </TreeGridColumn>
+                                        }
+                                    </TreeGridColumns>
+                                </SfTreeGrid>
+                            </Content>
+                        </GenericCard>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            </TabItems>
+    </SfTab>
+</div>
+
+<FindUserDialog IsVisible="@_showUserSearch" OkCallback="@OnUserDialogOk" CancelCallback="@OnUserDialogCancel" />
+
+<AddEditPermesso OkCallback="@OnEditOk"
+                 CancelCallback="@OnEditCancel"
+                 IsVisible="@_showEditor"
+                 Cliente="@_cliente"
+                 Settori="@_settoriAll"
+                 Opere="@_opereAll"
+                 Progetti="@_progettiAll"
+                 Teams="@_teamsAll"
+                 Gruppi="@_gruppiAll"
+                 Ruoli="@_ruoli"
+                 Permessi="@_permessi"
+                 PreSelectedTreeNode="_editingTreeNode">
+</AddEditPermesso>
+
+@code {
+
+    [Parameter] public Guid ClienteId { get; set; }
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private ClienteModel _cliente = new ClienteModel();
+    private List<SettoreModel> _settoriAll = new List<SettoreModel>();
+    private List<OperaModel> _opereAll = new List<OperaModel>();
+    private List<ProgettoModel> _progettiAll = new List<ProgettoModel>();
+    private List<TeamModel> _teamsAll = new List<TeamModel>();
+    private List<GruppoUtentiModel> _gruppiAll = new List<GruppoUtentiModel>();
+
+    private List<RuoloModel> _ruoli = new List<RuoloModel>();
+    private List<PermessoModel> _permessi = new List<PermessoModel>();
+    private List<UtenteModel> _utenti = new List<UtenteModel>();
+
+
+    private SfTreeGrid<EntitaPermessiModel> _treeGridSoggetti;
+    private SfTreeGrid<PermessiTreeNode> _treeGridPermessiSoggetto;
+    private ObservableCollection<EntitaPermessiModel> _soggettiTopLevel = new ObservableCollection<EntitaPermessiModel>();
+    //public Query SoggettiQuery { get; set; } = null;
+    private EntitaPermessiModel? _selectedSoggetto = null;
+    private ObservableCollection<PermessiTreeNode> _permessiSoggetto = new ObservableCollection<PermessiTreeNode>();
+    private List<PermessiTreeNode> _selectedPermessiSoggetto = new List<PermessiTreeNode>();
+    private bool DisableNewPermessoSoggetto { get { return _selectedSoggetto == null; } }
+    private bool DisableEditPermessoSoggetto { get { return (_selectedPermessiSoggetto?.Count() ?? 0) != 1; } }
+    private bool DisableDeletePermessoSoggetto { get { return (_selectedPermessiSoggetto?.Count() ?? 0) == 0; } }
+    //private bool DisableRefreshPermessoSoggetto { get { return (_selectedSoggetti?.Count() ?? 0) == 0; } }
+
+
+    private SfTreeGrid<EntitaPermessiModel> _treeGridOggetti;
+    private SfTreeGrid<PermessiTreeNode> _treeGridPermessiOggetto;
+    private ObservableCollection<EntitaPermessiModel> _oggettiTopLevel = new ObservableCollection<EntitaPermessiModel>();
+    private List<EntitaPermessiModel> _oggettiAll = new List<EntitaPermessiModel>();
+    //public Query OggettiQuery { get; set; } = null;
+    private EntitaPermessiModel? _selectedOggetto = null;
+    private ObservableCollection<PermessiTreeNode> _permessiOggetto = new ObservableCollection<PermessiTreeNode>();
+    private List<PermessiTreeNode> _selectedPermessiOggetto = new List<PermessiTreeNode>();
+    private bool DisableNewPermessoOggetto { get { return _selectedOggetto == null; } }
+    private bool DisableEditPermessoOggetto
+    {
+        get
+        {
+            return (_selectedPermessiOggetto?.Count() ?? 0) != 1 || (_selectedPermessiOggetto?.Count(x => x.Soggetto!.Type == nameof(GruppoUtentiModel) || x.Soggetto!.Type == nameof(TeamModel)) ?? 0) != 1;
+        }
+    }
+    private bool DisableDeletePermessoOggetto
+    {
+        get
+        {
+            return (_selectedPermessiOggetto?.Count() ?? 0) == 0 || (_selectedPermessiOggetto?.Count(x => x.Soggetto!.Type != nameof(GruppoUtentiModel) && x.Soggetto!.Type != nameof(TeamModel)) ?? 0) > 0;
+        }
+    }
+
+    //private bool DisableRefreshPermessoOggetto { get { return (_selectedOggetti?.Count() ?? 0) == 0; } }
+
+
+    SfTab? _tabs;
+    SfTextBox _userBox;
+    private bool _showUserSearch = false;
+
+    private PermessiTreeNode? _editingTreeNode = null;
+    //private EntitaPermessiModel? _editingSoggetto = null;
+    //private EntitaPermessiModel? _editingOggetto = null;
+    private bool _showEditor = false;
+
+
+    private string LeftWidth { get { return _leftWidth + "px"; } }
+    private int _leftWidth;
+    private string RightWidth { get { return _rightWidth + "px"; } }
+    private int _rightWidth;
+
+    private async Task ComputeGridWidth()
+    {
+        BrowserWindowSize size = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getElementDimensions", "tab");
+
+        _leftWidth = (int)Math.Round((size.Width - 48) * 0.33);
+        _rightWidth = size.Width - 48 - _leftWidth;
+
+        StateHasChanged();
+
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result0 = await _apiClient.JsonGetAsync<ClienteDto>("clienti", ClienteId.ToString());
+        if (!result0.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #1 - Cliente";
+            return;
+        }
+        _cliente = _mapper.Map<ClienteModel>(result0.ResponseContentData!);
+
+        _breadcrumbs = new List<(string, string)>()
+            {
+                ("Amministrazione Clienti", "/clienti"),
+                (_cliente.Info, "/clienti/" + ClienteId.ToString()),
+                ("Permessi", "/clienti/" + ClienteId.ToString() + "/permessi")
+            };
+
+        ComputeGridWidth();
+
+        await GetAuxDataSoggetti();
+        await GetPermessi();
+
+        //await ComputeCardWidth();
+        StateHasChanged();
+
+    }
+
+    private async Task GetAuxDataSoggetti(Guid? utenteId = null)
+    {
+        var query = new Dictionary<string, string>()
+                        {
+                    { "clienteId", _cliente.IdString }
+                        };
+
+        var resCurrent = await _apiClient.JsonGetAsync<UtenteDto>("utenti/get-utente-attuale");
+        if (!resCurrent.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Utente corrente";
+            return;
+        }
+
+        _oggettiAll.Clear();
+        _settoriAll.Clear();
+        _soggettiTopLevel.Clear();
+        _oggettiTopLevel.Clear();
+
+        var resTeams = await _apiClient.JsonGetAsync<IEnumerable<TeamDto>>("teams/get-by-cliente", query: query);
+        if (!resTeams.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #2 - Teams";
+            return;
+        }
+        var teams = (_mapper.Map<List<TeamModel>>(resTeams.ResponseContentData!)).OrderBy(x => x.Nome);
+        foreach (var t in teams)
+        {
+            t.SoggettiMembers = new List<EntitaPermessiModel>();
+            _teamsAll.Add(t);
+
+            var result1a = await _apiClient.JsonGetAsync<IEnumerable<UtenteDto>>("utenti/get-by-team", query: new Dictionary<string, string>() { { "teamId", t.IdString } });
+            if (!result1a.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #2a - Utenti del Team";
+                return;
+            }
+            var utenti = _mapper.Map<List<UtenteModel>>(result1a.ResponseContentData!).OrderBy(x => x.Cognome);
+            foreach (var u in utenti.Where(u => !u.Disabled))
+            {
+                //u.DynamicParent = t;
+                t.SoggettiMembers.Add(u);
+            }
+
+            if (utenteId == null || t.SoggettiMembers.Any(x => x.Id == utenteId)) _soggettiTopLevel.Add(t);
+        }
+
+        _cliente.OggettiChildren = new List<EntitaPermessiModel>();
+        _oggettiTopLevel.Add(_cliente);
+        _oggettiAll.Add(_cliente);
+
+        var resSettori = await _apiClient.JsonGetAsync<IEnumerable<SettoreDto>>("settori/get-by-cliente", query: query);
+        if (!resSettori.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #3 - Settori";
+            return;
+        }
+        var settori = _mapper.Map<List<SettoreModel>>(resSettori.ResponseContentData!).OrderBy(x => x.Nome);
+        foreach (var s in settori)
+        {
+            //s.DynamicParent = _cliente;
+            _oggettiAll.Add(s);
+            _settoriAll.Add(s);
+            _cliente.OggettiChildren.Add(s);
+            s.OggettiChildren = new List<EntitaPermessiModel>();
+            s.SoggettiChildren = new List<EntitaPermessiModel>();
+
+            var resOpere = await _apiClient.JsonGetAsync<IEnumerable<OperaDto>>("opere/get-by-settore", query: new Dictionary<string, string>() { { "settoreId", s.IdString } });
+            if (!resOpere.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #4 - Opere";
+                return;
+            }
+            var opere = _mapper.Map<List<OperaModel>>(resOpere.ResponseContentData!).OrderBy(x => x.Nome);
+
+            foreach (var o in opere)
+            {
+                //o.DynamicParent = s;
+                _oggettiAll.Add(o);
+                _opereAll.Add(o);
+                s.OggettiChildren.Add(o);
+                o.OggettiChildren = new List<EntitaPermessiModel>();
+                o.SoggettiChildren = new List<EntitaPermessiModel>();
+
+                var resProgetti = await _apiClient.JsonGetAsync<IEnumerable<ProgettoModel>>("progetti", query: new Dictionary<string, string>() { { "operaId", o.IdString } });
+                if (!resProgetti.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore #4a - Progetti dell'Opera";
+                    return;
+                }
+                var progetti = _mapper.Map<List<ProgettoModel>>(resProgetti.ResponseContentData!).OrderBy(x => x.Nome);
+
+                foreach (var p in progetti)
+                {
+                    //p.DynamicParent = o;
+                    _oggettiAll.Add(p);
+                    _progettiAll.Add(p);
+                    o.OggettiChildren.Add(p);
+                    p.OggettiChildren = new List<EntitaPermessiModel>();
+
+                    //TODO COMPUTI
+                }
+
+                var resGruppi = await _apiClient.JsonGetAsync<IEnumerable<GruppoUtentiDto>>("gruppiutenti/get-by-opera", query: new Dictionary<string, string>() { { "operaId", o.IdString } });
+                if (!resGruppi.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore #4d - Gruppi utenti dell'Opera";
+                    return;
+                }
+                var gruppi = _mapper.Map<List<GruppoUtentiModel>>(resGruppi.ResponseContentData!).OrderBy(x => x.Nome);
+
+                foreach (var g in gruppi)
+                {
+                    _gruppiAll.Add(g);
+
+                    //g.DynamicParent = o;
+                    g.SoggettiMembers = new List<EntitaPermessiModel>();
+
+                    bool found = (utenteId == null);
+
+                    var result2a = await _apiClient.JsonGetAsync<IEnumerable<UtenteDto>>("utenti/get-by-gruppo", query: new Dictionary<string, string>() { { "gruppoId", g.IdString } });
+                    if (!result2a.Success)
+                    {
+                        _requestError = true;
+                        _requestErrorMessage = "Errore #4e - Utenti del Gruppo";
+                        return;
+                    }
+                    var utenti = _mapper.Map<List<UtenteModel>>(result2a.ResponseContentData!).OrderBy(x => x.Cognome);
+                    foreach (var u in utenti.Where(u => !u.Disabled))
+                    {
+                        //u.DynamicParent = g;
+                        g.SoggettiMembers.Add(u);
+                        found = found || u.Id == utenteId;
+
+                    }
+
+                    var result2b = await _apiClient.JsonGetAsync<IEnumerable<TeamDto>>("teams/get-by-gruppo", query: new Dictionary<string, string>() { { "gruppoId", g.IdString } });
+                    if (!result2b.Success)
+                    {
+                        _requestError = true;
+                        _requestErrorMessage = "Errore #4f - Teams del Gruppo";
+                        return;
+                    }
+                    var teams2 = _mapper.Map<List<TeamModel>>(result2b.ResponseContentData!).OrderBy(x => x.Nome);
+                    foreach (var t in teams2)
+                    {
+                        t.IsMemberOnly = true;
+
+                        t.SoggettiMembers = new List<EntitaPermessiModel>();
+
+                        var result1a = await _apiClient.JsonGetAsync<IEnumerable<UtenteDto>>("utenti/get-by-team", query: new Dictionary<string, string>() { { "teamId", t.IdString } });
+                        if (!result1a.Success)
+                        {
+                            _requestError = true;
+                            _requestErrorMessage = "Errore #2a - Utenti del Team";
+                            return;
+                        }
+                        var utenti2 = _mapper.Map<List<UtenteModel>>(result1a.ResponseContentData!).OrderBy(x => x.Cognome);
+                        foreach (var u in utenti)
+                        {
+                            //u.DynamicParent = t;
+                            t.SoggettiMembers.Add(u);
+                            found = found || u.Id == utenteId;
+                        }
+
+                        //t.DynamicParent = g;
+                        g.SoggettiMembers.Add(t);
+
+                    }
+
+                    if (found) o.SoggettiChildren.Add(g);
+
+                }
+
+                if (o.SoggettiChildren.Count > 0) s.SoggettiChildren.Add(o);
+
+            }
+
+            if (s.SoggettiChildren.Count > 0) _soggettiTopLevel.Add(s);
+        }
+
+        var resRuoli = await _apiClient.JsonGetAsync<IEnumerable<RuoloDto>>("ruoli");
+        if (!resRuoli.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #6 - Ruolo";
+            return;
+        }
+        _ruoli = _mapper.Map<List<RuoloModel>>(resRuoli.ResponseContentData!);
+        _ruoli = _ruoli.Where(x => !x.Azioni.Contains(ModelData.Utilities.Azioni.Visibile)).ToList();
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetPermessi()
+    {
+        var query = new Dictionary<string, string>()
+                        {
+                    { "clienteId", _cliente.IdString }
+                        };
+
+        var result1 = await _apiClient.JsonGetAsync<IEnumerable<PermessoModel>>("permessi/get-by-cliente", query: query);
+        if (!result1.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #7 - Permessi";
+            return;
+        }
+        _permessi = _mapper.Map<List<PermessoModel>>(result1.ResponseContentData!);
+
+    }
+
+
+
+    private void OnDataBoundSoggetti()
+    {
+        OnSelectedSoggettiChanged(null);
+    }
+
+    private async Task OnSelectedSoggettiChanged(Syncfusion.Blazor.Grids.RowSelectEventArgs<EntitaPermessiModel>? args)
+    {
+        if (args != null) _selectedSoggetto = args.Data;
+        else _selectedSoggetto = (await _treeGridSoggetti.GetSelectedRecordsAsync())?.FirstOrDefault(); ;
+
+        _selectedPermessiSoggetto.Clear();
+        _permessiSoggetto.Clear();
+
+        if (_selectedSoggetto != null && !_selectedSoggetto.IsMemberOnly)
+        {
+            var node = new PermessiTreeNode(_selectedSoggetto, _cliente);
+            GetPermessiSoggetto(ref node);
+            if (node.Children.Count > 0 || node.Ruoli.Count>0) //node.Ruoli.ContainsValue(RuoloValues.NotInheritable) || node.Ruoli.ContainsValue(RuoloValues.Inheritable) || node.Ruoli.ContainsValue(RuoloValues.Inherited))
+                _permessiSoggetto.Add(node);
+
+        }
+
+        StateHasChanged();
+    }
+
+    private void GetPermessiSoggetto(ref PermessiTreeNode node)
+    {
+        if (node.Ruoli == null) node.Ruoli = new Dictionary<Guid, RuoloValues>(); // _ruoli.ToDictionary(entry => entry.Id, entry => RuoloValues.NotAssigned);
+
+        PermessoModel? permesso;
+
+        if (node.Soggetto != null && node.Oggetto != null)
+        {
+            //cerco permessi direttamente assegnati
+            if (node.Id == null)
+            {
+                Guid sogg = node.Soggetto.Id;
+                Guid ogg = node.Oggetto.Id;
+                permesso = (from qp in _permessi
+                            where qp.SoggettoId == sogg && qp.OggettoId == ogg
+                            select qp).FirstOrDefault();
+            }
+            else
+            {
+                Guid id = node.Id.Value;
+                permesso = (from qp in _permessi
+                            where qp.Id == id
+                            select qp).FirstOrDefault();
+            }
+        }
+        else
+        {
+            throw new Exception("invalid permission data");
+        }
+
+        //permessi direttamente assegnati
+        if (permesso != null)
+        {
+            node.Id = permesso.Id;
+
+            var direct = from r in _ruoli
+                         join pr in permesso.RuoliIds on r.Id equals pr
+                         select r.Id;
+
+            foreach (Guid ruoloId in direct)
+            {
+                node.Ruoli[ruoloId] = _ruoli.Where(x => x.Id == ruoloId).First().Inheritable ? RuoloValues.Inheritable : RuoloValues.NotInheritable;
+            }
+        }
+
+        node.Children = new List<PermessiTreeNode>();
+
+        if (!node.Oggetto.IsMemberOnly && node.Oggetto.OggettiChildren != null)
+            foreach (var child in node.Oggetto.OggettiChildren)
+            {
+
+                PermessiTreeNode childNode = new PermessiTreeNode(node.Soggetto,
+                                                                  child,
+                                                                  node.Ruoli.Where(entry => entry.Value == RuoloValues.Inheritable || entry.Value == RuoloValues.Inherited).ToDictionary(entry => entry.Key,
+                                                                                          entry => RuoloValues.Inherited));
+
+                GetPermessiSoggetto(ref childNode);
+
+                if (childNode.Children.Count > 0 || childNode.Ruoli.Count > 0) // childNode.Ruoli.ContainsValue(RuoloValues.Inheritable) || childNode.Ruoli.ContainsValue(RuoloValues.NotInheritable) || childNode.Ruoli.ContainsValue(RuoloValues.Inherited))
+                    node.Children.Add(childNode);
+            }  
+
+    }
+
+    private async Task OnSelectedPermessiSoggettoChanged(Syncfusion.Blazor.Grids.RowSelectEventArgs<PermessiTreeNode> args)
+    {
+        _selectedPermessiSoggetto = await _treeGridPermessiSoggetto.GetSelectedRecordsAsync();
+        StateHasChanged();
+    }
+
+    private void OnClickSoggettiRefresh()
+    {
+        GetAuxDataSoggetti();
+    }
+
+    private void OnClickPermessiSoggettoNew()
+    {
+        _editingTreeNode = new PermessiTreeNode(false, _selectedSoggetto!);
+        //_editingSoggetto = _selectedSoggetto;
+        //_editingOggetto = null;
+        _showEditor = true;
+    }
+
+    private void OnClickPermessiSoggettoEdit()
+    {          
+        _editingTreeNode = _selectedPermessiSoggetto[0];
+        //_editingSoggetto = _selectedPermessiSoggetto[0].Soggetto;
+        //_editingOggetto = _selectedPermessiSoggetto[0].Oggetto;
+        _showEditor = true;
+    }
+
+    private async Task OnClickPermessiSoggettoDelete()
+    {
+        var result = await _apiClient.JsonDeleteAsync("permessi", _selectedPermessiSoggetto[0].IdString!);
+        if (result.Success)
+        {
+            var toRemove = _permessi.First(p => p.Id == _selectedPermessiSoggetto[0].Id);
+            _permessi.Remove(toRemove);
+        }
+        else
+        {
+            //_requestError = true;
+            //_requestErrorMessage = "Errore creazione nuovi permessi";
+            return;
+        }
+        OnSelectedSoggettiChanged(null);
+    }
+
+    private void OnClickPermessiSoggettoRefresh()
+    {
+        OnSelectedSoggettiChanged(null);
+    }
+
+
+
+    private void OnDataBoundOggetti()
+    {
+        OnSelectedOggettiChanged(null);
+    }
+
+    private async Task OnSelectedOggettiChanged(Syncfusion.Blazor.Grids.RowSelectEventArgs<EntitaPermessiModel>? args)
+    {
+        if (args != null) _selectedOggetto = args.Data;
+        else _selectedOggetto = (await _treeGridOggetti.GetSelectedRecordsAsync())?.FirstOrDefault();
+
+        _selectedPermessiOggetto.Clear();
+        _permessiOggetto.Clear();
+
+        if (_selectedOggetto != null)
+        {
+            foreach (var s in _soggettiTopLevel)
+            {
+                var node = new PermessiTreeNode(s, _selectedOggetto);
+                GetPermessiOggetto(ref node);
+                if (node.Children.Count > 0 || node.Ruoli.ContainsValue(RuoloValues.Inheritable) || node.Ruoli.ContainsValue(RuoloValues.NotInheritable) || node.Ruoli.ContainsValue(RuoloValues.Inherited))
+                    _permessiOggetto.Add(node);
+            }
+
+        }
+
+        // await _treeGridOggetti.RefreshAsync();
+        // await _treeGridPermessiOggetto.RefreshAsync();
+
+        StateHasChanged();
+
+    }
+
+    private void GetPermessiOggetto(ref PermessiTreeNode node)
+    {
+        if (node.Ruoli == null) node.Ruoli = new Dictionary<Guid, RuoloValues>(); //  _ruoli.ToDictionary(entry => entry.Id, entry => RuoloValues.NotAssigned);
+
+        PermessoModel? permesso;
+
+        if (node.Soggetto == null || node.Oggetto == null)
+        {
+            throw new Exception("invalid permission data");
+        }
+
+        if (!(node.Soggetto.IsContainerOnly || node.Soggetto.IsMemberOnly))
+        {
+
+            Guid sogg = node.Soggetto.Id;
+            Guid ogg = node.Oggetto.Id;
+
+            //permessi assegnati direttamente
+            if (node.Id == null)
+            {
+                permesso = (from qp in _permessi
+                            where qp.SoggettoId == sogg && qp.OggettoId == ogg
+                            select qp).FirstOrDefault();
+            }
+            else
+            {
+                Guid id = node.Id.Value;
+                permesso = (from qp in _permessi
+                            where qp.Id == id
+                            select qp).FirstOrDefault();
+            }
+
+
+            if (permesso != null) node.Id = permesso.Id;
+
+            //permessi ereditati
+            List<EntitaPermessiModel> antenatiOggetti = GetAntenati(node.Oggetto);
+            var inherited = (from qp in _permessi
+                             from ant in antenatiOggetti
+                             from ru in _ruoli
+                             where qp.SoggettoId == sogg && qp.OggettoId == ant.Id
+                                && ru.Inheritable && qp.RuoliIds.Contains(ru.Id) 
+                             select qp).Distinct();
+
+            //assegnazione
+            foreach (var r in _ruoli)
+            {
+                if (permesso != null && permesso.RuoliIds.Contains(r.Id))
+                {
+                    node.Ruoli[r.Id] = _ruoli.Where(x => x.Id == r.Id).First().Inheritable ? RuoloValues.Inheritable : RuoloValues.NotInheritable;
+                }
+                else if (inherited.SelectMany(x => x.RuoliIds).Contains(r.Id))
+                {
+                    node.Ruoli[r.Id] = RuoloValues.Inherited;
+                }
+
+            }
+        }
+
+        node.Children = new List<PermessiTreeNode>();
+
+        if (!node.Soggetto.IsMemberOnly && node.Soggetto.SoggettiChildren != null)
+        {
+            foreach (var child in node.Soggetto.SoggettiChildren)
+            {
+                PermessiTreeNode childNode = new PermessiTreeNode(child,
+                                                                  node.Oggetto);
+
+                GetPermessiOggetto(ref childNode);
+
+                if (childNode.Children.Count > 0 || childNode.Ruoli.Count>0) //childNode.Ruoli.ContainsValue(RuoloValues.DirectlyAssigned) || childNode.Ruoli.ContainsValue(RuoloValues.Inherited))
+                    node.Children.Add(childNode);
+
+            }
+        }
+
+    }
+
+    private List<EntitaPermessiModel> GetAntenati(EntitaPermessiModel oggetto)
+    {
+        //oggetto e suoi antenati
+        List<EntitaPermessiModel> result = new List<EntitaPermessiModel>();
+
+        while (oggetto?.ParentId != null)
+        {
+            var parent = _oggettiAll.Find(o => o.Id == oggetto.ParentId);
+            if (parent != null)
+            {
+                result.Add(parent);
+                oggetto = parent;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return result;
+
+    }
+
+    private async Task OnSelectedPermessiOggettoChanged(Syncfusion.Blazor.Grids.RowSelectEventArgs<PermessiTreeNode> args)
+    {
+        _selectedPermessiOggetto = await _treeGridPermessiOggetto.GetSelectedRecordsAsync();
+        StateHasChanged();
+    }
+
+    private void OnClickOggettiRefresh()
+    {
+        GetAuxDataSoggetti();
+    }
+
+    private void OnClickPermessiOggettoNew()
+    {
+        _editingTreeNode = new PermessiTreeNode(true, _selectedOggetto!);
+        //_editingSoggetto=null;
+        //_editingOggetto = _selectedOggetto;
+        _showEditor = true;
+    }
+
+    private void OnClickPermessiOggettoEdit()
+    {
+        _editingTreeNode = _selectedPermessiOggetto[0];
+        //_editingSoggetto = _selectedPermessiOggetto[0].Soggetto;
+        //_editingOggetto = _selectedPermessiOggetto[0].Oggetto;
+        _showEditor = true;
+    }
+
+    private async Task  OnClickPermessiOggettoDelete()
+    {
+        var result = await _apiClient.JsonDeleteAsync("permessi", _selectedPermessiOggetto[0].IdString!);
+        if (result.Success)
+        {
+            var toRemove = _permessi.First(p => p.Id == _selectedPermessiOggetto[0].Id);
+            _permessi.Remove(toRemove);
+        }
+        else
+        {
+            //_requestError = true;
+            //_requestErrorMessage = "Errore creazione nuovi permessi";
+            return;
+        }
+        OnSelectedOggettiChanged(null);
+
+    }
+
+    private void OnClickPermessiOggettoRefresh()
+    {
+        OnSelectedOggettiChanged(null);
+    }
+
+
+
+    private void SearchUsers(MouseEventArgs args)
+    {
+        _showUserSearch = true;
+    }
+
+    private void ClearUser(MouseEventArgs args)
+    {
+        _userBox.Value = string.Empty;
+        GetAuxDataSoggetti();
+    }
+
+    private void OnUserDialogOk(UtenteModel utente)
+    {
+        _showUserSearch = false;
+
+        _userBox.Value = utente.Info;
+
+        GetAuxDataSoggetti(utente.Id);
+
+    }
+
+    private void OnUserDialogCancel()
+    {
+        _showUserSearch = false;
+    }
+
+
+    private async Task OnEditOk(PermessoModel updatedPermesso)
+    {
+        _showEditor = false;
+        var index = _permessi.FindIndex(x => x.Id == updatedPermesso.Id);
+
+        if (index < 0)
+        {
+            _permessi.Add(updatedPermesso);
+        }
+        else
+        {
+            _permessi[index] = updatedPermesso;
+        }
+
+        switch (_tabs!.SelectedItem)
+        {
+            case 0:
+                OnSelectedSoggettiChanged(null);
+                break;
+            case 1:
+                OnSelectedOggettiChanged(null);
+                break;
+            default:
+                break;
+        }
+        
+    }
+
+    private void OnEditCancel()
+    {
+        _showEditor = false;
+    }
+
+    private void RefreshTab()
+    {
+        switch (_tabs!.SelectedItem)
+        {
+            case 0:
+                OnClickSoggettiRefresh();
+                break;
+            case 1:
+                OnClickOggettiRefresh();
+                break;
+            default:
+                break;
+        }
+        StateHasChanged();
+    }
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            _listener.OnResized += WindowResized;
+
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        _listener.OnResized -= WindowResized;
+
+    }
+
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await ComputeGridWidth();
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+
+    }
+
+
+    
+
+  
+
+}

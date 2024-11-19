@@ -1,0 +1,744 @@
+﻿@page "/clienti/{ClienteId:guid}/licenze"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navMan
+@inject Syncfusion.Blazor.Popups.SfDialogService _dialogService
+@*@inject AuthenticationStateProvider _authState*@
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - teams del Cliente</PageTitle>
+
+<PageHeader Title="Licenze"
+            ObjectType="Cliente"
+            ObjectName="@_cliente.Info"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@RequestError"
+            RequestMessage="@RequestErrorMessage" />
+
+
+<table class="mb-4">
+    <tr>
+        <th style="min-width:200px"></th>
+        <th></th>
+    </tr>
+    @if (_licenza != null)
+    {
+        <tr>
+            <td>
+                <span class="fw-bold">Licenza valida:</span>
+            </td>
+            <td>
+                @if (_licenza.IsValid)
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" /></span>
+                }
+                else
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+                }
+            </td>
+        </tr>
+        @if (_adminMode)
+        {
+            <tr>
+                <td>
+                    <span class="fw-bold">Chiave licenza:</span>
+                </td>
+                <td style="overflow-wrap:anywhere">
+                    <span>@(_licenza.ChiaveLicenza ?? string.Empty)</span>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                <span class="fw-bold">Codice cliente:</span>
+            </td>
+            <td>
+                <span>@(string.IsNullOrWhiteSpace(_licenza.CodiceCliente) ? "---" : _licenza.CodiceCliente)</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="fw-bold">Scadenza:</span>
+            </td>
+            <td>
+                <span class="@(_licenza.IsExpired ? "color-red" : "color-green")">@(_licenza.ExpirationDate.ToString("dddd d MMMM yyyy"))</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="fw-bold">Abilitazione:</span>
+            </td>
+            <td>
+                @if (_licenza.IsDisabled)
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+                }
+                else
+                {
+                    <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" /></span>
+                }
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="fw-bold">Attivazioni totali:</span>
+            </td>
+            <td>
+                <span class="@(_licenza.Activations <= 0 ? "color-red" : "")">@(_licenza?.Activations.ToString() ?? "")</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="fw-bold">Funzioni:</span>
+            </td>
+            <td>
+                @if ((_licenza?.LicenseFeatures?.Count() ?? -1) > 0)
+                {
+                    for (int i = 0; i < _licenza!.LicenseFeatures.Count(); i++)
+                    {
+                        <span>@(Enum.GetName<ModelData.Utilities.LicenseFeature>(_licenza!.LicenseFeatures[i]) + (i < _licenza!.LicenseFeatures.Count() - 1 ? "; " : ""))</span>
+                    }
+                }
+                else
+                {
+                    <span class="color-red">[Nessuna funzione assegnata]</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="fw-bold">Informazioni aggiuntive:</span>
+            </td>
+            <td style="overflow-wrap:anywhere">
+                <span>@(_licenza?.AdditionalInfo ?? "---")</span>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <td>
+                <span class="fw-bold">Licenza valida:</span>
+            </td>
+            <td>
+                <span><SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-chiudi e-grid-tick color-red" /></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="fw-bold">Informazioni aggiuntive:</span>
+            </td>
+            <td style="overflow-wrap:anywhere">
+                <span>Nessuna licenza impostata</span>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="mt-0 mb-4">
+    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" Disabled="@(_licenza != null)" OnClick="@(OnClickNewLicense)">Inserisci chiave</SfButton>
+    <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" Disabled="@(_licenza == null)" OnClick="@(OnClickArchive)">Archivia</SfButton>
+</div>
+
+<div class="mt-4">
+    <SfTab ID="tab" @ref="_tabs" HeaderPlacement="HeaderPosition.Top" CssClass="e-fill" Height="100%">
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Licenza attiva" />
+                </ChildContent>
+                <ContentTemplate>
+                    <div id="teams" class="control-section row" style="min-height:300px">
+                        <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                            <SfCard CssClass="e-card">
+                                <CardHeader Title="Teams associati alla licenza">
+                                    <div>
+                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" OnClick="@OnClickAddTeam"></SfButton>
+                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-chiudi" IconPosition="IconPosition.Left" Disabled="@(!TeamSelected)" OnClick="@OnClickRemoveTeams"></SfButton>
+                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" OnClick="@OnClickRefreshTeams"></SfButton>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <SfGrid DataSource="@_teams"
+                                            TValue="TeamModel"
+                                    @ref="_gridT"
+                                            AllowSelection="true"
+                                            AllowGrouping="false"
+                                            AllowFiltering="false"
+                                            AllowReordering="true"
+                                            AllowResizing="true"
+                                            AllowSorting="true"
+                                            AllowMultiSorting="true">
+                                        <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" ShowDeleteConfirmDialog="true" Mode="EditMode.Dialog" />
+                                        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"
+                                                               EnableSimpleMultiRowSelection="false"
+                                                               CheckboxOnly="false"
+                                                               Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                        <GridEvents TValue="TeamModel" RowSelected="@OnTeamSelectedChanged" RowDeselected="@OnTeamSelectedChanged" Created="@OnGridTCreated" />
+                                        <GridColumns>
+                                            <GridColumn HeaderText="Id" Field=@nameof(TeamModel.Id) IsPrimaryKey="true" Visible="false"></GridColumn>
+                                            <GridColumn HeaderText="Nome" Field=@nameof(TeamModel.Nome) Type="ColumnType.String" EditType="EditType.DefaultEdit" Width="70%"></GridColumn>
+                                            <GridColumn HeaderText="Amministrativo" Field=@nameof(TeamModel.IsAdmin) Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" Width="15%">
+                                                <Template>
+                                                    @{
+                                                        if ((context as TeamModel)?.IsAdmin ?? false)
+                                                        {
+                                                            <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                                        }
+                                                        //else non mostro nulla
+                                                    }
+                                                </Template>
+                                            </GridColumn>
+                                            <GridColumn HeaderText="Licenza" Field=@nameof(TeamModel.IsLicensed) Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" Width="15%">
+                                                <Template>
+                                                    @{
+                                                        if ((context as TeamModel)?.IsLicensed ?? false)
+                                                        {
+                                                            <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                                        }
+                                                        //else non mostro nulla
+                                                    }
+                                                </Template>
+                                            </GridColumn>
+                                        </GridColumns>
+                                    </SfGrid>
+                                </CardContent>
+                            </SfCard>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Archivio licenze" />
+                </ChildContent>
+                <ContentTemplate>
+                    <div id="archivio" class="control-section row" style="min-height:300px">
+                        <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+                            <SfCard CssClass="e-card">
+                                <CardHeader Title="Licenze archiviate">
+                                    <div>
+                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-annulla-azione" IconPosition="IconPosition.Left" Disabled="@(!OneArchiveSelected)" OnClick="@OnClickRestore"></SfButton>
+                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" Disabled="@(!ArchiveSelected)" OnClick="@OnClickDeleteArchive"></SfButton>
+                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" OnClick="@OnClickRefreshArchive"></SfButton>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <SfGrid DataSource="@_archive"
+                                            TValue="LicenzaDto"
+                                    @ref="_gridA"
+                                            AllowSelection="true"
+                                            AllowGrouping="false"
+                                            AllowFiltering="false"
+                                            AllowReordering="true"
+                                            AllowResizing="true"
+                                            AllowSorting="true"
+                                            AllowMultiSorting="true">
+                                        <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" ShowDeleteConfirmDialog="true" Mode="EditMode.Dialog" />
+                                        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"
+                                                               EnableSimpleMultiRowSelection="false"
+                                                               CheckboxOnly="false"
+                                                               Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                                        <GridEvents TValue="LicenzaDto" Created="@OnGridLCreated" RowSelected="@OnArchiveSelectedChanged" RowDeselected="@OnArchiveSelectedChanged" />
+                                        <GridColumns>
+                                            <GridColumn HeaderText="Codice cliente" Field=@nameof(LicenzaDto.CodiceCliente) Type="ColumnType.String" Width="12%"></GridColumn>
+                                            <GridColumn HeaderText="Scadenza" Field=@nameof(LicenzaDto.ExpirationDate) Type="ColumnType.DateOnly" Width="18%">
+                                                <Template>
+                                                    @{
+                                                        string css = (context as LicenzaDto)!.IsExpired ? "color-red" : "color-green";
+                                                        <span class="@css">@((context as LicenzaDto)!.ExpirationDate.ToString("dd/MM/yyyy"))</span>
+
+                                                    }
+                                                </Template>
+                                            </GridColumn>
+                                            <GridColumn HeaderText="Attivazioni" Field=@nameof(LicenzaDto.Activations) Type="ColumnType.Number" Width="10%">
+                                                <Template>
+                                                    @{
+                                                        string css = ((context as LicenzaDto)?.Activations ?? 0) <= 0 ? "color-red" : "";
+                                                        <span class="@css">@((context as LicenzaDto)!.Activations)</span>
+                                                    }
+                                                </Template>
+                                            </GridColumn>
+                                            @foreach (var feature in Enum.GetValues<ModelData.Utilities.LicenseFeature>())
+                                            {
+                                                <GridColumn HeaderText="@(Enum.GetName<ModelData.Utilities.LicenseFeature>(feature))" Field=@nameof(TeamModel.IsLicensed)
+                                                            Type="ColumnType.Boolean" EditType="EditType.BooleanEdit" DisplayAsCheckBox="true" Width="8%">
+                                                    <Template>
+                                                        @{
+                                                            if ((context as LicenzaDto)!.LicenseFeatures?.Contains(feature) ?? false)
+                                                            {
+                                                                <SfIcon IconCss="e-inherit e-icons pe-sm-3 icon-conferma e-grid-tick color-green" />
+                                                            }
+                                                            //else non mostro nulla
+                                                        }
+                                                    </Template>
+                                                </GridColumn>
+                                            }
+                                            @if (_adminMode)
+                                            {
+                                                <GridColumn HeaderText="Chiave" Field=@nameof(LicenzaDto.ChiaveLicenza) Type="ColumnType.None" Width="8%">
+                                                    <Template>
+                                                        <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-join" IconPosition="IconPosition.Left" OnClick="@(() => OnClickLicenseKey((context as LicenzaDto).ChiaveLicenza))"></SfButton>
+                                                    </Template>
+                                                </GridColumn>
+                                            }
+                                            <GridColumn HeaderText="Info aggiuntive" Field=@nameof(LicenzaDto.AdditionalInfo) Type="ColumnType.String" Width="45%" ClipMode="ClipMode.EllipsisWithTooltip"></GridColumn>
+                                        </GridColumns>
+                                    </SfGrid>
+                                </CardContent>
+                            </SfCard>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+</div>
+
+<FindTeamDialog ClienteId="@(_cliente.Id)" IsVisible="@_showTeamSearch" OkCallback="@OnTeamDialogOk" CancelCallback="@OnTeamDialogCancel" />
+
+<StringInputPopup PopupTitle="Inserisci chiave di licenza"
+                  OnSubmit="@OnSubmitNewLicense"
+                  OnCancel="@OnCancelNewLicense"
+                  IsVisible="@_showNewLicensePopup" />
+
+@code {
+
+    [CascadingParameter] public UtenteModel? JoinUser { get; set; }
+
+    [Parameter] public Guid? ClienteId { get; set; }
+
+
+    private ClienteModel _cliente = new ClienteModel();
+
+    private LicenzaDto? _licenza = null;
+
+    private bool _adminMode;
+
+    private SfTab? _tabs;
+    private SfGrid<TeamModel> _gridT;
+    private SfGrid<LicenzaDto> _gridA;
+
+    private ObservableCollection<TeamModel> _teams = new ObservableCollection<TeamModel>();
+    private bool TeamSelected { get; set; } = false;
+
+    private ObservableCollection<LicenzaDto> _archive = new ObservableCollection<LicenzaDto>();
+    private bool ArchiveSelected { get; set; } = false;
+    private bool OneArchiveSelected { get; set; } = false;
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool RequestError { get; set; } = false;
+    private string RequestErrorMessage { get; set; } = "";
+
+    private bool _showTeamSearch = false;
+    private bool _showNewLicensePopup = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        RequestError = false;
+        RequestErrorMessage = "";
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            //var authState = await _authState.GetAuthenticationStateAsync();
+
+            //var roles = authState.User.Claims.Where(c => c.Type == RuoliAuth0.ROLEKEY).Select(c => c.Value);
+
+
+            _adminMode = JoinUser?.Auth0Roles?.Contains(RuoliAuth0.DIGICORP) ?? false;
+
+
+            var clienteResult = await _apiClient.JsonGetAsync<ClienteDto>("clienti", ClienteId.ToString());
+            if (!clienteResult.Success)
+            {
+                RequestError = true;
+                RequestErrorMessage = "Errore #1 - Cliente";
+                return;
+            }
+            _cliente = _mapper.Map<ClienteModel>(clienteResult.ResponseContentData!);
+
+            _breadcrumbs = new List<(string, string)>()
+                                {
+                ("Amministrazione Clienti", "/clienti"),
+                (_cliente.Info, "/clienti/" + ClienteId.ToString()),
+                ("Licenze", "/clienti/" + ClienteId.ToString() + "/licenze")
+                                };
+
+
+            var licenzaResult = await _apiClient.JsonGetAsync<LicenzaDto>("clienti/get-licenza", query: new Dictionary<string, string>() { { "clienteId", _cliente.IdString } });
+            if (licenzaResult.Success)
+            {
+                _licenza = licenzaResult.ResponseContentData!;
+            }
+            else
+            {
+                if (licenzaResult.ResponseStatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    //Non c'è una chiave di licenza attiva
+                    _licenza = null;
+                }
+                else
+                {
+                    RequestError = true;
+                    RequestErrorMessage = "Errore #2 - Licenza";
+                    return;
+                }
+            }
+
+            await GetTeams();
+
+            await GetArchive();
+
+        }
+        else
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private void OnGridTCreated()
+    {
+        if (_gridT != null)
+        {
+            var sort1 = new SortColumn();
+            sort1.Field = nameof(TeamModel.Nome);
+            sort1.Direction = SortDirection.Ascending;
+
+            _gridT.SortColumnsAsync(new List<SortColumn>() { sort1 });
+        }
+
+    }
+
+    private void OnGridLCreated()
+    {
+        if (_gridA != null)
+        {
+            var sort2 = new SortColumn();
+            sort2.Field = nameof(LicenzaDto.ExpirationDate);
+            sort2.Direction = SortDirection.Descending;
+
+            _gridA.SortColumnsAsync(new List<SortColumn>() { sort2 });
+
+        }
+
+    }
+
+
+
+    private void OnTeamSelectedChanged()
+    {
+        TeamSelected = (_gridT.SelectedRowIndexes?.Count() ?? -1) > 0;
+
+        StateHasChanged();
+    }
+
+
+    private void OnClickAddTeam()
+    {
+        _showTeamSearch = true;
+    }
+
+    private async Task OnClickRemoveTeams()
+    {
+        if (TeamSelected)
+        {
+
+            string msg = string.Empty;
+            switch (_gridT.SelectedRecords.Count())
+            {
+                case 0:
+                    return;
+                case 1:
+                    msg = "Disassociare il team selezionato dalla licenza?";
+                    break;
+                default:
+                    msg = "Disassociare i team selezionati dalla licenza?";
+                    break;
+            }
+
+            bool confirm = await _dialogService.ConfirmAsync(msg, "Conferma disassociazione", DialogOptions.ConfirmOptions);
+            if (confirm)
+            {
+                foreach (var team in _gridT.SelectedRecords)
+                {
+                    var dto = new TeamUpdateDto()
+                        {
+                            Id = team.Id,
+                            Nome = team.Nome,
+                            IsAdmin = team.IsAdmin,
+                            IsLicensed = false
+                        };
+
+                    var result = await _apiClient.JsonPutAsync("teams", team.IdString, dto);
+                    if (!result.Success)
+                    {
+                        RequestError = true;
+                        RequestErrorMessage = "Errore disassociazione";
+                        return;
+                    }
+                    _teams.Remove(_teams.Where(t => t.IdString == team.IdString).Single());
+                }
+
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnTeamDialogOk(TeamModel team)
+    {
+        _showTeamSearch = false;
+
+        var dto = new TeamUpdateDto()
+            {
+                Id = team.Id,
+                Nome = team.Nome,
+                IsAdmin = team.IsAdmin,
+                IsLicensed = true
+            };
+
+        var result = await _apiClient.JsonPutAsync("teams", team.IdString, dto);
+        if (result.Success)
+        {
+            team.IsLicensed = true;
+            _teams.Add(team);
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task OnTeamDialogCancel()
+    {
+        _showTeamSearch = false;
+    }
+
+
+    private async Task OnClickRefreshTeams()
+    {
+        RequestError = false;
+        RequestErrorMessage = "";
+
+        if (_cliente?.Id != null && _cliente.Id != Guid.Empty)
+        {
+            await GetTeams();
+            _gridT.ForceUpdate = true;
+        }
+        else
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetTeams()
+    {
+        if (_licenza != null)
+        {
+            var result = await _apiClient.JsonGetAsync<IEnumerable<TeamDto>>("teams/get-by-cliente", query: new Dictionary<string, string>() { { "clienteId", _cliente.IdString } });
+            if (!result.Success)
+            {
+                RequestError = true;
+                RequestErrorMessage = "Errore #3 - Teams";
+                return;
+            }
+            _teams = _mapper.Map<ObservableCollection<TeamModel>>(result.ResponseContentData!.Where(t => t.IsLicensed.GetValueOrDefault(false)));
+        }
+        else
+        {
+            _teams.Clear();
+            TeamSelected = false;
+        }
+
+        StateHasChanged();
+    }
+
+
+    private void OnArchiveSelectedChanged()
+    {
+        ArchiveSelected = (_gridA.SelectedRowIndexes?.Count() ?? -1) > 0;
+        OneArchiveSelected = (_gridA.SelectedRowIndexes?.Count() ?? -1) == 1;
+
+        StateHasChanged();
+    }
+
+    private async Task OnClickDeleteArchive()
+    {
+        if (_adminMode)
+        {
+            foreach (var license in _gridA.SelectedRecords.Select(x => x.ChiaveLicenza))
+            {
+                var result = await _apiClient.JsonSendAsync<LicenzaDto>("clienti/elimina-licenza",
+                                                                  HttpMethod.Patch,
+                                                                  new Dictionary<string, string>() { { "clienteId", _cliente.IdString }, { "chiaveLicenza", license! } },
+                                                                  null);
+                if (!result.Success)
+                {
+                    RequestError = true;
+                    RequestErrorMessage = "Errore eliminazione licenze - " + result.ResponseStatusCode.ToString();
+                    return;
+                }
+            }
+
+            OnClickRefreshArchive();
+        }
+    }
+
+    private async Task OnClickRefreshArchive()
+    {
+        RequestError = false;
+        RequestErrorMessage = "";
+
+        if (_cliente?.Id != null && _cliente.Id != Guid.Empty)
+        {
+            await GetArchive();
+            _gridA.ForceUpdate = true;
+        }
+        else
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetArchive()
+    {
+
+        var result = await _apiClient.JsonGetAsync<IEnumerable<LicenzaDto>>("clienti/get-licenze-archivio", query: new Dictionary<string, string>() { { "clienteId", _cliente.IdString } });
+        if (!result.Success)
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore #4 - Archivio";
+            return;
+        }
+        _archive = new ObservableCollection<LicenzaDto>(result.ResponseContentData!);
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnClickNewLicense()
+    {
+        if (_adminMode && _licenza == null)
+        {
+            _showNewLicensePopup = true;
+        }
+
+    }
+
+    private void OnCancelNewLicense()
+    {
+        _showNewLicensePopup = false;
+    }
+
+    private void OnSubmitNewLicense(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+            value = value.Trim();
+
+        _showNewLicensePopup = false;
+
+        InserisciORipristinaLicenzaAsync(value);
+    }
+
+    private async Task OnClickArchive()
+    {
+        if (!_adminMode)
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore archiviazione licenza - operazione riservata all'amministratore Digi Corp";
+            return;
+        }
+
+        var result = await _apiClient.JsonSendAsync("clienti/archivia-licenza",
+                                                    HttpMethod.Patch,
+                                                    new Dictionary<string, string>() { { "clienteId", _cliente.IdString } },
+                                                    null);
+        if (!result.Success)
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore archiviazione licenza - " + result.ResponseStatusCode.ToString();
+            return;
+        }
+
+        _licenza = null;
+        OnClickRefreshArchive();
+
+    }
+
+    private void OnClickRestore()
+    {
+        string chiave = _gridA.SelectedRecords[0].ChiaveLicenza!;
+        InserisciORipristinaLicenzaAsync(chiave);
+    }
+
+    private async Task InserisciORipristinaLicenzaAsync(string chiave)
+    {
+        if (!_adminMode)
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore inserimento/ripristino licenza - operazione riservata all'amministratore Digi Corp";
+            return;
+        }
+        var result = await _apiClient.JsonSendAsync<LicenzaDto>("clienti/inserisci-licenza",
+                                                              HttpMethod.Patch,
+                                                              new Dictionary<string, string>() { { "clienteId", _cliente.IdString }, { "chiaveLicenza", chiave } },
+                                                              null);
+        if (!result.Success)
+        {
+            RequestError = true;
+            RequestErrorMessage = "Errore inserimento/ripristino licenza - " + result.ResponseStatusCode.ToString();
+            return;
+        }
+
+        _licenza = result.ResponseContentData!;
+        OnClickRefreshArchive();
+
+    }
+
+    private void OnClickLicenseKey(string key)
+    {
+        if (_adminMode)
+        {
+            _dialogService.AlertAsync(key, "Chiave di licenza", DialogOptions.AlertOptions);
+        }
+    }
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+
+</style>

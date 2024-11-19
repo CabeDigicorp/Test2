@@ -1,0 +1,69 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+N.B. by Ale:  Anche se scritto per CryptoLicensing For .Net 2018 in realtà è stato acquistato CryptoLicensing For .Net 2020
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+-----Messaggio originale-----
+Da: Himangi [LogicNP Software] <himangi@ssware.com> 
+Inviato: giovedì 11 novembre 2021 08:43
+A: patrizia@digicorp.it
+Oggetto: License Information for CryptoLicensing For .Net 2018
+
+Dear Customer,
+
+Thank you for purchasing from LogicNP Software. The following is the license information for the products you purchased.
+
+License holder's name : Gian Piero TRUCCOLO Company Name : DIGI CORP S.R.L.
+Email : patrizia@digicorp.it
+
+Type of license :
+Number of Licenses : 1
+
+Support And Upgrade Subscription Purchased : No Support And Upgrade Subscription Ends on : 10 December 2021
+
+CryptoLicensing For .Net 2018 Enterprise Edition License String:
+lgCBAOiilLbP1tcBAQCBAE5hbWU9R2lhbiBQaWVybyBUUlVDQ09MTyNDb21wYW55PURJR0
+kgQ09SUCBTLlIuTC4jRW1haWw9cGF0cml6aWFAZGlnaWNvcnAuaXQjU3Vic2NyaXB0aW9u
+PUZhbHNlI1N1YnNjcmlwdGlvblZhbGlkVGlsbD0xMC1EZWMtMjAyMQEHHOcgUjNNA/n4kA
++A7Bt17HJEXdYizPoJ4dVOSklvFgsoKC3mLLP//GnJkX5Fnosu
+
+To activate the license :
+1. In the main application, select 'Help' --> 'Enter License...'.
+2. Enter ONLY the license string from the email and click OK (the license string is the encoded garbled string). You should receive a 'Thank you for purchasing CryptoLicensing ...' message.
+3. Close and restart the CryptoLicensing application.
+
+==========================================================
+
+LICENSE CODE TO USE WITH LICENSE SERVICE (required only if you are using the license service) :
+
+lgCBAOiilLbP1tcBAQCBAE5hbWU9R2lhbiBQaWVybyBUUlVDQ09MTyNDb21wYW55PURJR0
+kgQ09SUCBTLlIuTC4jRW1haWw9cGF0cml6aWFAZGlnaWNvcnAuaXQjU3Vic2NyaXB0aW9u
+PUZhbHNlI1N1YnNjcmlwdGlvblZhbGlkVGlsbD0xMC1EZWMtMjAyMQEHgAVeo1E7gOB7lj
+XmNh3sX6Buqi4mFsEZYN6aTfMckSLuxoxk9Iu9A32wNYtqWAej
+
+Use the above license code in the App_Code\LicenseService.cs (or .vb) file of your license service as follows:
+
+// C#
+this.Generator.SetLicenseCode("lgCBAOiilLbP1tcBAQCBAE5hbWU9R2lhbiBQaWVybyBUUlVDQ09MTyNDb21wYW55PURJR0kgQ09SUCBTLlIuTC4jRW1haWw9cGF0cml6aWFAZGlnaWNvcnAuaXQjU3Vic2NyaXB0aW9uPUZhbHNlI1N1YnNjcmlwdGlvblZhbGlkVGlsbD0xMC1EZWMtMjAyMQEHgAVeo1E7gOB7ljXmNh3sX6Buqi4mFsEZYN6aTfMckSLuxoxk9Iu9A32wNYtqWAej"); 
+
+
+' VB.Net
+Me.Generator.SetLicenseCode("lgCBAOiilLbP1tcBAQCBAE5hbWU9R2lhbiBQaWVybyBUUlVDQ09MTyNDb21wYW55PURJR0kgQ09SUCBTLlIuTC4jRW1haWw9cGF0cml6aWFAZGlnaWNvcnAuaXQjU3Vic2NyaXB0aW9uPUZhbHNlI1N1YnNjcmlwdGlvblZhbGlkVGlsbD0xMC1EZWMtMjAyMQEHgAVeo1E7gOB7ljXmNh3sX6Buqi4mFsEZYN6aTfMckSLuxoxk9Iu9A32wNYtqWAej") 
+
+
+
+Evaluation Info Dialog Source Code Link:
+http://www.ssware.com/cryptolicensing/showevaluationdialog.zip
+
+Please take note of the following :
+
+1. The license holder's name, company name and email is embedded in the license string, so each license string is traceable to the person/company which purchased the license.
+2. The controls are licensed on a per-developer basis, so only as many developers can use this license as indicated in the license information above. If additional developers need to use the controls, you will need additional licenses.
+3. Also note that the license is not a concurrent license but is a named license, so different developers cannot use the same license at any time.
+4. Your license itself is perpetual. The Support And Upgrade Subscription End Date indicates till when you are entitled to receive free updates and priority technical support.
+
+You will be notified of any updates to this product.If you have any queries, suggestions,comments or bug-reports, please contact us at support@ssware.com or sales@ssware.com .
+
+Thank You
+LogicNP Software
+
+

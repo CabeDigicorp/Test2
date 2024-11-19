@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="StampeWpf.ReportWizardSettingDataView" Collapsed="true">
+    <Position X="4.25" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>IBMYkQJJAQsIYQJNTADGECIhEAQAAoigsLACABoMARo=</HashCode>
+      <FileName>Wizard\Data\ReportWizardSettingDataView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StampeWpf.Wizard.ReportWizardSettingData" Collapsed="true">
+    <Position X="4.25" Y="1" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AARAoAJwAAEAYMAACACQAEAEAIYEECEAAAMAACIAAEA=</HashCode>
+      <FileName>Wizard\Data\ReportWizardSettingData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ReportSettingDataViewHelper" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="GroupSetting" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="StampeWpf.Wizard.TextBoxItemView" Collapsed="true">
+    <Position X="12.75" Y="8.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>BCAJAAAAACgAUEMBgBACCAiACAAAAEAMAAACAIIEIgA=</HashCode>
+      <FileName>Wizard\Data\TextBoxItemView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StampeWpf.Wizard.TextBoxItem" Collapsed="true">
+    <Position X="13" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAQACIAABAKKFAgQKDgSQFQAACAAAgAAgQAAgioCA=</HashCode>
+      <FileName>Wizard\Data\TextBoxItem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="ItemsRaggruppamenti" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="StampeWpf.Wizard.TreeviewItem" Collapsed="true">
+    <Position X="12.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAYAQBAABEgmAAAIAQAwAECQACAAIKAAAACKAKBCoA=</HashCode>
+      <FileName>Wizard\Data\TextBoxItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StampeWpf.Wizard.RaggruppamentiItemsView" Collapsed="true">
+    <Position X="6.75" Y="7.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>gAYgAAC0AEAFIACAAQQAEAAgAgEIGgBEAEIAAAEASgA=</HashCode>
+      <FileName>Wizard\Data\RaggruppamentiItemsView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="GroupSettingView" />
+      <Property Name="ReportSettingDataViewHelper" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="StampeWpf.Wizard.ReportSettingDataViewHelper">
+    <Position X="1" Y="4.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAgQAIAAAADAA4AAAAAAQDAAAQiAAAACAAQAAAKCQgA=</HashCode>
+      <FileName>Wizard\Data\ReportSettingDataViewHelper.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="ItemsRaggruppamenti" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="StampeWpf.Wizard.GroupSettingView" Collapsed="true">
+    <Position X="6.75" Y="11.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAQAAAAAAAAAQAAAAAAAgAIAgBAAAAKAAAAAAA=</HashCode>
+      <FileName>Wizard\Data\GroupSettingView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StampeWpf.Wizard.DocumentoView" Collapsed="true">
+    <Position X="9" Y="1" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>wQAUCACEEAMAEAARAgghMDKABAgEAAAADAACCB0AAAg=</HashCode>
+      <FileName>Wizard\Data\DocumentoView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

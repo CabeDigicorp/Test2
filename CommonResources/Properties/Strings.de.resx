@@ -1,0 +1,4449 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="4D" xml:space="preserve">
+    <value>4D</value>
+  </data>
+  <data name="a" xml:space="preserve">
+    <value>an:</value>
+  </data>
+  <data name="a partire da" xml:space="preserve">
+    <value> </value>
+  </data>
+  <data name="A partire da1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AAA0" xml:space="preserve">
+    <value>AAA0</value>
+  </data>
+  <data name="AAA1" xml:space="preserve">
+    <value>AAA1</value>
+  </data>
+  <data name="AAA2" xml:space="preserve">
+    <value>AAA2</value>
+  </data>
+  <data name="AAA3" xml:space="preserve">
+    <value>AAA3</value>
+  </data>
+  <data name="AAA4" xml:space="preserve">
+    <value>AAA4</value>
+  </data>
+  <data name="AAA5" xml:space="preserve">
+    <value>AAA5</value>
+  </data>
+  <data name="AAA6" xml:space="preserve">
+    <value>AAA6</value>
+  </data>
+  <data name="AAA7" xml:space="preserve">
+    <value>AAA7</value>
+  </data>
+  <data name="AAA8" xml:space="preserve">
+    <value>AAA8</value>
+  </data>
+  <data name="AAA9" xml:space="preserve">
+    <value>AAA9</value>
+  </data>
+  <data name="Accedi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AccessoWebInCorso" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ActivationsAreFloating" xml:space="preserve">
+    <value>Floating-Aktivierungen</value>
+  </data>
+  <data name="Adatta a" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Adatta foglio ad una pagina" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Adatta tutte le colonne ad una pagina" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Adatta tutte le righe ad una pagina" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AffinareLaRicerca" xml:space="preserve">
+    <value>Suche verfeinern</value>
+  </data>
+  <data name="Aggiorna" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Aggiorna foglio di calcolo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiornaAllaVersione" xml:space="preserve">
+    <value>zur Version aktualisieren</value>
+  </data>
+  <data name="AggiornaDaPrezzario" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiornamentoInCorso" xml:space="preserve">
+    <value>Aktualisierung…</value>
+  </data>
+  <data name="AggiornaModello" xml:space="preserve">
+    <value>Vorlage aktualisieren</value>
+  </data>
+  <data name="AggiornaPrezzario" xml:space="preserve">
+    <value>Preisliste aktualisieren</value>
+  </data>
+  <data name="Aggiornare il modello Import xpwe" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiornaVociComputo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiornaVociWBS" xml:space="preserve">
+    <value>PSP aktualisieren</value>
+  </data>
+  <data name="Aggiungi" xml:space="preserve">
+    <value>einfügen</value>
+  </data>
+  <data name="Aggiungi a selezione" xml:space="preserve">
+    <value>zur Auswahl hinzufügen</value>
+  </data>
+  <data name="Aggiungi articolo" xml:space="preserve">
+    <value>Artikel einfügen</value>
+  </data>
+  <data name="Aggiungi condizione" xml:space="preserve">
+    <value>Kriterium hinzufügen</value>
+  </data>
+  <data name="Aggiungi divisione" xml:space="preserve">
+    <value>Abschnitt einfügen</value>
+  </data>
+  <data name="Aggiungi dopo l'elemento corrente" xml:space="preserve">
+    <value>unter den ausgewählten Eintrag hinzufügen</value>
+  </data>
+  <data name="Aggiungi elementi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Aggiungi elementi e gruppo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Aggiungi filtro" xml:space="preserve">
+    <value>Filter hinzufügen</value>
+  </data>
+  <data name="Aggiungi gruppo" xml:space="preserve">
+    <value>Gruppe hinzufügen</value>
+  </data>
+  <data name="Aggiungi in coda" xml:space="preserve">
+    <value>unten einfügen</value>
+  </data>
+  <data name="Aggiungi inferiore dell'elemento corrente" xml:space="preserve">
+    <value>Eintrag einfügen untergeordnet zu:</value>
+  </data>
+  <data name="Aggiungi nella sezione Elementi" xml:space="preserve">
+    <value>zum Elementenabschnitt hinzufügen</value>
+  </data>
+  <data name="Aggiungi raggruppamento" xml:space="preserve">
+    <value>Gruppe einfügen</value>
+  </data>
+  <data name="Aggiungi superiore dell'elemento corrente" xml:space="preserve">
+    <value>Eintrag einfügen obergeordnet zu:</value>
+  </data>
+  <data name="Aggiungi TAG ai filtri selezionati" xml:space="preserve">
+    <value>Tag zu ausgewählten Filtern hinzufügen</value>
+  </data>
+  <data name="Aggiungi un filtro" xml:space="preserve">
+    <value>Filter einfügen</value>
+  </data>
+  <data name="Aggiungi voci da elenco prezzi" xml:space="preserve">
+    <value>Eintrag aus der Preisliste hinzufügen</value>
+  </data>
+  <data name="AggiungiAdAttributoMultivalore" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiungiARiferimento" xml:space="preserve">
+    <value>Untergruppe hinzufügen</value>
+  </data>
+  <data name="AggiungiArticoli" xml:space="preserve">
+    <value>Artikel einfügen</value>
+  </data>
+  <data name="AggiungiAttivitaDaElencoPrezzi" xml:space="preserve">
+    <value>Aufgabe aus der Preisliste einfügen</value>
+  </data>
+  <data name="AggiungiSuddivisione" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiungiTag" xml:space="preserve">
+    <value>Tag einfügen</value>
+  </data>
+  <data name="AggiungiUnaPiuVoci" xml:space="preserve">
+    <value>ein oder mehere Einträge einfügen</value>
+  </data>
+  <data name="AggiungiVoce" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AggiungiVociAttivita" xml:space="preserve">
+    <value>Aktivität zum ausgewählten Eintrag einfügen</value>
+  </data>
+  <data name="aggregata" xml:space="preserve">
+    <value>aggregierte</value>
+  </data>
+  <data name="AggregatoCalcolato" xml:space="preserve">
+    <value>kalkulierte Aggregat</value>
+  </data>
+  <data name="Alcune classi sono escluse dal modello" xml:space="preserve">
+    <value>einige Klassen sind vom Model ausgeschlossen</value>
+  </data>
+  <data name="Allegati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Allegati del progetto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Allinea" xml:space="preserve">
+    <value>ausrichten</value>
+  </data>
+  <data name="Allineamento" xml:space="preserve">
+    <value>Ausrichtung</value>
+  </data>
+  <data name="AllineamentoOrizzontale" xml:space="preserve">
+    <value>Horizontal Ausrichtung</value>
+  </data>
+  <data name="AllineamentoVerticale" xml:space="preserve">
+    <value>Vertikal Ausrichtung</value>
+  </data>
+  <data name="Almeno una è incompleta" xml:space="preserve">
+    <value>Mindestens eine ist unvollständig</value>
+  </data>
+  <data name="Altezza della immagine in pixel" xml:space="preserve">
+    <value>Bild Höhe in Pixel</value>
+  </data>
+  <data name="Altezza immagine" xml:space="preserve">
+    <value>Bild Höhe</value>
+  </data>
+  <data name="AltreOpzioni" xml:space="preserve">
+    <value>weitere Optionen</value>
+  </data>
+  <data name="Anagrafica" xml:space="preserve">
+    <value>persönliche Daten </value>
+  </data>
+  <data name="AncoraggioVerticale" xml:space="preserve">
+    <value>Vertikale Verankerung</value>
+  </data>
+  <data name="And (intersezione)" xml:space="preserve">
+    <value>AND (Schnittmenge)</value>
+  </data>
+  <data name="AND intersezione" xml:space="preserve">
+    <value>AND (Schnittmenge)</value>
+  </data>
+  <data name="Anni" xml:space="preserve">
+    <value>Jahre</value>
+  </data>
+  <data name="Anno" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Annotazione" xml:space="preserve">
+    <value>Anmerkung</value>
+  </data>
+  <data name="Annotazioni" xml:space="preserve">
+    <value>Anmerkungen</value>
+  </data>
+  <data name="Annulla" xml:space="preserve">
+    <value>beenden</value>
+  </data>
+  <data name="Annulla la funzione" xml:space="preserve">
+    <value>Funktion löschen</value>
+  </data>
+  <data name="Anteponi al codice esistente" xml:space="preserve">
+    <value>vor dem besherigen Code hizufügen</value>
+  </data>
+  <data name="Anteprima" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="AnteprimaReport" xml:space="preserve">
+    <value>Bericht Vorschau</value>
+  </data>
+  <data name="Applica" xml:space="preserve">
+    <value>anwenden</value>
+  </data>
+  <data name="Applica bordi a tabella" xml:space="preserve">
+    <value>Tabelle Rahmenlinie anwenden</value>
+  </data>
+  <data name="ApplicazioneRegoleInCorso" xml:space="preserve">
+    <value>Laufende Anwendung der Regel. Bitte warten…</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>Join</value>
+  </data>
+  <data name="Apri" xml:space="preserve">
+    <value>öffnen</value>
+  </data>
+  <data name="ApriCartellaModelli" xml:space="preserve">
+    <value>Vorlage-Ordner öffnen</value>
+  </data>
+  <data name="ApriCartellaPrezzari" xml:space="preserve">
+    <value>Preisliste Ordner öffnen</value>
+  </data>
+  <data name="ApriDaWeb" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Archivio" xml:space="preserve">
+    <value>Archiv</value>
+  </data>
+  <data name="Archivio&gt;Contatti" xml:space="preserve">
+    <value>Archiv&gt;Kontakte</value>
+  </data>
+  <data name="Archivio&gt;Filtri" xml:space="preserve">
+    <value>Archiv&gt;Filters</value>
+  </data>
+  <data name="Archivio&gt;Prezzari" xml:space="preserve">
+    <value>Archiv&gt;Preiliste</value>
+  </data>
+  <data name="Archivio&gt;Regole" xml:space="preserve">
+    <value>Archiv&gt;Regeln</value>
+  </data>
+  <data name="Area" xml:space="preserve">
+    <value>Fläche</value>
+  </data>
+  <data name="Articoli" xml:space="preserve">
+    <value>Artikel</value>
+  </data>
+  <data name="Articoli e Filtri con probabilità di conflitto" xml:space="preserve">
+    <value>Artikel und Filters mit Konfliktwahrscheinlichkeit</value>
+  </data>
+  <data name="Articolo inesistente" xml:space="preserve">
+    <value>Artikel existiert nicht</value>
+  </data>
+  <data name="Articolo2" xml:space="preserve">
+    <value>Artikel</value>
+  </data>
+  <data name="ArticoloAttivita" xml:space="preserve">
+    <value />
+  </data>
+  <data name="associato all'elemento" xml:space="preserve">
+    <value>mit Artikel verknüpft</value>
+  </data>
+  <data name="Associazioni ripetute elementi-articoli" xml:space="preserve">
+    <value>redundante Assoziationen Elemente-Artikel </value>
+  </data>
+  <data name="ATTENZIONE" xml:space="preserve">
+    <value>WARNUNG! </value>
+  </data>
+  <data name="Attenzione  Questo valore ha la virgola" xml:space="preserve">
+    <value>Warnung! Dieser Wert hat ein Komma</value>
+  </data>
+  <data name="Attenzione  Questo valore ha la virgola. Se il valore è numerico il separatore decimale deve essere il punto." xml:space="preserve">
+    <value>Warnung! Dieser Wert hat ein Komma statt einen Punkt</value>
+  </data>
+  <data name="Attenzione visibilità trasparenze colori e zoom" xml:space="preserve">
+    <value>Warnung! Sichtbarkeit, Transparenzen, Farbe und Zoom</value>
+  </data>
+  <data name="Attenzione!CompilareIlRaggruppamentoVuotoPrimaDiCancellarneUnAltro" xml:space="preserve">
+    <value>Warnung! die leere Gruppe auffüllen, bevor Sie eine andere löschen</value>
+  </data>
+  <data name="Attenzione!CompilareTuttiIRaggruppamentiPrimaDiProcedere" xml:space="preserve">
+    <value>Warnung! alle Gruppe auffüllen, bevor Sie fortfahren</value>
+  </data>
+  <data name="Attenzione!NonCiSonoDatiDisponibiliPerLElaborazioneDelReport" xml:space="preserve">
+    <value>Warnung! Keine Daten für die Berichtserstellung verfügbar</value>
+  </data>
+  <data name="Attenzione!NonEPossibileCancellareLUltimaColonna" xml:space="preserve">
+    <value>Warnung! Sie können nicht die letzte Spalte löschen</value>
+  </data>
+  <data name="Attenzione!NonEPossibileInserireUnoStessoRaggruppamentoPiuVolte" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Attenzione!SelezionareLattributoDellaRigaSuccessivaPrimaDiSpostareLaRigaDiRaggruppamento" xml:space="preserve">
+    <value>Warnung! Wählen Sie das Attribut der unteren Zeile , bevor Sie die Gruppe verschieben</value>
+  </data>
+  <data name="AttenzioneNonEPossibileCancellareLUltimaRiga" xml:space="preserve">
+    <value>Warnung! Sie können die letzte Zeile nicht löschen</value>
+  </data>
+  <data name="Attiva elaborazione in MultiThread" xml:space="preserve">
+    <value>Multithread aktivieren</value>
+  </data>
+  <data name="Attiva la gestione delle viste precedenti" xml:space="preserve">
+    <value>vorherige Ansicht aktivieren</value>
+  </data>
+  <data name="Attiva la trasparenza" xml:space="preserve">
+    <value>Transparenz aktivieren</value>
+  </data>
+  <data name="AttivaLicenza" xml:space="preserve">
+    <value>Lizenz aktivieren</value>
+  </data>
+  <data name="Attivita" xml:space="preserve">
+    <value>Aufgabe</value>
+  </data>
+  <data name="Attivita riferita" xml:space="preserve">
+    <value>angeschlossene Aufgaben</value>
+  </data>
+  <data name="Attivita selezionate" xml:space="preserve">
+    <value>Balken finden</value>
+  </data>
+  <data name="Attivita utilizzate nel progetto" xml:space="preserve">
+    <value>Projektaufgabe</value>
+  </data>
+  <data name="AttivoFiltroConRisultatoMultiplo" xml:space="preserve">
+    <value>Multi-Filter aktiv</value>
+  </data>
+  <data name="AttivoFiltroPerAttributoRiferito" xml:space="preserve">
+    <value>verknüpfter Attribufilter aktiviert</value>
+  </data>
+  <data name="Attributi" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="Attributi aggiuntivi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AttributiAllegati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AttributiCalendari" xml:space="preserve">
+    <value>Kalendar Eigenschaften</value>
+  </data>
+  <data name="AttributiCapitoli" xml:space="preserve">
+    <value>Abschnitt Eigenschaften</value>
+  </data>
+  <data name="AttributiComputo" xml:space="preserve">
+    <value>Massenermittlung Eigenschaften</value>
+  </data>
+  <data name="AttributiConStessoNome" xml:space="preserve">
+    <value>Warnung! Zwei Attribute haben den gleichen Name</value>
+  </data>
+  <data name="AttributiContatti" xml:space="preserve">
+    <value>Kontakt-Attribute</value>
+  </data>
+  <data name="AttributiDivisione" xml:space="preserve">
+    <value>Abschnitt-Attribute</value>
+  </data>
+  <data name="AttributiElementi" xml:space="preserve">
+    <value>Elementen-Attribute</value>
+  </data>
+  <data name="AttributiElencoAttivita" xml:space="preserve">
+    <value>Aufgabenliste-Attribute</value>
+  </data>
+  <data name="AttributiElencoPrezzi" xml:space="preserve">
+    <value>Preisliste-Attribute</value>
+  </data>
+  <data name="AttributiInfoProgetto" xml:space="preserve">
+    <value>Infos-Attribute</value>
+  </data>
+  <data name="AttributiVariabili" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AttributiWBS" xml:space="preserve">
+    <value>PSP-Attribute</value>
+  </data>
+  <data name="attributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Attributo SAL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Attributo1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Attributo11" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AttributoRiferito" xml:space="preserve">
+    <value>verknüpftes Attribut</value>
+  </data>
+  <data name="Autenticazione fallita." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Automatici" xml:space="preserve">
+    <value>automatisch</value>
+  </data>
+  <data name="Autorizzazioni" xml:space="preserve">
+    <value>Genehmigungen</value>
+  </data>
+  <data name="AutoSave" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Avvia" xml:space="preserve">
+    <value>starten</value>
+  </data>
+  <data name="AvviaGuidaOnline" xml:space="preserve">
+    <value>Online-Leitfaden</value>
+  </data>
+  <data name="AvviaTeleassistenza" xml:space="preserve">
+    <value>Teleassistenz</value>
+  </data>
+  <data name="Barrato" xml:space="preserve">
+    <value>durchgestrichen</value>
+  </data>
+  <data name="Barre" xml:space="preserve">
+    <value>Balken</value>
+  </data>
+  <data name="Barre di riepilogo" xml:space="preserve">
+    <value>Sammelvorgangsbalken</value>
+  </data>
+  <data name="BarreDiRiepilogo" xml:space="preserve">
+    <value>Sammelvorgangsbalken</value>
+  </data>
+  <data name="BenvenutoInJoin" xml:space="preserve">
+    <value>Wilkommen im JOIN</value>
+  </data>
+  <data name="Blocca ritardo" xml:space="preserve">
+    <value>Verzögerung  sperren</value>
+  </data>
+  <data name="Booleano" xml:space="preserve">
+    <value>Boolesche</value>
+  </data>
+  <data name="Box tra due punti" xml:space="preserve">
+    <value>2-Punkte Markierungsbereich</value>
+  </data>
+  <data name="CacheMaxSize" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Calcola" xml:space="preserve">
+    <value>berechnen</value>
+  </data>
+  <data name="Calcola il computo relativo alla formula quantità inserita" xml:space="preserve">
+    <value>Wert der Formel berechnen</value>
+  </data>
+  <data name="CalcolaVoci" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Calcolo errato per l'articolo" xml:space="preserve">
+    <value>fehlerhafte Berechnung für den Artikel</value>
+  </data>
+  <data name="Calcolo i costi del filtro" xml:space="preserve">
+    <value>Filter Kosten-Berechnung</value>
+  </data>
+  <data name="Calendari" xml:space="preserve">
+    <value>Kalendar </value>
+  </data>
+  <data name="calendario" xml:space="preserve">
+    <value>Kalendar</value>
+  </data>
+  <data name="Calendario standard" xml:space="preserve">
+    <value>Standardkalendar </value>
+  </data>
+  <data name="Calendario2" xml:space="preserve">
+    <value>Kalendar</value>
+  </data>
+  <data name="CalendarioRiferito" xml:space="preserve">
+    <value>verknüpfter Kalendar</value>
+  </data>
+  <data name="CambiaLicenza" xml:space="preserve">
+    <value>Lizenz wechseln</value>
+  </data>
+  <data name="Campi" xml:space="preserve">
+    <value>Felder</value>
+  </data>
+  <data name="Cancella BuildingStorey" xml:space="preserve">
+    <value>Gebäude Geschoss löschen</value>
+  </data>
+  <data name="Cancella i TAG selezionati" xml:space="preserve">
+    <value>Ausgewähltes Tag löschen</value>
+  </data>
+  <data name="Cancella Le Viste utente selezionate" xml:space="preserve">
+    <value>Ausgewählte Benutzeransichten löschen</value>
+  </data>
+  <data name="Cancella tutti i piani di taglio" xml:space="preserve">
+    <value>Schnittebene löschen</value>
+  </data>
+  <data name="Cancellazione dei filtri selezionati" xml:space="preserve">
+    <value>Ausgewählte Filters löschen</value>
+  </data>
+  <data name="Cancellazione del testo di ricerca" xml:space="preserve">
+    <value>Textsuche zurücksetzen</value>
+  </data>
+  <data name="Cancellazione della singola condizione" xml:space="preserve">
+    <value>Einzelkriterium entfernen</value>
+  </data>
+  <data name="CAP" xml:space="preserve">
+    <value>PLZ</value>
+  </data>
+  <data name="Capitoli" xml:space="preserve">
+    <value>Paragraph</value>
+  </data>
+  <data name="Capitoli (Parent)" xml:space="preserve">
+    <value>Paragraphen</value>
+  </data>
+  <data name="Capitolo" xml:space="preserve">
+    <value>Paragraph</value>
+  </data>
+  <data name="Carattere" xml:space="preserve">
+    <value>Schriftart</value>
+  </data>
+  <data name="Carattere non consentito nel nome dell'attributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Carica la vista" xml:space="preserve">
+    <value>Ansicht laden</value>
+  </data>
+  <data name="caricamento" xml:space="preserve">
+    <value>laden</value>
+  </data>
+  <data name="Caricamento Proprietà" xml:space="preserve">
+    <value>Eigenschaften laden</value>
+  </data>
+  <data name="CaricamentoInCorso" xml:space="preserve">
+    <value>laden…</value>
+  </data>
+  <data name="CaricaModelloIFC" xml:space="preserve">
+    <value>IFC Modell anzeigen</value>
+  </data>
+  <data name="CaricaModelloIFCConPreferenze" xml:space="preserve">
+    <value>IFC Modell mit Voreinstellungen anzeigen</value>
+  </data>
+  <data name="Caricato" xml:space="preserve">
+    <value>geladen</value>
+  </data>
+  <data name="Centro" xml:space="preserve">
+    <value>Mitte</value>
+  </data>
+  <data name="Cerca in" xml:space="preserve">
+    <value>finden in</value>
+  </data>
+  <data name="Cerca in Proprietà" xml:space="preserve">
+    <value>in Eigenschaften suchen</value>
+  </data>
+  <data name="Check nei gruppi che vuoi ricaricare nella scena" xml:space="preserve">
+    <value>Prüfen Sie die Gruppen, die Sie neu laden möchten</value>
+  </data>
+  <data name="Chiave duplicata" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ChiaviDuplicate" xml:space="preserve">
+    <value>Schlüßel duplizieren</value>
+  </data>
+  <data name="Chiudere la finestra filtro" xml:space="preserve">
+    <value>Filterfenster schließen</value>
+  </data>
+  <data name="ChiudereLaFinestraDelModello" xml:space="preserve">
+    <value>Schließen Sie das Modellfenster, um Befehle zu aktivieren</value>
+  </data>
+  <data name="Chiudi" xml:space="preserve">
+    <value>schließen</value>
+  </data>
+  <data name="Ci sono errori nelle parentesi che legano le condizioni logiche" xml:space="preserve">
+    <value>Warnung! Fehler in den logischen Klammer-Kriterien</value>
+  </data>
+  <data name="Ci sono Regole" xml:space="preserve">
+    <value>enthält Regeln</value>
+  </data>
+  <data name="Ci sono Regole Visualizza o Modifica per vederle" xml:space="preserve">
+    <value>Regeln bearbeiten</value>
+  </data>
+  <data name="CiSonoVociConQuantitaZeroVuoiEliminarle" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Classe" xml:space="preserve">
+    <value>Klasse</value>
+  </data>
+  <data name="Classe errata" xml:space="preserve">
+    <value>falsche Klasse</value>
+  </data>
+  <data name="Classe Ifc" xml:space="preserve">
+    <value>IFC Klasse</value>
+  </data>
+  <data name="Classe inesistente nel modello" xml:space="preserve">
+    <value>fehlende Klasse</value>
+  </data>
+  <data name="ClasseIfc" xml:space="preserve">
+    <value>IFC Klasse</value>
+  </data>
+  <data name="Click con il pulsante destro per memorizzare il percorso della Proprietà" xml:space="preserve">
+    <value>rechtsklick um Eigenschaft-Pfad zu kopieren</value>
+  </data>
+  <data name="Click per impostare o scegliere un valore" xml:space="preserve">
+    <value>Klicken Sie um einen Wert einzustellen oder auszuwählen</value>
+  </data>
+  <data name="Click per impostare una condizione logica" xml:space="preserve">
+    <value>Klicken Sie um ein logisches Kriterium einzustellen</value>
+  </data>
+  <data name="Click per impostare una proprietà" xml:space="preserve">
+    <value>Klicken Sie um eine Eigenschaft einzustellen</value>
+  </data>
+  <data name="Click per modificare il valore" xml:space="preserve">
+    <value>Klicken Sie um einen Wert zu ändern</value>
+  </data>
+  <data name="Click per modificare la condizione logica" xml:space="preserve">
+    <value>Klicken Sie um ein logisches Kriterium zu ändern</value>
+  </data>
+  <data name="Click per modificare la proprietà" xml:space="preserve">
+    <value>Klicken Sie um eine Eigenschaft zu ändern</value>
+  </data>
+  <data name="Click per uscire" xml:space="preserve">
+    <value>Klicken zum beenden</value>
+  </data>
+  <data name="Click per vedere anche gli elementi con valori uguali a zero" xml:space="preserve">
+    <value>Klicken Sie um die Eigenschaft mit Wert=0 einzublenden</value>
+  </data>
+  <data name="Click per vedere anche gli elementi non comuni" xml:space="preserve">
+    <value>Klicken Sie um die nicht-gemeinsame Eigenschaften einzublenden</value>
+  </data>
+  <data name="Click per vedere gli elementi con valori nulli" xml:space="preserve">
+    <value>Klicken Sie um die Eigenschaft mit Wert=NULL einzublenden</value>
+  </data>
+  <data name="Click per vedere solo gli elementi con valori legali" xml:space="preserve">
+    <value>Klicken Sie um nur die Eigenschaften mit Rechtsgültigkeit einzublenden</value>
+  </data>
+  <data name="Click per vedere solo gli elementi con valori nulli" xml:space="preserve">
+    <value>Klicken Sie um auch die Eigenschaften mit Werten= 0 einzublenden</value>
+  </data>
+  <data name="Click per vedere solo gli elementi non comuni" xml:space="preserve">
+    <value>Klicken Sie um nur die nicht-gemeinsame Eigenschaften einzublenden</value>
+  </data>
+  <data name="Click qui per aggiungere" xml:space="preserve">
+    <value>Klicken zum Hinzufügen</value>
+  </data>
+  <data name="Coda" xml:space="preserve">
+    <value>Fußzeile</value>
+  </data>
+  <data name="Codice" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Codice fiscale" xml:space="preserve">
+    <value>Steuernummer</value>
+  </data>
+  <data name="CodiceArticolo" xml:space="preserve">
+    <value>Artikel Code</value>
+  </data>
+  <data name="CodiceCapitolo" xml:space="preserve">
+    <value>Paragraph Code</value>
+  </data>
+  <data name="CodiceCliente" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CodiceDiLicenza" xml:space="preserve">
+    <value>Lizenzcode</value>
+  </data>
+  <data name="Codifica" xml:space="preserve">
+    <value>verschlüsseln</value>
+  </data>
+  <data name="CodificaSelezione" xml:space="preserve">
+    <value>Auswahl verschlüsseln</value>
+  </data>
+  <data name="Cognome" xml:space="preserve">
+    <value>Nachname</value>
+  </data>
+  <data name="Collassa la griglia" xml:space="preserve">
+    <value>zuklappen</value>
+  </data>
+  <data name="Collassa tutto" xml:space="preserve">
+    <value>Alles zuklappen</value>
+  </data>
+  <data name="Collega" xml:space="preserve">
+    <value>Balken verbinden</value>
+  </data>
+  <data name="Colonna" xml:space="preserve">
+    <value>Spalte</value>
+  </data>
+  <data name="Colonne" xml:space="preserve">
+    <value>Spalten</value>
+  </data>
+  <data name="Colora tutto" xml:space="preserve">
+    <value>alles einfärben</value>
+  </data>
+  <data name="Colore" xml:space="preserve">
+    <value>Farbe</value>
+  </data>
+  <data name="Colore bordo" xml:space="preserve">
+    <value>Rahmenlinien Farbe</value>
+  </data>
+  <data name="Colore IFC" xml:space="preserve">
+    <value>IFC Farbe</value>
+  </data>
+  <data name="Colore linea" xml:space="preserve">
+    <value>Linienfarbe</value>
+  </data>
+  <data name="Colore Standard-Modificato" xml:space="preserve">
+    <value>Standarfarbe geändert</value>
+  </data>
+  <data name="ColoreCarattere" xml:space="preserve">
+    <value>Schriftfarbe</value>
+  </data>
+  <data name="ColoreSfondo" xml:space="preserve">
+    <value>Hintergrund Farbe</value>
+  </data>
+  <data name="Commento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Committente" xml:space="preserve">
+    <value>Bauherr</value>
+  </data>
+  <data name="Committenti" xml:space="preserve">
+    <value>Bauherren</value>
+  </data>
+  <data name="CompilareIlRaggruppamentoVuotoPrimaDiEliminareIlGruppoSelezionato" xml:space="preserve">
+    <value>Gruppe ausfüllen bevor löschen</value>
+  </data>
+  <data name="CompilareIlRaggruppamentoVuotoPrimaDiInserireUnNuovoGruppo" xml:space="preserve">
+    <value>Füllen Sie die leere Gruppen, bevor Sie eine neue einfügen</value>
+  </data>
+  <data name="Compilato" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Componente della traslazione secondo X Punto di arrivo e Punto di partenza" xml:space="preserve">
+    <value>X Versetzung (dX)</value>
+  </data>
+  <data name="Componente della traslazione secondo Y Punto di arrivo e Punto di partenza" xml:space="preserve">
+    <value>Y Versetzung (dY)</value>
+  </data>
+  <data name="Componente della traslazione secondo Z Punto di arrivo e Punto di partenza" xml:space="preserve">
+    <value>Z Versetzung (dZ)</value>
+  </data>
+  <data name="Computo" xml:space="preserve">
+    <value>Massenermittlung</value>
+  </data>
+  <data name="Computo Aggiorna" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Computo Data" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Comune" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="CON IL FILTRO" xml:space="preserve">
+    <value>MIT FILTERN</value>
+  </data>
+  <data name="ConcatenaACapo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ConcatenaAlLivelloSuperiore" xml:space="preserve">
+    <value>zur oberen Ebene hizufügen</value>
+  </data>
+  <data name="ConcatenaConSpazio" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ConcatenaEtichettaEValore" xml:space="preserve">
+    <value>Etikett und Werte verbinden</value>
+  </data>
+  <data name="Condizione" xml:space="preserve">
+    <value>Voraussetzung</value>
+  </data>
+  <data name="Condizione errata" xml:space="preserve">
+    <value>falsches Kriterium</value>
+  </data>
+  <data name="Condizioni" xml:space="preserve">
+    <value>Kriterien</value>
+  </data>
+  <data name="Condizioni filtro" xml:space="preserve">
+    <value>Filter-Einstellungen</value>
+  </data>
+  <data name="Condizioni impostate impossibili" xml:space="preserve">
+    <value>eingestellete Kriterien unmöglich</value>
+  </data>
+  <data name="Conferma" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ConfermaAssegnazioneElementoArticoloTarget" xml:space="preserve">
+    <value>der Artikel und/oder das Element der ausgewahlten Zeile und Ihre Attribute werden an den Elementen zugewiesen. Fortfahren?</value>
+  </data>
+  <data name="Connessioni" xml:space="preserve">
+    <value>Verknüpfte Elemente</value>
+  </data>
+  <data name="Connettori" xml:space="preserve">
+    <value>Verbinder</value>
+  </data>
+  <data name="Consente di selezionare tutto il testo e gli oggetti" xml:space="preserve">
+    <value>Alle Texte und Objekte auswählen</value>
+  </data>
+  <data name="Conta" xml:space="preserve">
+    <value>auszählen</value>
+  </data>
+  <data name="Contabilita" xml:space="preserve">
+    <value>Buchhaltung</value>
+  </data>
+  <data name="Contatti" xml:space="preserve">
+    <value>Kontakte</value>
+  </data>
+  <data name="contenuta" xml:space="preserve">
+    <value>enthalten</value>
+  </data>
+  <data name="Contiene" xml:space="preserve">
+    <value>enthält</value>
+  </data>
+  <data name="contieneGia" xml:space="preserve">
+    <value>es enthält bereits einen Eintrag</value>
+  </data>
+  <data name="Contrassegno" xml:space="preserve">
+    <value>Kennzeichen</value>
+  </data>
+  <data name="Controllare le condizioni" xml:space="preserve">
+    <value>Kriterien prüfen</value>
+  </data>
+  <data name="Controllo diagnostico" xml:space="preserve">
+    <value>Fehlerüberprüfung</value>
+  </data>
+  <data name="ControlloOrtografico" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Conversione in corso..." xml:space="preserve">
+    <value>Umwandlung in Gange</value>
+  </data>
+  <data name="Coord punto selezionato" xml:space="preserve">
+    <value>Koordinaten des ausgewählten Punktes</value>
+  </data>
+  <data name="Copia" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Copia campo" xml:space="preserve">
+    <value>Feld kopieren</value>
+  </data>
+  <data name="Copia Codice Articolo" xml:space="preserve">
+    <value>Artikelcode kopieren</value>
+  </data>
+  <data name="Copia con intestazioni" xml:space="preserve">
+    <value>mit Kopfzeile kopieren</value>
+  </data>
+  <data name="Copia dalla scena" xml:space="preserve">
+    <value>ausgewählte Fläche</value>
+  </data>
+  <data name="Copia filtro" xml:space="preserve">
+    <value>Filter kopieren</value>
+  </data>
+  <data name="Copia immagine" xml:space="preserve">
+    <value>Bild kopieren</value>
+  </data>
+  <data name="Copia1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Copia2" xml:space="preserve">
+    <value>Kopie</value>
+  </data>
+  <data name="CopiaDi" xml:space="preserve">
+    <value>Kopie von</value>
+  </data>
+  <data name="CopiaNegliAppunti" xml:space="preserve">
+    <value>Notiz kopieren</value>
+  </data>
+  <data name="Corsivo" xml:space="preserve">
+    <value>kursiv</value>
+  </data>
+  <data name="Coumputo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Crea filtro per ogni valore del paramentro" xml:space="preserve">
+    <value>Filter für jede Parameterwert erstellen</value>
+  </data>
+  <data name="Crea filtro su paramentro" xml:space="preserve">
+    <value>Filter nach Parameter erstellen</value>
+  </data>
+  <data name="CreaReport" xml:space="preserve">
+    <value>Bericht erstellen</value>
+  </data>
+  <data name="CreaVociWBS" xml:space="preserve">
+    <value>PSP Einträge erstellen</value>
+  </data>
+  <data name="Cumulato" xml:space="preserve">
+    <value />
+  </data>
+  <data name="da" xml:space="preserve">
+    <value>von</value>
+  </data>
+  <data name="da 1 a" xml:space="preserve">
+    <value>von 1 bis</value>
+  </data>
+  <data name="Da filtro" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Da2" xml:space="preserve">
+    <value>Von </value>
+  </data>
+  <data name="Data" xml:space="preserve">
+    <value>Datum </value>
+  </data>
+  <data name="Data creazione" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="Data fine gantt" xml:space="preserve">
+    <value>Abschluss-Datum Gantt</value>
+  </data>
+  <data name="Data fine lavori" xml:space="preserve">
+    <value>Bauabschluss Datum</value>
+  </data>
+  <data name="Data inizio gantt" xml:space="preserve">
+    <value>Beginn-Datum Gantt</value>
+  </data>
+  <data name="Data inizio lavori" xml:space="preserve">
+    <value>Baubeginn Datum</value>
+  </data>
+  <data name="Data ultima modifica" xml:space="preserve">
+    <value>zuletzt geändert</value>
+  </data>
+  <data name="DataDiCreazione" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="DataFine" xml:space="preserve">
+    <value>Abschluss Datum</value>
+  </data>
+  <data name="DataFineGantt" xml:space="preserve">
+    <value>Abschluss-Datum Gantt</value>
+  </data>
+  <data name="DataFineLavori" xml:space="preserve">
+    <value>Bauabschluss Datum</value>
+  </data>
+  <data name="DataInizio" xml:space="preserve">
+    <value>Beginn Datum</value>
+  </data>
+  <data name="DataInizioGantt" xml:space="preserve">
+    <value>Beginn-Datum Gantt</value>
+  </data>
+  <data name="DataInizioLavori" xml:space="preserve">
+    <value>Baubeginn Datum</value>
+  </data>
+  <data name="DataLocale" xml:space="preserve">
+    <value>Datum lokale Variante</value>
+  </data>
+  <data name="DataService" xml:space="preserve">
+    <value>datum Web Variante</value>
+  </data>
+  <data name="DataUltimaModifica" xml:space="preserve">
+    <value>zuletzt geändert</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Date e valori" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Date Gant" xml:space="preserve">
+    <value>Datum Gantt</value>
+  </data>
+  <data name="Date Gantt" xml:space="preserve">
+    <value>Datum Gantt</value>
+  </data>
+  <data name="Date progetto" xml:space="preserve">
+    <value>Projekt-Datum</value>
+  </data>
+  <data name="Date1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DateExpires" xml:space="preserve">
+    <value>Ablaufdatum</value>
+  </data>
+  <data name="Dati identificativi del progetto" xml:space="preserve">
+    <value>Projekt Infos: Bauherren, Bauunternehmer, Projektplanung, Firma, Betrag, Kosten</value>
+  </data>
+  <data name="Dati sul modello IFC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DatiGenerali" xml:space="preserve">
+    <value>Project Infos</value>
+  </data>
+  <data name="DatiProgetto" xml:space="preserve">
+    <value>Project Infos</value>
+  </data>
+  <data name="Decadi" xml:space="preserve">
+    <value>Dekade</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Dafault</value>
+  </data>
+  <data name="DefaultBloccato" xml:space="preserve">
+    <value>nur-Lese</value>
+  </data>
+  <data name="Definizione" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="degli Attributi senza link" xml:space="preserve">
+    <value>von Attribute ohne Link</value>
+  </data>
+  <data name="del progetto" xml:space="preserve">
+    <value>von Projekt</value>
+  </data>
+  <data name="Delta" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Descrizione" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="Descrizione report" xml:space="preserve">
+    <value>Berichtbeschreibung</value>
+  </data>
+  <data name="DescrizioneBreve" xml:space="preserve">
+    <value>kleine Beschreibung</value>
+  </data>
+  <data name="DescrizioneCapitolo" xml:space="preserve">
+    <value>Paragraph Beschreibung</value>
+  </data>
+  <data name="DescrizioneQuantita" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Deseleziona" xml:space="preserve">
+    <value>Auswahl aufheben</value>
+  </data>
+  <data name="Deseleziona tutti" xml:space="preserve">
+    <value>Alles aufheben</value>
+  </data>
+  <data name="Deseleziona tutto" xml:space="preserve">
+    <value>alles abwählen</value>
+  </data>
+  <data name="Destra" xml:space="preserve">
+    <value>rechts</value>
+  </data>
+  <data name="Destro" xml:space="preserve">
+    <value>rechts</value>
+  </data>
+  <data name="Dettagli" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Deve essere selezionata prima di selezionare l'oggetto" xml:space="preserve">
+    <value>Das muss ausgewählt werden, bevor der Auswahl des Objektes</value>
+  </data>
+  <data name="di" xml:space="preserve">
+    <value>von</value>
+  </data>
+  <data name="Diagramma di Gantt relativo alla WBS del progetto" xml:space="preserve">
+    <value>Gantt-Diagramm bezogen auf den PSP des Projekts</value>
+  </data>
+  <data name="Dimensione" xml:space="preserve">
+    <value>Abmessung</value>
+  </data>
+  <data name="dimensione normale" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DimensioneCarattere" xml:space="preserve">
+    <value>Schriftgrad</value>
+  </data>
+  <data name="Dimensioni" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Dimensioni del Modello" xml:space="preserve">
+    <value>Modell Größe</value>
+  </data>
+  <data name="Dimensioni dell'elemento selezionato" xml:space="preserve">
+    <value>Größe des ausgewhalten Element</value>
+  </data>
+  <data name="Dimensioni della scena" xml:space="preserve">
+    <value>Größe der Szene</value>
+  </data>
+  <data name="Dipende da" xml:space="preserve">
+    <value>abhängig von</value>
+  </data>
+  <data name="DirezioneLavori" xml:space="preserve">
+    <value>Bauleitung</value>
+  </data>
+  <data name="DirittiRiservati" xml:space="preserve">
+    <value>alle Rechte sind vorbehalten</value>
+  </data>
+  <data name="Disattiva il colore delle righe della Grid" xml:space="preserve">
+    <value>Rasterlinien Farben deaktivieren</value>
+  </data>
+  <data name="Distanza" xml:space="preserve">
+    <value>Abstand</value>
+  </data>
+  <data name="Distanza progressiva" xml:space="preserve">
+    <value>progressiver Abstand</value>
+  </data>
+  <data name="Diverso da" xml:space="preserve">
+    <value>unterschiedlich von</value>
+  </data>
+  <data name="DiversoDa" xml:space="preserve">
+    <value>unterschiedlich von</value>
+  </data>
+  <data name="Divisione" xml:space="preserve">
+    <value>Abschnitt</value>
+  </data>
+  <data name="Divisioni" xml:space="preserve">
+    <value>weitere Abschnitte</value>
+  </data>
+  <data name="Documenti" xml:space="preserve">
+    <value>Dokumente</value>
+  </data>
+  <data name="Documenti (Parent)" xml:space="preserve">
+    <value>Dokumente</value>
+  </data>
+  <data name="Documento" xml:space="preserve">
+    <value>Dokument</value>
+  </data>
+  <data name="Domenica" xml:space="preserve">
+    <value>Sonntag</value>
+  </data>
+  <data name="Doppio click per inserire una Ifc Label verrà selezionata la corrispondente Entità" xml:space="preserve">
+    <value>doppel-click um Ifc Etikette zu platzieren</value>
+  </data>
+  <data name="Doppio click su attributo proprietà per inserirlo in Formula Quantità" xml:space="preserve">
+    <value>doppel-click auf Attribut-Eigenschaft um es in der Menge-Formel hinzufügen</value>
+  </data>
+  <data name="DownloadInCorso" xml:space="preserve">
+    <value>unterladen…</value>
+  </data>
+  <data name="DownloadModelli" xml:space="preserve">
+    <value>Vorlagen unterladen</value>
+  </data>
+  <data name="DownloadPrezzari" xml:space="preserve">
+    <value>Preisliste unterladen</value>
+  </data>
+  <data name="Drag-Drop le colonne su questa area" xml:space="preserve">
+    <value>Drag-Drop Spalten in diesem Bereich</value>
+  </data>
+  <data name="Due livelli (intermedio, inferiore)" xml:space="preserve">
+    <value>zweistufig (mittelere, untere)</value>
+  </data>
+  <data name="DueDivisioniConStessoCodice" xml:space="preserve">
+    <value>Sie können nicht zwei Abschnitte mit demselben Code importieren</value>
+  </data>
+  <data name="Dur" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="Dur cal" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="Durata" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="Durata (calendario)" xml:space="preserve">
+    <value>Zeitraum (Kalendar)</value>
+  </data>
+  <data name="Durata calendario" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Durata giorni lavorativi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Duratacalendario" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="E necessario" xml:space="preserve">
+    <value>Sie müssen</value>
+  </data>
+  <data name="e rappresenta graficamente i dati presenti in Join" xml:space="preserve">
+    <value>und stellt grafisch die Daten in Join vorhandenen dar</value>
+  </data>
+  <data name="E' necessario inserire una descrizione della vista" xml:space="preserve">
+    <value>Sie müssen eine Beschreibung der Ansicht eintragen</value>
+  </data>
+  <data name="E' necessario selezionare un filtro" xml:space="preserve">
+    <value>Sie müssen einen Filter auswählen</value>
+  </data>
+  <data name="E' necessario selezionare una regola" xml:space="preserve">
+    <value>Sie müssen eine Regel auswählen</value>
+  </data>
+  <data name="E' possibile copiare solo i percorsi" xml:space="preserve">
+    <value>Sie können nur Pfad kopieren</value>
+  </data>
+  <data name="e-mail" xml:space="preserve">
+    <value>e-Mail</value>
+  </data>
+  <data name="Eccezioni" xml:space="preserve">
+    <value>Ausnahmen</value>
+  </data>
+  <data name="Eccezioni calendario" xml:space="preserve">
+    <value>Kalendar-Ausnahmen</value>
+  </data>
+  <data name="Edita report" xml:space="preserve">
+    <value>Bericht bearbeiten</value>
+  </data>
+  <data name="EditaTesto" xml:space="preserve">
+    <value>Text bearbeiten</value>
+  </data>
+  <data name="Element" xml:space="preserve">
+    <value>Element</value>
+  </data>
+  <data name="Element Type Nome" xml:space="preserve">
+    <value>Element Typ Name</value>
+  </data>
+  <data name="elementi" xml:space="preserve">
+    <value>Elemente</value>
+  </data>
+  <data name="elementi di tipo" xml:space="preserve">
+    <value>Element Typ</value>
+  </data>
+  <data name="ELEMENTI SELEZIONATI" xml:space="preserve">
+    <value>ausgewählte Elemente</value>
+  </data>
+  <data name="ELEMENTI TROVATI" xml:space="preserve">
+    <value>gefundene Elemente</value>
+  </data>
+  <data name="ELEMENTI VISIBILI" xml:space="preserve">
+    <value>sichtbare Elemente</value>
+  </data>
+  <data name="Elementi2" xml:space="preserve">
+    <value>Elemente</value>
+  </data>
+  <data name="Elemento" xml:space="preserve">
+    <value>Element</value>
+  </data>
+  <data name="Elemento non presente" xml:space="preserve">
+    <value>Element ist nicht vorhanden</value>
+  </data>
+  <data name="Elemento precedente" xml:space="preserve">
+    <value>vorheriges Element</value>
+  </data>
+  <data name="Elemento successivo" xml:space="preserve">
+    <value>nächstes Element</value>
+  </data>
+  <data name="Elenco" xml:space="preserve">
+    <value>Liste</value>
+  </data>
+  <data name="Elenco degli articoli del progetto utilizzabili nel computo" xml:space="preserve">
+    <value>Liste der Projektartikel, die in der Massenermittlung verwendet werden können</value>
+  </data>
+  <data name="Elenco dei documenti disponibili" xml:space="preserve">
+    <value>Dokumentenliste</value>
+  </data>
+  <data name="ElencoAttivita" xml:space="preserve">
+    <value>Aufgabenliste</value>
+  </data>
+  <data name="ElencoPrezzi" xml:space="preserve">
+    <value>Preisliste</value>
+  </data>
+  <data name="Elimina" xml:space="preserve">
+    <value>löschen</value>
+  </data>
+  <data name="Elimina annotazione" xml:space="preserve">
+    <value>Anmerkung löschen</value>
+  </data>
+  <data name="Elimina divisione" xml:space="preserve">
+    <value>Abschnitt löschen</value>
+  </data>
+  <data name="Elimina gli articoli selezionati" xml:space="preserve">
+    <value>ausgewählter Artikel löschen</value>
+  </data>
+  <data name="Elimina raggruppamento" xml:space="preserve">
+    <value>Gruppe löschen</value>
+  </data>
+  <data name="Elimina Traslazione" xml:space="preserve">
+    <value>Versetzung löschen</value>
+  </data>
+  <data name="Elimina tutte le annotazioni" xml:space="preserve">
+    <value>alle Anmerkungen löschen</value>
+  </data>
+  <data name="EliminaPrezzario" xml:space="preserve">
+    <value>Preisliste löschen</value>
+  </data>
+  <data name="EliminaVociGenerateDaRegolePrecedenti" xml:space="preserve">
+    <value>Alle Einträge löschen, die von den vorherigen Filterregeln erzeugt wurden</value>
+  </data>
+  <data name="EliminazioneAttributoNonConsentita" xml:space="preserve">
+    <value>Built-in Attribut. Es kann nicht gelöscht werden</value>
+  </data>
+  <data name="EliminazioneDivisioneNonConsentita" xml:space="preserve">
+    <value>Sie können nicht diesen Abschnitt löschen</value>
+  </data>
+  <data name="EliminazioneRiferimentoNonConsentita" xml:space="preserve">
+    <value>Built-in Attribut. Es kann nicht gelöscht werden</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Abschluss Datum</value>
+  </data>
+  <data name="entità aggregate" xml:space="preserve">
+    <value>verknüpfte Objekte</value>
+  </data>
+  <data name="entità contenute" xml:space="preserve">
+    <value>enthaltene Objekte</value>
+  </data>
+  <data name="Entità corrente" xml:space="preserve">
+    <value>Aktuelles Objekt</value>
+  </data>
+  <data name="Entità della traslazione inserita manualmente" xml:space="preserve">
+    <value>Versetzungswerte manuell eingegeben</value>
+  </data>
+  <data name="Entità della traslazione rilevata automaticamente" xml:space="preserve">
+    <value>Versetzungswerte automatisch erkannt</value>
+  </data>
+  <data name="Entità non geometriche non vengono selezionate" xml:space="preserve">
+    <value>nicht-geometrische Elementen werden nicht ausgewählt</value>
+  </data>
+  <data name="Entità selezionate" xml:space="preserve">
+    <value>ausgewählte Objekte</value>
+  </data>
+  <data name="Entità visibili" xml:space="preserve">
+    <value>sichtbare Objekte</value>
+  </data>
+  <data name="EPossibileUtilizzareLaFunzioneRoundup_" xml:space="preserve">
+    <value>Sie können die Funktion Roundup (Argument;Divisor) verwenden, die das Mehrfach des Divisors höher als das Argument ergibt</value>
+  </data>
+  <data name="Errore" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Errore al caricamento" xml:space="preserve">
+    <value>Fehler beim Laden</value>
+  </data>
+  <data name="Errore di sintassi della formula" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Errore durante l'importazione" xml:space="preserve">
+    <value />
+  </data>
+  <data name="errore gestione clipboard" xml:space="preserve">
+    <value>Fehler in der Notizenverwaltung</value>
+  </data>
+  <data name="errore in GetEntitiesHistory" xml:space="preserve">
+    <value>Fehler beim GetObjekteProtokol</value>
+  </data>
+  <data name="errore in GetQuantityValueString" xml:space="preserve">
+    <value>Fehler beim GetMengeWertString</value>
+  </data>
+  <data name="errore in GetUserSelectdObjectValue" xml:space="preserve">
+    <value>Fehler beim GetBenutzerAusgewählterObjektWert</value>
+  </data>
+  <data name="errore in GetUserSelectdQuantityValue" xml:space="preserve">
+    <value>Fehler beim GetBenutzerAusgewählterMengeWert</value>
+  </data>
+  <data name="Errore nel salvataggio del file" xml:space="preserve">
+    <value>Fehler bei Datei speichern</value>
+  </data>
+  <data name="Errore nell' apertura del modello" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Errore nella formula  riga nulla" xml:space="preserve">
+    <value>Formel-Fehler</value>
+  </data>
+  <data name="Errore nello scaricamento del modello" xml:space="preserve">
+    <value />
+  </data>
+  <data name="errore visualizzato nel file log" xml:space="preserve">
+    <value>Fehler in LogDatei anzeigen</value>
+  </data>
+  <data name="Errori nel filtro" xml:space="preserve">
+    <value>Filter Fehlermeldung</value>
+  </data>
+  <data name="Esci" xml:space="preserve">
+    <value>beenden</value>
+  </data>
+  <data name="Esci senza salvare i TAG" xml:space="preserve">
+    <value>beenden ohne Tag Speichern</value>
+  </data>
+  <data name="Escludi dal modello le classi non visualizzate" xml:space="preserve">
+    <value>keine unsichtbare Klasse laden</value>
+  </data>
+  <data name="Esegui il box sferico" xml:space="preserve">
+    <value>sphärische auswahl</value>
+  </data>
+  <data name="Esegui il filtro" xml:space="preserve">
+    <value>Filter ausführen</value>
+  </data>
+  <data name="Esegui Visualizza tutto per annullarli" xml:space="preserve">
+    <value>Alle anzeigen [F3] klicken, um zubeenden</value>
+  </data>
+  <data name="Eseguo la selezione degli elementi coinvolti" xml:space="preserve">
+    <value>Alle Elemente anzeigen, die komplett betroffen sind</value>
+  </data>
+  <data name="Esempio" xml:space="preserve">
+    <value>Beispiel</value>
+  </data>
+  <data name="Esiste" xml:space="preserve">
+    <value>existiert</value>
+  </data>
+  <data name="Esiste già e non viene copiato" xml:space="preserve">
+    <value>existiert bereits (nicht kopiert)</value>
+  </data>
+  <data name="Esiste già un piano con questa normale" xml:space="preserve">
+    <value>Das Plan existiert beireits</value>
+  </data>
+  <data name="Espandi la griglia" xml:space="preserve">
+    <value>aufklappen</value>
+  </data>
+  <data name="espandi o chiudi gruppo" xml:space="preserve">
+    <value>Gruppe aufklappen/zuklappen</value>
+  </data>
+  <data name="Espandi Ramo" xml:space="preserve">
+    <value>die Kante aufklappen</value>
+  </data>
+  <data name="Espandi selezione" xml:space="preserve">
+    <value>Auswahl aufklappen</value>
+  </data>
+  <data name="Espandi/Collassa" xml:space="preserve">
+    <value>einblenden/ausblenden</value>
+  </data>
+  <data name="EspandiCollassa" xml:space="preserve">
+    <value>einblenden/ausblenden</value>
+  </data>
+  <data name="Esporta IFC" xml:space="preserve">
+    <value>als IFC exportieren</value>
+  </data>
+  <data name="Esporta in formato IFC" xml:space="preserve">
+    <value>als IFC-Format exportieren</value>
+  </data>
+  <data name="Esporta in IFC la vista selezionata" xml:space="preserve">
+    <value>ausgewählte Auswahl als IFC exportieren</value>
+  </data>
+  <data name="Esporta vista" xml:space="preserve">
+    <value>Ansicht exportieren</value>
+  </data>
+  <data name="Esporta vista e IfcCost" xml:space="preserve">
+    <value>Ansicht und IFC Kosten exportieren</value>
+  </data>
+  <data name="EsportaGantt" xml:space="preserve">
+    <value>Gantt exportieren</value>
+  </data>
+  <data name="EsportaInExcel" xml:space="preserve">
+    <value>als MS Excel exportieren</value>
+  </data>
+  <data name="EsportaInProject" xml:space="preserve">
+    <value>als MS Projekt exportieren</value>
+  </data>
+  <data name="Esportazione XML" xml:space="preserve">
+    <value>XML Exportieren</value>
+  </data>
+  <data name="Etichetta Ifc" xml:space="preserve">
+    <value>Ifc Tag</value>
+  </data>
+  <data name="EtichettaWizard" xml:space="preserve">
+    <value>Tag…</value>
+  </data>
+  <data name="eventualmente cancellare la condizione" xml:space="preserve">
+    <value>gegebenenfalls die Krierien löschen</value>
+  </data>
+  <data name="Evidenzia" xml:space="preserve">
+    <value>hervorheben</value>
+  </data>
+  <data name="Evidenzia elementi non presenti nel computo" xml:space="preserve">
+    <value>Elemente markieren, die in Massenermittlung nicht enthalten sind</value>
+  </data>
+  <data name="Evidenzia elementi non presenti nelle regole" xml:space="preserve">
+    <value>Elemente markieren, die in Regeln nicht enthalten sind</value>
+  </data>
+  <data name="EvidenziaInModel3d" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Evidenziatori" xml:space="preserve">
+    <value>Textmarker</value>
+  </data>
+  <data name="ExportExcelComputo" xml:space="preserve">
+    <value>als Excel exportieren</value>
+  </data>
+  <data name="Fase di creazione" xml:space="preserve">
+    <value>Entfurwsphase</value>
+  </data>
+  <data name="Fattore" xml:space="preserve">
+    <value />
+  </data>
+  <data name="fax_" xml:space="preserve">
+    <value>Fax +39 0434 376059</value>
+  </data>
+  <data name="Feature" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Federazione" xml:space="preserve">
+    <value>Verband</value>
+  </data>
+  <data name="feriale" xml:space="preserve">
+    <value>Werktag</value>
+  </data>
+  <data name="Feriale2" xml:space="preserve">
+    <value>Werktag</value>
+  </data>
+  <data name="FF" xml:space="preserve">
+    <value>EE</value>
+  </data>
+  <data name="FI" xml:space="preserve">
+    <value>ES</value>
+  </data>
+  <data name="FileModificatoDopoDownload" xml:space="preserve">
+    <value>die Datei würde nach dem Download-Datum geändert. Wollen Sie es überschreiben?</value>
+  </data>
+  <data name="FileNonTrovato" xml:space="preserve">
+    <value>Die Datei wurde nicht gefunden</value>
+  </data>
+  <data name="FilesIFC" xml:space="preserve">
+    <value>IFC Datei</value>
+  </data>
+  <data name="Filtra" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Filtra elementi visibili" xml:space="preserve">
+    <value>sichtbare Elemente filtern</value>
+  </data>
+  <data name="Filtra la selezione" xml:space="preserve">
+    <value>Auswahl filtern</value>
+  </data>
+  <data name="Filtra per classe" xml:space="preserve">
+    <value>nach Klasse filtern</value>
+  </data>
+  <data name="Filtra per codice" xml:space="preserve">
+    <value>nach Code filtern</value>
+  </data>
+  <data name="Filtra per descrizione" xml:space="preserve">
+    <value>nach Beschreibung filtern</value>
+  </data>
+  <data name="Filtra per TAG" xml:space="preserve">
+    <value>nach Tag filtern</value>
+  </data>
+  <data name="Filtrate" xml:space="preserve">
+    <value>gefiltert</value>
+  </data>
+  <data name="filtri" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Filtri associati" xml:space="preserve">
+    <value>zugehörige Filtern</value>
+  </data>
+  <data name="Filtri e regole" xml:space="preserve">
+    <value>Filters und Regeln</value>
+  </data>
+  <data name="Filtri e regole irregolari" xml:space="preserve">
+    <value>unregelmäßige Filters und Regeln </value>
+  </data>
+  <data name="Filtri in conflitto:" xml:space="preserve">
+    <value>Filters im Konflikt</value>
+  </data>
+  <data name="Filtri2" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="filtro" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Filtro illegale causa Classe inesistente o condizione errata o nessun risultato ottenuto" xml:space="preserve">
+    <value>ungültiger Filter: fehlende Klasse - falsche Vorraussetzung - keine Ergebnisse</value>
+  </data>
+  <data name="Filtro2" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="FiltroRegola" xml:space="preserve">
+    <value>Filter Einstellungen</value>
+  </data>
+  <data name="Fine" xml:space="preserve">
+    <value>Abschluss</value>
+  </data>
+  <data name="Fine fine" xml:space="preserve">
+    <value>Ende Ende</value>
+  </data>
+  <data name="Fine inizio" xml:space="preserve">
+    <value>Ende Start</value>
+  </data>
+  <data name="Fine-Fine (FF)" xml:space="preserve">
+    <value>Ende Ende (EE)</value>
+  </data>
+  <data name="Fine-Inizio (FI)" xml:space="preserve">
+    <value>Ende Start (ES)</value>
+  </data>
+  <data name="FineDocumento" xml:space="preserve">
+    <value>Dokumentsende</value>
+  </data>
+  <data name="FineMese" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Firme" xml:space="preserve">
+    <value>Unterschriften</value>
+  </data>
+  <data name="Fogli di calcolo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Fogli di lavoro base dati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FogliDiCalcolo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Foglio" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FormatiNumerici" xml:space="preserve">
+    <value>numerisches Format</value>
+  </data>
+  <data name="Formato" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="FormatoNonValido" xml:space="preserve">
+    <value>ungültiges Format</value>
+  </data>
+  <data name="FormatoNumero" xml:space="preserve">
+    <value>Zahlenformat</value>
+  </data>
+  <data name="FormatoQuantita" xml:space="preserve">
+    <value>Menge Format</value>
+  </data>
+  <data name="FormatoWindows" xml:space="preserve">
+    <value>Fenster Format</value>
+  </data>
+  <data name="formula" xml:space="preserve">
+    <value>Formel</value>
+  </data>
+  <data name="Formula Quantità" xml:space="preserve">
+    <value>Formel Mengeberechnung</value>
+  </data>
+  <data name="Formula2" xml:space="preserve">
+    <value>Formel</value>
+  </data>
+  <data name="Funzione" xml:space="preserve">
+    <value>Funktion</value>
+  </data>
+  <data name="Funzioni e operatori utilizzabili" xml:space="preserve">
+    <value>verwendbare Kunktionenund Operationen</value>
+  </data>
+  <data name="Gantt" xml:space="preserve">
+    <value>Gantt</value>
+  </data>
+  <data name="Gantt esportato con successo" xml:space="preserve">
+    <value>Gannt erfolgreich exportiert</value>
+  </data>
+  <data name="Genera computo" xml:space="preserve">
+    <value>Massenermittlung erstellen</value>
+  </data>
+  <data name="Genera computo con Costo" xml:space="preserve">
+    <value>Massenermittlung + IFC-Kosten</value>
+  </data>
+  <data name="GeneraComputo" xml:space="preserve">
+    <value>Massenermittlung erstellen</value>
+  </data>
+  <data name="Generale" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GeneraWBS" xml:space="preserve">
+    <value>PSP erstellen</value>
+  </data>
+  <data name="Gestione date progetto" xml:space="preserve">
+    <value>Projekt-Termine Einstellungen</value>
+  </data>
+  <data name="Gestione eccezioni del calendario" xml:space="preserve">
+    <value>Kalendar-Ausnahmen Einstellungen</value>
+  </data>
+  <data name="Gestione immagine" xml:space="preserve">
+    <value>Bild Einstellungen</value>
+  </data>
+  <data name="Gestione opere" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Gestione predecessori" xml:space="preserve">
+    <value>Steuerung Vorläufer</value>
+  </data>
+  <data name="Gestione report" xml:space="preserve">
+    <value>Bericht Einstellungen</value>
+  </data>
+  <data name="Gestione scala cronologica" xml:space="preserve">
+    <value>Verwaltung Zeitplan</value>
+  </data>
+  <data name="Gestione TAG" xml:space="preserve">
+    <value>Tag Einstellungen</value>
+  </data>
+  <data name="Gestione viste" xml:space="preserve">
+    <value>Ansichten Einstellungen</value>
+  </data>
+  <data name="GestioneAttributiAllegati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GestioneAttributiCalendari" xml:space="preserve">
+    <value>Kalendar Attribute Einstellungen</value>
+  </data>
+  <data name="GestioneAttributiCapitoli" xml:space="preserve">
+    <value>Paragraphen-Attribute Einstellungen</value>
+  </data>
+  <data name="GestioneAttributiComputo" xml:space="preserve">
+    <value>Massenermittlung-Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiContatti" xml:space="preserve">
+    <value>Kontakte Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiDivisione" xml:space="preserve">
+    <value>Abschnitt Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiElementi" xml:space="preserve">
+    <value>Elemente Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiElencoAttivita" xml:space="preserve">
+    <value>Aufgabenliste Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiInfoProgetto" xml:space="preserve">
+    <value>Informationen Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiPrezzario" xml:space="preserve">
+    <value>Preisliste Attribute Manager</value>
+  </data>
+  <data name="GestioneAttributiVariabili" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GestioneAttributiWBS" xml:space="preserve">
+    <value>PSP Attribute Manager</value>
+  </data>
+  <data name="GestioneRicodificaAttributi" xml:space="preserve">
+    <value>Code Attribute Manager</value>
+  </data>
+  <data name="Gestisci TAG" xml:space="preserve">
+    <value>Tag einstellen</value>
+  </data>
+  <data name="GetRemainingActivationCount" xml:space="preserve">
+    <value>Übrige Aktivierungen</value>
+  </data>
+  <data name="Giorni" xml:space="preserve">
+    <value>Tage</value>
+  </data>
+  <data name="Giorni non lavorativi" xml:space="preserve">
+    <value>nicht Werktag</value>
+  </data>
+  <data name="GiorniLavorativi" xml:space="preserve">
+    <value>Werktag</value>
+  </data>
+  <data name="GiorniPeriodo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GiorniProg" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Giorno" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="Giovedi" xml:space="preserve">
+    <value>Donnerstag</value>
+  </data>
+  <data name="Giustifica" xml:space="preserve">
+    <value>Text ausrichten</value>
+  </data>
+  <data name="GlobalId" xml:space="preserve">
+    <value>Globale ID</value>
+  </data>
+  <data name="GrandezzaCarattere" xml:space="preserve">
+    <value>Schriftgrad</value>
+  </data>
+  <data name="Grassetto" xml:space="preserve">
+    <value>fett</value>
+  </data>
+  <data name="Griglia" xml:space="preserve">
+    <value>Raster</value>
+  </data>
+  <data name="Gruppi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Gruppo" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="Gruppo con" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="GruppoRiferitoSotto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Guid" xml:space="preserve">
+    <value>Verweis</value>
+  </data>
+  <data name="Guida" xml:space="preserve">
+    <value>Handbuch</value>
+  </data>
+  <data name="GuidCollection" xml:space="preserve">
+    <value>Multi-Werte Verweis</value>
+  </data>
+  <data name="Ha all'interno condizioni impossibili" xml:space="preserve">
+    <value>ungültige Filter-Kriterien</value>
+  </data>
+  <data name="Ha classi dipendenti" xml:space="preserve">
+    <value>Es hat abhängige Klassen</value>
+  </data>
+  <data name="Ha condizioni impossibili o primitiva inesistenti" xml:space="preserve">
+    <value>falsche oder fehlende Kriterien</value>
+  </data>
+  <data name="Ha le seguenti dipendenze" xml:space="preserve">
+    <value>Es hat folgende Abhängigkeiten</value>
+  </data>
+  <data name="I filtri selezionati verranno eliminati" xml:space="preserve">
+    <value>ausgewählte Filters werden gelöscht</value>
+  </data>
+  <data name="I piani di taglio sono cumultativi" xml:space="preserve">
+    <value>Schnittebene sind kumulativer</value>
+  </data>
+  <data name="Identificazione" xml:space="preserve">
+    <value>Aufgabe</value>
+  </data>
+  <data name="IF" xml:space="preserve">
+    <value>SE</value>
+  </data>
+  <data name="II" xml:space="preserve">
+    <value>SS</value>
+  </data>
+  <data name="Il calcolo riporta un valore troppo grande che non può essere rappresentato" xml:space="preserve">
+    <value>Die Berechnung zeigt einen zu großen Wert an, der nicht dargestelltbar ist</value>
+  </data>
+  <data name="Il file JOIN sorgente deve essere diverso" xml:space="preserve">
+    <value>Join Quellendatei muss anders sein</value>
+  </data>
+  <data name="Il file JOIN sorgente non contiene filtri" xml:space="preserve">
+    <value>Join Quellenatei ohne Filtern</value>
+  </data>
+  <data name="Il filtro" xml:space="preserve">
+    <value>der Filter</value>
+  </data>
+  <data name="Il prezzo dell'articolo" xml:space="preserve">
+    <value>Artikelpreis</value>
+  </data>
+  <data name="Il Tag" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="IlServizioDiTeleassistenza_" xml:space="preserve">
+    <value>Die Teleassistenz kann nur nach Kontaktaufnahme mit unseren Geschäftsbüros gestartet werden.</value>
+  </data>
+  <data name="Importa" xml:space="preserve">
+    <value>importieren</value>
+  </data>
+  <data name="Importa filtri e regole da file" xml:space="preserve">
+    <value>Filters und Regeln aus Datei importieren</value>
+  </data>
+  <data name="ImportaArticoli" xml:space="preserve">
+    <value>Artikel importieren</value>
+  </data>
+  <data name="ImportaCapitoli" xml:space="preserve">
+    <value>Paragraph importieren</value>
+  </data>
+  <data name="ImportaDaFile" xml:space="preserve">
+    <value>aus Datei importieren</value>
+  </data>
+  <data name="ImportaDaFileJoin" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImportaDaFileXlsx" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImportaDaPrezzario" xml:space="preserve">
+    <value>aus Preisliste importieren</value>
+  </data>
+  <data name="ImportaModello" xml:space="preserve">
+    <value>Vorlage importieren</value>
+  </data>
+  <data name="ImportaModelloDaFile" xml:space="preserve">
+    <value>Vorlage aus Datei importieren</value>
+  </data>
+  <data name="ImportaWBS" xml:space="preserve">
+    <value>PSP importieren</value>
+  </data>
+  <data name="ImportaXpwe" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione articoli..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione capitoli..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione categorie..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione configurazione..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione modello..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione terminata correttamente" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione voci di computo..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione voci di WBS..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importazione xpwe..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImportazioneDi" xml:space="preserve">
+    <value>Eintrag importieren</value>
+  </data>
+  <data name="ImportItemsAllegati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImportItemsCalendari" xml:space="preserve">
+    <value>Kalendar importieren</value>
+  </data>
+  <data name="ImportItemsComputo" xml:space="preserve">
+    <value>Massenermittlung-Eintrag  importieren</value>
+  </data>
+  <data name="ImportItemsContatti" xml:space="preserve">
+    <value>Kontakte importieren</value>
+  </data>
+  <data name="ImportItemsDocumenti" xml:space="preserve">
+    <value>Dokumente importieren</value>
+  </data>
+  <data name="ImportItemsElementi" xml:space="preserve">
+    <value>Elemente importieren</value>
+  </data>
+  <data name="ImportItemsElencoAttivita" xml:space="preserve">
+    <value>Aufgaben importieren</value>
+  </data>
+  <data name="ImportItemsReport" xml:space="preserve">
+    <value>Berichte importieren</value>
+  </data>
+  <data name="ImportItemsStili" xml:space="preserve">
+    <value>Formate importieren</value>
+  </data>
+  <data name="ImportItemsTag" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Importo" xml:space="preserve">
+    <value>Betrag </value>
+  </data>
+  <data name="Importo elemento" xml:space="preserve">
+    <value>Element-Kosten</value>
+  </data>
+  <data name="Importo totale" xml:space="preserve">
+    <value>Gesamtbetrag</value>
+  </data>
+  <data name="ImportoLavori" xml:space="preserve">
+    <value>Baukosten</value>
+  </data>
+  <data name="ImportProjectModel" xml:space="preserve">
+    <value>Projektvorlage importiere</value>
+  </data>
+  <data name="Impossibile eseguire il calcolo" xml:space="preserve">
+    <value>Die Berechnung kann nicht ausgeführt werden</value>
+  </data>
+  <data name="ImpossibileSpostareIlRaggruppamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Imposta attributi" xml:space="preserve">
+    <value>Attribute einstellen</value>
+  </data>
+  <data name="Imposta classe" xml:space="preserve">
+    <value>Klasse einstellen</value>
+  </data>
+  <data name="Imposta colonne" xml:space="preserve">
+    <value>Spalten einstellen</value>
+  </data>
+  <data name="Imposta colore" xml:space="preserve">
+    <value>Farben einstellen</value>
+  </data>
+  <data name="Imposta default" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Imposta filtro" xml:space="preserve">
+    <value>Filter einstellen</value>
+  </data>
+  <data name="Imposta Rtf" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Imposta variabili" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImpostaEvidenziatori" xml:space="preserve">
+    <value>Textmarker Einstellungen</value>
+  </data>
+  <data name="Impostare almeno una colonna nel report" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Impostazione degli attributi relativi ai soggetti coinvolti nel progetto" xml:space="preserve">
+    <value>Beteiligte Attribute: Vorname, Nachname, Anschrift,Telefon</value>
+  </data>
+  <data name="ImpostazioneAttributoDaRiepilogare" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Impostazioni" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Impostazioni date e valori SAL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Impostazioni delle unità di misura e dei formati numerici relativi alle quantità" xml:space="preserve">
+    <value>Mengeneinheit und Zahlenformat Einstellungen </value>
+  </data>
+  <data name="Impostazioni Gantt" xml:space="preserve">
+    <value>Gantt Einstellungen</value>
+  </data>
+  <data name="Impostazioni griglia" xml:space="preserve">
+    <value>Rater Einstellungen</value>
+  </data>
+  <data name="Impostazioni Scala" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Impostazioni stampa Gantt" xml:space="preserve">
+    <value>Gant Druckeinstellungen</value>
+  </data>
+  <data name="ImpostazioniPagina" xml:space="preserve">
+    <value>Seite Einstellungen</value>
+  </data>
+  <data name="ImpostazioniStile" xml:space="preserve">
+    <value>Format Einstellungen</value>
+  </data>
+  <data name="Impresa" xml:space="preserve">
+    <value>Auftragnehmer</value>
+  </data>
+  <data name="ImpresaEsecutrice" xml:space="preserve">
+    <value>Auftragnehmer</value>
+  </data>
+  <data name="Imprese" xml:space="preserve">
+    <value>Bauunternehmen</value>
+  </data>
+  <data name="InAlto" xml:space="preserve">
+    <value>nach oben</value>
+  </data>
+  <data name="InBasso" xml:space="preserve">
+    <value>nach unten</value>
+  </data>
+  <data name="Incolla" xml:space="preserve">
+    <value>einfügen</value>
+  </data>
+  <data name="Incolla dopo elemento corrente" xml:space="preserve">
+    <value>nach das aktuelle Element einfügen</value>
+  </data>
+  <data name="Incolla dopo l'elemento corrente" xml:space="preserve">
+    <value>nach das aktuelle Element einfügen</value>
+  </data>
+  <data name="Incolla inferiore dell'elemento corrente" xml:space="preserve">
+    <value>untergeordnete zum aktuellen Element einfügen</value>
+  </data>
+  <data name="IncollaCampo" xml:space="preserve">
+    <value>Feld einfügen</value>
+  </data>
+  <data name="Indirizzo" xml:space="preserve">
+    <value>Anschrift</value>
+  </data>
+  <data name="inesistente" xml:space="preserve">
+    <value>nicht vorhanden</value>
+  </data>
+  <data name="Inferiore" xml:space="preserve">
+    <value>Unten</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="InfoProgetto" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Informazioni" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Informazioni sul File" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Informazioni sul programma e sul modello" xml:space="preserve">
+    <value>IFC speichern</value>
+  </data>
+  <data name="Informazioni sulla griglia" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InformazioniSulProgettoAperto" xml:space="preserve">
+    <value>geöffnetes Projekt</value>
+  </data>
+  <data name="Inglese" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IniziaCon" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IniziaDaPag" xml:space="preserve">
+    <value>starten von Seite Nr.</value>
+  </data>
+  <data name="InizializzazioneProgetto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InizializzazioneSezioni" xml:space="preserve">
+    <value>Abschitt Initialisierung</value>
+  </data>
+  <data name="Inizio" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Inizio fine" xml:space="preserve">
+    <value>Start End</value>
+  </data>
+  <data name="Inizio inizio" xml:space="preserve">
+    <value>Start Start</value>
+  </data>
+  <data name="Inizio-Fine (IF)" xml:space="preserve">
+    <value>Start-End (SE)</value>
+  </data>
+  <data name="Inizio-Inizio (II)" xml:space="preserve">
+    <value>Start-Start (SS)</value>
+  </data>
+  <data name="Inoltre deve essere selezionata una entità" xml:space="preserve">
+    <value>Objekt auswählen</value>
+  </data>
+  <data name="Inserire il nome del file IFC da salvare" xml:space="preserve">
+    <value>IFC Datei speichern</value>
+  </data>
+  <data name="Inserire il nome del nuovo file IFC" xml:space="preserve">
+    <value>neuer IFC Dateiname eingeben</value>
+  </data>
+  <data name="Inserire il nome del progetto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Inserire il numero elemento" xml:space="preserve">
+    <value>Elementnummer eingeben</value>
+  </data>
+  <data name="Inserire il testo per la ricerca incrementale Premere invio per selezionare" xml:space="preserve">
+    <value>Suchtext einfügen. ENTER drucken um auszuwählen.</value>
+  </data>
+  <data name="Inserire la descrizione del filtro" xml:space="preserve">
+    <value>Filterbeschreibung eingeben</value>
+  </data>
+  <data name="Inserire la descrizione del TAG" xml:space="preserve">
+    <value>Tagbeschreibung eingeben</value>
+  </data>
+  <data name="Inserire la descrizione della vista" xml:space="preserve">
+    <value>Ansichtenbeschreibung eingeben</value>
+  </data>
+  <data name="Inserire prima la proprietà" xml:space="preserve">
+    <value>Eigenschaft eingeben</value>
+  </data>
+  <data name="Inserire prima la Proprietà e la Condizione" xml:space="preserve">
+    <value>Eigenschaft und Kriterium eingeben</value>
+  </data>
+  <data name="Inserire un numero di elemento" xml:space="preserve">
+    <value>Elementnummer eingeben</value>
+  </data>
+  <data name="Inserire un testo" xml:space="preserve">
+    <value>Text eingeben</value>
+  </data>
+  <data name="InserireLicenza" xml:space="preserve">
+    <value>Aktivieren Sie den Lizenzschlüssel oder starten Sie das Programm in der Demoversion (20 Tage)</value>
+  </data>
+  <data name="Inserisci Annotazione" xml:space="preserve">
+    <value>Anmerkung einfügen</value>
+  </data>
+  <data name="Inserisci riferimento in origine" xml:space="preserve">
+    <value>Achsenursprung anzeigen</value>
+  </data>
+  <data name="Inserisci testo" xml:space="preserve">
+    <value>Text einfügen</value>
+  </data>
+  <data name="Inserisci un TAG" xml:space="preserve">
+    <value>Tag einfügen</value>
+  </data>
+  <data name="Inserisci un valore" xml:space="preserve">
+    <value>Wert eingeben</value>
+  </data>
+  <data name="Inserisci una Vista utente" xml:space="preserve">
+    <value>Benutzeransicht eingeben</value>
+  </data>
+  <data name="InserisciVoce" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Intervallo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Intervallo consentito" xml:space="preserve">
+    <value>zulässiges Zeitraum</value>
+  </data>
+  <data name="Intestazione" xml:space="preserve">
+    <value>Kopfzeile</value>
+  </data>
+  <data name="IntestazioneCentrale" xml:space="preserve">
+    <value>Kopfzeile zentriert</value>
+  </data>
+  <data name="IntestazioneColonnaTitolo" xml:space="preserve">
+    <value>Spaltenopfzeile</value>
+  </data>
+  <data name="IntestazioneDestra" xml:space="preserve">
+    <value>Kopfzeile rechts</value>
+  </data>
+  <data name="IntestazioneSinistra" xml:space="preserve">
+    <value>Kopfzeile links</value>
+  </data>
+  <data name="Inverti trasparente-opaco" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvertiTrasparenteOpaco" xml:space="preserve">
+    <value> Transparent / Opak umschalten</value>
+  </data>
+  <data name="InvertiVisualizzaNascondi" xml:space="preserve">
+    <value>Sichtbar/Unschtbar umschalten</value>
+  </data>
+  <data name="Iscrizione CCIAA" xml:space="preserve">
+    <value>Handelskammer Registrierungsnummer</value>
+  </data>
+  <data name="IsDigicorpOwner" xml:space="preserve">
+    <value>DigiCorp Inhaber</value>
+  </data>
+  <data name="Isola" xml:space="preserve">
+    <value>Isolieren</value>
+  </data>
+  <data name="Isola anche elementi che intersecano la sfera" xml:space="preserve">
+    <value>auch die Elemente isolieren, die den Bereich schneiden</value>
+  </data>
+  <data name="Isola ortogonale" xml:space="preserve">
+    <value>Orthogonal isolieren</value>
+  </data>
+  <data name="Isola solo elementi del tipo selezionato" xml:space="preserve">
+    <value>nur die Elemente isolieren, die die gleiche Kategorie entsprechen</value>
+  </data>
+  <data name="Italiano" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Join" xml:space="preserve">
+    <value>Join</value>
+  </data>
+  <data name="Join Explorer utilizza la tecnologia XBim" xml:space="preserve">
+    <value>Join Explorer verwendet die Technologie XBim</value>
+  </data>
+  <data name="Join Explorer è un modellatore tridimensionale che opera sullo standard IFC" xml:space="preserve">
+    <value>Join Explorer ist ein dreidimensionaler Modelleur, der auf Basis des IFC Standards funktioniert</value>
+  </data>
+  <data name="L articolo non esiste nel prezzario" xml:space="preserve">
+    <value>Artikel in Preisliste nicht vorhanden</value>
+  </data>
+  <data name="L'attributo risulta lucchettato" xml:space="preserve">
+    <value />
+  </data>
+  <data name="l'errore si trova nel file log" xml:space="preserve">
+    <value>Fehler in Log-Datei anzeigen</value>
+  </data>
+  <data name="la Classe" xml:space="preserve">
+    <value>Klasse</value>
+  </data>
+  <data name="La entità" xml:space="preserve">
+    <value>Das Objekt</value>
+  </data>
+  <data name="La proprietà Tab" xml:space="preserve">
+    <value>Tab Eigenschaft</value>
+  </data>
+  <data name="LaDestinazione" xml:space="preserve">
+    <value>das Ziel</value>
+  </data>
+  <data name="LaFunzionalitaEDisponibileSoltantoNelleFeatures" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LaGuidaOnlineConsente_" xml:space="preserve">
+    <value>der folgender Befehl erlaubt Ihnen den Online-Leitfaden zu starten. Wenn der Online-Leitfaden das Problem nicht lösen kann, können Sie die Teleassistenz benutzen.</value>
+  </data>
+  <data name="Larghezza colonne" xml:space="preserve">
+    <value>Spaltenbreite</value>
+  </data>
+  <data name="Larghezza della immagine in pixel" xml:space="preserve">
+    <value>Bildbreite (Pixels)</value>
+  </data>
+  <data name="Larghezza immagine" xml:space="preserve">
+    <value>Bildbreite</value>
+  </data>
+  <data name="LarghezzaColonne" xml:space="preserve">
+    <value>Spaltenbreite</value>
+  </data>
+  <data name="LaVoceNonSaraCreata" xml:space="preserve">
+    <value>der Eintrag wird nicht erstellt</value>
+  </data>
+  <data name="LavoriDi" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="Lavoro" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="Layout Gantt" xml:space="preserve">
+    <value>Gantt Layout</value>
+  </data>
+  <data name="LayoutIntestazione" xml:space="preserve">
+    <value>Layout Kopfzeile</value>
+  </data>
+  <data name="LayoutPiePagina" xml:space="preserve">
+    <value>Layout Fußzeile</value>
+  </data>
+  <data name="LicenseStatus" xml:space="preserve">
+    <value>Lizenz-Status</value>
+  </data>
+  <data name="Licenza" xml:space="preserve">
+    <value>Lizenz</value>
+  </data>
+  <data name="LicenzaTrialNonValida" xml:space="preserve">
+    <value>Probe-Lizenzabgelaufen</value>
+  </data>
+  <data name="Linee orizzontali" xml:space="preserve">
+    <value>horizontale Linien</value>
+  </data>
+  <data name="Linee verticali" xml:space="preserve">
+    <value>vertikale Linien</value>
+  </data>
+  <data name="Linee veticali" xml:space="preserve">
+    <value>vertikale Linien</value>
+  </data>
+  <data name="Lingua" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="Link" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Lista elementi visibili" xml:space="preserve">
+    <value>Liste sichtbare Elemente </value>
+  </data>
+  <data name="Livello" xml:space="preserve">
+    <value>Ebene</value>
+  </data>
+  <data name="Livello inferiore" xml:space="preserve">
+    <value>untere Ebene</value>
+  </data>
+  <data name="Livello intermedio" xml:space="preserve">
+    <value>mittlere Ebene</value>
+  </data>
+  <data name="Livello superiore" xml:space="preserve">
+    <value>obere Ebene</value>
+  </data>
+  <data name="LoginInCorso" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Luminosità" xml:space="preserve">
+    <value>Helligkeit</value>
+  </data>
+  <data name="lun-ven_" xml:space="preserve">
+    <value>Mon-Fre    11:00 - 12:30 ; 17:00 - 18:00</value>
+  </data>
+  <data name="lun-ven_InContratto_" xml:space="preserve">
+    <value>Mon-Fre    8:30 - 12:30 ; 14:00 - 18:00</value>
+  </data>
+  <data name="Lunedi" xml:space="preserve">
+    <value>Montag</value>
+  </data>
+  <data name="Lunghezza" xml:space="preserve">
+    <value>Länge</value>
+  </data>
+  <data name="Lunghezza Area Volume" xml:space="preserve">
+    <value>Länge Fläche Volume</value>
+  </data>
+  <data name="Maggiore di" xml:space="preserve">
+    <value>Größer als</value>
+  </data>
+  <data name="Maggiore o uguale a" xml:space="preserve">
+    <value>größer oder gleich</value>
+  </data>
+  <data name="MaggioreDi" xml:space="preserve">
+    <value>Größer als</value>
+  </data>
+  <data name="MaggioreUgualeDi" xml:space="preserve">
+    <value>größer oder gleich</value>
+  </data>
+  <data name="MainApp" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Mantieni offset" xml:space="preserve">
+    <value>Versatz behalten</value>
+  </data>
+  <data name="MantieniInTutteLeSezioni" xml:space="preserve">
+    <value>Einträge im Abschnitt unverändert behalten</value>
+  </data>
+  <data name="MantieniLaVoce" xml:space="preserve">
+    <value>Eintrag beibehalten</value>
+  </data>
+  <data name="MantieniNellaSezione" xml:space="preserve">
+    <value>Einträge im Abschnitt unverändert behalten</value>
+  </data>
+  <data name="MantieniStruttura" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MantieniVociComputoEsistenti" xml:space="preserve">
+    <value>alle bischerige Einträge in Massenermittlung behalten</value>
+  </data>
+  <data name="Manuale" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Margini" xml:space="preserve">
+    <value>Ränder</value>
+  </data>
+  <data name="Martedi" xml:space="preserve">
+    <value>Dienstag</value>
+  </data>
+  <data name="Massimo" xml:space="preserve">
+    <value>Höchstwert</value>
+  </data>
+  <data name="Matricola INPS" xml:space="preserve">
+    <value>Renteversicherungsnummer</value>
+  </data>
+  <data name="MaxActivations" xml:space="preserve">
+    <value>Maximale Anzahl von Aktivierungen</value>
+  </data>
+  <data name="Media" xml:space="preserve">
+    <value>Mittelwert</value>
+  </data>
+  <data name="Mercoledi" xml:space="preserve">
+    <value>Mittwoch</value>
+  </data>
+  <data name="Mese" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Mesi" xml:space="preserve">
+    <value>Monate</value>
+  </data>
+  <data name="Minimo" xml:space="preserve">
+    <value>Mindestwert</value>
+  </data>
+  <data name="Minore di" xml:space="preserve">
+    <value>kleiner als</value>
+  </data>
+  <data name="Minore o uguale a" xml:space="preserve">
+    <value>kleiner oder gleich</value>
+  </data>
+  <data name="MinoreDi" xml:space="preserve">
+    <value>kleiner als</value>
+  </data>
+  <data name="MinoreUgualeDi" xml:space="preserve">
+    <value>kleiner oder gleich</value>
+  </data>
+  <data name="Minuti" xml:space="preserve">
+    <value>Minuten</value>
+  </data>
+  <data name="MinutiDiIntervallo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Misura" xml:space="preserve">
+    <value>messen</value>
+  </data>
+  <data name="Misura area" xml:space="preserve">
+    <value>Fläche messen</value>
+  </data>
+  <data name="Misura distanza" xml:space="preserve">
+    <value>Abstand messen</value>
+  </data>
+  <data name="Misura elementi" xml:space="preserve">
+    <value>Elemente messen</value>
+  </data>
+  <data name="Misura elementi selezionati" xml:space="preserve">
+    <value>markierter Artikel messen</value>
+  </data>
+  <data name="Misura elementi visibili" xml:space="preserve">
+    <value>sichtbare Objekte messen</value>
+  </data>
+  <data name="Misura le entità selezionate" xml:space="preserve">
+    <value>markierte Objekte messen</value>
+  </data>
+  <data name="Misura le entità visibili" xml:space="preserve">
+    <value>sichtbare Objekte messen</value>
+  </data>
+  <data name="Model3dFiles" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Model3dFilters" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Model3dPreferences" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Model3dTags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Model3dUserRototranslation" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Model3dUserViews" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Modellatore IFC" xml:space="preserve">
+    <value>IFC Viewer</value>
+  </data>
+  <data name="Modelli" xml:space="preserve">
+    <value>Vorlagen</value>
+  </data>
+  <data name="Modelli Ifc" xml:space="preserve">
+    <value>IFC Modelle</value>
+  </data>
+  <data name="ModelliFolder" xml:space="preserve">
+    <value>Vorlagen</value>
+  </data>
+  <data name="Modello" xml:space="preserve">
+    <value>3D Modell</value>
+  </data>
+  <data name="modello della federazione" xml:space="preserve">
+    <value>Verband Modell</value>
+  </data>
+  <data name="Modello3dNonCaricato" xml:space="preserve">
+    <value>IFC Modell nicht geladen</value>
+  </data>
+  <data name="ModelloIFC" xml:space="preserve">
+    <value>IFC Modell</value>
+  </data>
+  <data name="Modifica" xml:space="preserve">
+    <value>bearbeiten</value>
+  </data>
+  <data name="Modifica annotazione" xml:space="preserve">
+    <value>Anmerkung bearbeiten</value>
+  </data>
+  <data name="Modifica Multipla" xml:space="preserve">
+    <value>Mehrere bearbeiten</value>
+  </data>
+  <data name="ModificaMultipla" xml:space="preserve">
+    <value>Mehrere bearbeiten</value>
+  </data>
+  <data name="ModificaNonConsentitaBuiltIn" xml:space="preserve">
+    <value>Built-in Attribut. Änderungen nicht möglich</value>
+  </data>
+  <data name="ModificaNonConsentitaNotNew" xml:space="preserve">
+    <value>Definitionsänderung ist nicht zulässig. Das Attribut wiederherstellen</value>
+  </data>
+  <data name="Modificato" xml:space="preserve">
+    <value>geändert</value>
+  </data>
+  <data name="ModificaValoreAttributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Mostra" xml:space="preserve">
+    <value>einblenden</value>
+  </data>
+  <data name="Mostra o nascondi" xml:space="preserve">
+    <value>Schnittebenen sichtbar/unschtbar umschalten</value>
+  </data>
+  <data name="Mostra sulla scena la condizione impostata" xml:space="preserve">
+    <value>Dieser Filter in der Szene anzeigen</value>
+  </data>
+  <data name="Mostra viste precedenti" xml:space="preserve">
+    <value>vorherige Ansicht anzeigen</value>
+  </data>
+  <data name="Mostra-Nascondi elemento" xml:space="preserve">
+    <value>Element sichtbar/unschtbar</value>
+  </data>
+  <data name="Mostra-Nascondi griglia" xml:space="preserve">
+    <value>Raster sichtbar/unschtbar</value>
+  </data>
+  <data name="Multi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MultiCalcolo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Multiselezione" xml:space="preserve">
+    <value>Multi-Auswahl</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Nascondi" xml:space="preserve">
+    <value>ausblenden</value>
+  </data>
+  <data name="NascondiValore" xml:space="preserve">
+    <value>Wert ausblenden</value>
+  </data>
+  <data name="Navigazione" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NCifreDecimali" xml:space="preserve">
+    <value>Anzahl Dezimalziffer</value>
+  </data>
+  <data name="NeccessarioRiavvio" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Nessun conflitto presente" xml:space="preserve">
+    <value>kein Konflikt gefunden</value>
+  </data>
+  <data name="Nessun elemento trovato è visibile" xml:space="preserve">
+    <value>kein gefundenes Element ist sichtbar</value>
+  </data>
+  <data name="Nessun filtro selezionato" xml:space="preserve">
+    <value>kein Filter ausgewählt</value>
+  </data>
+  <data name="Nessun livello selezionato nella colonna Codifica" xml:space="preserve">
+    <value>keine Ebene  in der Code-Spalte ausgewählt</value>
+  </data>
+  <data name="Nessun modello aperto" xml:space="preserve">
+    <value>kein Modell offen</value>
+  </data>
+  <data name="Nessun report assegnato per il documento selezionato" xml:space="preserve">
+    <value>kein Bericht zum Dokument zugeordnet</value>
+  </data>
+  <data name="Nessun TAG presente" xml:space="preserve">
+    <value>Kein Tag ist definiert</value>
+  </data>
+  <data name="Nessuna proprietà presente" xml:space="preserve">
+    <value>keine Eigenschaften sind definiert</value>
+  </data>
+  <data name="Nessuna scala" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Nessuna segnalazione presente" xml:space="preserve">
+    <value>Keine Meldung</value>
+  </data>
+  <data name="NessunAttributoCorrispondeAllaPrimaRigaDelFoglioExcel" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NessunElementoTrovatoNellaSezioneCorrente" xml:space="preserve">
+    <value>Im aktuellen Abschnitt sind keine ausgewählte IFC-Modellelemente vorhanden</value>
+  </data>
+  <data name="NessunModello3dDaCaricare" xml:space="preserve">
+    <value>suchen nach gültige IFC-Dateien zum Laden</value>
+  </data>
+  <data name="Nessuno" xml:space="preserve">
+    <value>keine</value>
+  </data>
+  <data name="NessunoStile" xml:space="preserve">
+    <value>kein Format</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="Nome" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Nome attributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Nome del file Bmp" xml:space="preserve">
+    <value>Dateiname (*bmp)</value>
+  </data>
+  <data name="Nome del file Bmp da generare" xml:space="preserve">
+    <value>Dateiname erstellen (*-bmp)</value>
+  </data>
+  <data name="Nome file" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="Nome livello" xml:space="preserve">
+    <value>Ebenenname</value>
+  </data>
+  <data name="Nome Ragione sociale" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Nome tipo" xml:space="preserve">
+    <value>Typbezeichnung</value>
+  </data>
+  <data name="NomeFile" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="NomeFileIfc" xml:space="preserve">
+    <value>IFC Dateiname</value>
+  </data>
+  <data name="NomeProgetto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Non ancora salvato" xml:space="preserve">
+    <value>noch nicht gespeichert</value>
+  </data>
+  <data name="non comuni a tutti gli elementi filtrati" xml:space="preserve">
+    <value>sie sind nicht identisch für alle gefilterte Elemente</value>
+  </data>
+  <data name="Non considerare i calendari delle attivita" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Non contiene" xml:space="preserve">
+    <value>enthält nicht</value>
+  </data>
+  <data name="Non esiste" xml:space="preserve">
+    <value>nicht vorhanden</value>
+  </data>
+  <data name="Non ho trovato alcun Tipo" xml:space="preserve">
+    <value>kein Typus wurde gefunden</value>
+  </data>
+  <data name="Non trovato" xml:space="preserve">
+    <value>nicht gefunden</value>
+  </data>
+  <data name="Non trovo alcun elemento nella tabella delle proprietà" xml:space="preserve">
+    <value>kein Element wurde in Eigenschaftstabelle gefunden</value>
+  </data>
+  <data name="Non è consentito caricare files con lo stesso nome" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Non è possibile modificare la proprietà" xml:space="preserve">
+    <value>die Eigenschaften können nicht geändert werden</value>
+  </data>
+  <data name="Non è possibile portare nella formula" xml:space="preserve">
+    <value>die Formel kann nicht eingetragen werden</value>
+  </data>
+  <data name="Non è possibile selezionare proprietà" xml:space="preserve">
+    <value>die Eigenschaften können nicht ausgewählt werden,</value>
+  </data>
+  <data name="Non è presente un calendario comune tra le attivita selezionate" xml:space="preserve">
+    <value>Es gibt keinen gemeinsamen Kalender</value>
+  </data>
+  <data name="non è univocamente determinata" xml:space="preserve">
+    <value>es ist nicht eindeutig</value>
+  </data>
+  <data name="NonEPossibileInserireUnaVoceSubordinata" xml:space="preserve">
+    <value>der Eintrag kann nicht unten eingefügt werden: er ist bereits mit anderen Artikel verknüpft</value>
+  </data>
+  <data name="NonEPossibileSelezionareQuestoAttributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NonPossibileAssociareAutomaticamenteIlFiltro" xml:space="preserve">
+    <value>Der gefilterter Wert kann nicht automatisch dem ergestellten Eintrag zugeordnet werden.</value>
+  </data>
+  <data name="NonPossibileCopiaDiQuestaSelezione" xml:space="preserve">
+    <value>eine Kopie der Auswahl ist nicht zulässig</value>
+  </data>
+  <data name="NonPossibileFiltrarePerQuestoAttributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NonPossibileOrdinarePerQuestoAttributo" xml:space="preserve">
+    <value>sortieren nach diesem Attribut nicht möglich</value>
+  </data>
+  <data name="NonPossibileRaggrupparePerQuestoAttributo" xml:space="preserve">
+    <value>gruppieren nach diesem Attribut nicht möglich</value>
+  </data>
+  <data name="NonPossibileSelezionarePiuDiUnArticolo" xml:space="preserve">
+    <value>mehr als ein Artikel mit Preis kann nicht ausgewählt werden</value>
+  </data>
+  <data name="NonPossibileSelezionarePiuDiUnaVoce" xml:space="preserve">
+    <value>mehr als ein Eintrag kann nicht ausgewählt werden</value>
+  </data>
+  <data name="Nota" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Npagina" xml:space="preserve">
+    <value>Nr. Seite</value>
+  </data>
+  <data name="Npagina/NtotalePagine" xml:space="preserve">
+    <value>Nr. Seite/ gesamt Seiten</value>
+  </data>
+  <data name="Num.Elementi" xml:space="preserve">
+    <value>Nr. Elementen</value>
+  </data>
+  <data name="Num.Proprietà" xml:space="preserve">
+    <value>Nr. Eigenschaften</value>
+  </data>
+  <data name="NumerazionePagina" xml:space="preserve">
+    <value>Seitennummerierung</value>
+  </data>
+  <data name="Numero di BaseQuantity" xml:space="preserve">
+    <value>Basismenge</value>
+  </data>
+  <data name="Numero di CPU presenti" xml:space="preserve">
+    <value>Nr. CPU</value>
+  </data>
+  <data name="Numero di elementi geometrici" xml:space="preserve">
+    <value>geometrische Elemente</value>
+  </data>
+  <data name="Numero di Entità IFC" xml:space="preserve">
+    <value>IFC Objekte</value>
+  </data>
+  <data name="Numero di Property" xml:space="preserve">
+    <value>Eigenschaften</value>
+  </data>
+  <data name="Numero di Righe" xml:space="preserve">
+    <value>Spalten Anzahl</value>
+  </data>
+  <data name="NumeroColonne" xml:space="preserve">
+    <value>Spaltenanzahl</value>
+  </data>
+  <data name="NumeroContabilita" xml:space="preserve">
+    <value>Währung</value>
+  </data>
+  <data name="NumeroPagina" xml:space="preserve">
+    <value>Seitennummer</value>
+  </data>
+  <data name="NumeroReale" xml:space="preserve">
+    <value>Reelle Zahl</value>
+  </data>
+  <data name="NumeroTotalePagine" xml:space="preserve">
+    <value>gesamt Seiten</value>
+  </data>
+  <data name="NuovaPagina" xml:space="preserve">
+    <value>Gesamtseitenzahl</value>
+  </data>
+  <data name="Nuovo" xml:space="preserve">
+    <value>Neu</value>
+  </data>
+  <data name="Nuovo Filtro" xml:space="preserve">
+    <value>neuer Filter</value>
+  </data>
+  <data name="NuovoProgetto" xml:space="preserve">
+    <value>neues Projekt</value>
+  </data>
+  <data name="NZeriIniziali" xml:space="preserve">
+    <value>Anzahl führende Nullen</value>
+  </data>
+  <data name="ObjectType" xml:space="preserve">
+    <value>Objekttyp</value>
+  </data>
+  <data name="OccorreSelezionareUnArticolo" xml:space="preserve">
+    <value>ein Artikel mit Preis muss ausgewählt werden</value>
+  </data>
+  <data name="OccorreSelezionareUnAttivita" xml:space="preserve">
+    <value>eine Aufgabe muss ausgewählt werden</value>
+  </data>
+  <data name="OccorreSelezionareUnaVoce" xml:space="preserve">
+    <value>ein Eintrag muss ausgewählt werden</value>
+  </data>
+  <data name="OccorreSelezionareUnCalendario" xml:space="preserve">
+    <value>ein Kalendar muss ausgewählt werden</value>
+  </data>
+  <data name="Offset" xml:space="preserve">
+    <value>Versatz</value>
+  </data>
+  <data name="Offset rispetto alla traslazione assegnata" xml:space="preserve">
+    <value>Versatz bezogen auf die zugeordnete Translation</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="Ok se vuoi procedere" xml:space="preserve">
+    <value>Wollen Sie fortfahren?</value>
+  </data>
+  <data name="Opaco" xml:space="preserve">
+    <value>Opak</value>
+  </data>
+  <data name="Opaco tutto" xml:space="preserve">
+    <value>alles Opak</value>
+  </data>
+  <data name="Opera" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Operatore" xml:space="preserve">
+    <value>Operator</value>
+  </data>
+  <data name="Operazione" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Operazione annullata" xml:space="preserve">
+    <value>Funktion abgebrochen</value>
+  </data>
+  <data name="OperazioneDiRaggruppamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OperazioneTraVoci" xml:space="preserve">
+    <value>Rechenoperationen mit Einträge</value>
+  </data>
+  <data name="Oppure si riferisce a primitive errate" xml:space="preserve">
+    <value>oder er bezieht sich auf falschen Primitiven</value>
+  </data>
+  <data name="Opzione non prevista per i Materiali" xml:space="preserve">
+    <value>Option für Materialien nicht zulässig</value>
+  </data>
+  <data name="Opzioni" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+  <data name="Opzioni annotazioni" xml:space="preserve">
+    <value>Anmerkung Voreinstellungen</value>
+  </data>
+  <data name="OpzioniDiStampa" xml:space="preserve">
+    <value>Drucken Optionen</value>
+  </data>
+  <data name="OpzioniVisualizzatore" xml:space="preserve">
+    <value>Viewer Einstellungen</value>
+  </data>
+  <data name="OR Unione" xml:space="preserve">
+    <value>OR (Vereinigungsmenge)</value>
+  </data>
+  <data name="Orario" xml:space="preserve">
+    <value>Zeit</value>
+  </data>
+  <data name="Orario da calendario" xml:space="preserve">
+    <value>Kalendar-Zeit</value>
+  </data>
+  <data name="Orario di lavoro" xml:space="preserve">
+    <value>Arbeitszeit</value>
+  </data>
+  <data name="Orario di lavoro settimanale" xml:space="preserve">
+    <value>Wochenarbeitszeit</value>
+  </data>
+  <data name="Orario eccezione" xml:space="preserve">
+    <value>Zeit-Ausnahme</value>
+  </data>
+  <data name="Orario settimanale" xml:space="preserve">
+    <value>Wochenarbeitszeit</value>
+  </data>
+  <data name="OrarioLavoro" xml:space="preserve">
+    <value>Arbeitszeit</value>
+  </data>
+  <data name="Ordina" xml:space="preserve">
+    <value>sortieren</value>
+  </data>
+  <data name="Ordinamento" xml:space="preserve">
+    <value>Sortierung</value>
+  </data>
+  <data name="Ore" xml:space="preserve">
+    <value>Stunden</value>
+  </data>
+  <data name="Organizzazione" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="Orientamento" xml:space="preserve">
+    <value>Ausrichtung</value>
+  </data>
+  <data name="Origine" xml:space="preserve">
+    <value>Ursprung</value>
+  </data>
+  <data name="Origine del Modello" xml:space="preserve">
+    <value>Modell Ursprung</value>
+  </data>
+  <data name="Orizzontale" xml:space="preserve">
+    <value>horizontal</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value />
+  </data>
+  <data name="pagine" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Paragrafo" xml:space="preserve">
+    <value>Absatz</value>
+  </data>
+  <data name="Parentesi aperte non seguite dallo stesso numero di partentesi chiuse" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Parentesi chiuse non seguite dallo stesso numero di partentesi aperte" xml:space="preserve">
+    <value>schließende Klammer-Anzahl unterschiedlich zur öffnende Klammer-Anzahl</value>
+  </data>
+  <data name="Partita IVA" xml:space="preserve">
+    <value>MwSt-Nummer   (Mehrwerksteuer-Nummer)</value>
+  </data>
+  <data name="PartiUguali" xml:space="preserve">
+    <value>gleiche Teile</value>
+  </data>
+  <data name="Passo" xml:space="preserve">
+    <value>Schritt</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Per determinare l'entità della traslazione è necessario selezionare due punti sulla scena" xml:space="preserve">
+    <value>wählen Sie zuerst einen Punkt in der Datei zu versetzen, und dann einen anderen in der Referenzdatei</value>
+  </data>
+  <data name="per maggiori informazioni si possono visitare i siti sotto indicati" xml:space="preserve">
+    <value>Weitere Infos</value>
+  </data>
+  <data name="Per poter memorizzare le condizioni" xml:space="preserve">
+    <value>um die Kriterien speichern zu können</value>
+  </data>
+  <data name="Per rendere effettive le modifiche riavviare Lapplicazione" xml:space="preserve">
+    <value>Anwendung bitte neu starten, damit die Änderungen wirksam werden</value>
+  </data>
+  <data name="Per tre punti" xml:space="preserve">
+    <value>drei-Punkte Fläche</value>
+  </data>
+  <data name="percCompletamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Percentuali avanzamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Percorso" xml:space="preserve">
+    <value>Pfad</value>
+  </data>
+  <data name="Percorso critico" xml:space="preserve">
+    <value>kritischer Pfad</value>
+  </data>
+  <data name="PercorsoDeiFileModelli" xml:space="preserve">
+    <value>Pfad Modell-Datei</value>
+  </data>
+  <data name="PercorsoDeiFilePrezzari" xml:space="preserve">
+    <value>Pfad Preisliste-Datei</value>
+  </data>
+  <data name="PercPeriodo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PercProgressivo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="percvalori" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Periodi con uguale produttivita" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Periodo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Persona" xml:space="preserve">
+    <value>Person</value>
+  </data>
+  <data name="Piani di taglio" xml:space="preserve">
+    <value>Schnittebenen</value>
+  </data>
+  <data name="Piano di taglio" xml:space="preserve">
+    <value>Schnittebene</value>
+  </data>
+  <data name="Piano di taglio parallelo ad una faccia" xml:space="preserve">
+    <value>Fläche auswählen</value>
+  </data>
+  <data name="Piano di taglio per tre punti" xml:space="preserve">
+    <value>drei-Punkte Fläche</value>
+  </data>
+  <data name="PiePaginaCentrale" xml:space="preserve">
+    <value>Fußzeile zentriert</value>
+  </data>
+  <data name="PiePaginaDestra" xml:space="preserve">
+    <value>Fußzeile rechts</value>
+  </data>
+  <data name="PiePaginaSinistra" xml:space="preserve">
+    <value>Fußzeile links</value>
+  </data>
+  <data name="Piè pagina" xml:space="preserve">
+    <value>Fußzeile</value>
+  </data>
+  <data name="Posizione INAIL" xml:space="preserve">
+    <value>DGUV Nummer (Deutsche gesetzliche Unfallversicherung)</value>
+  </data>
+  <data name="Postponi al codice esistente" xml:space="preserve">
+    <value>nach bisherigem Code hinzufügen</value>
+  </data>
+  <data name="Predecessori" xml:space="preserve">
+    <value>Vorläufer</value>
+  </data>
+  <data name="Preferenze" xml:space="preserve">
+    <value>Voreinstellungen</value>
+  </data>
+  <data name="Preferenze annotazioni" xml:space="preserve">
+    <value>Anmerkung Voreinstellungen</value>
+  </data>
+  <data name="Preferenze visualizzatore" xml:space="preserve">
+    <value>Modell Voreinstellungen</value>
+  </data>
+  <data name="Prefisso" xml:space="preserve">
+    <value>Präfix</value>
+  </data>
+  <data name="Premere per impostare una parentesi aperta" xml:space="preserve">
+    <value>click um eine öffnende Klammer hinzufügen</value>
+  </data>
+  <data name="Premere per impostare una parentesi chiusa" xml:space="preserve">
+    <value>click um eine schließende Klammer hinzufügen</value>
+  </data>
+  <data name="Premere per modificare AND in OR" xml:space="preserve">
+    <value>click um AND/OR umzukehren</value>
+  </data>
+  <data name="Presenze" xml:space="preserve">
+    <value>Presenzen</value>
+  </data>
+  <data name="Prezzari" xml:space="preserve">
+    <value>Peislisten</value>
+  </data>
+  <data name="PrezzariFolder" xml:space="preserve">
+    <value>Peislisten</value>
+  </data>
+  <data name="Prezzario" xml:space="preserve">
+    <value>Preisliste</value>
+  </data>
+  <data name="Prezzario (Parent)" xml:space="preserve">
+    <value>Preisliste</value>
+  </data>
+  <data name="Prezzario origine" xml:space="preserve">
+    <value>Quell Preisliste</value>
+  </data>
+  <data name="PrezzarioInterno" xml:space="preserve">
+    <value>interne Preisliste</value>
+  </data>
+  <data name="PrezzarioOrigine" xml:space="preserve">
+    <value>Quell Preisliste</value>
+  </data>
+  <data name="Prezzo" xml:space="preserve">
+    <value>Preis</value>
+  </data>
+  <data name="Primo Elemento" xml:space="preserve">
+    <value>erstes Element</value>
+  </data>
+  <data name="Procedi per effettuare la Codifica" xml:space="preserve">
+    <value>weitergehen zum Codieren</value>
+  </data>
+  <data name="Prodotto" xml:space="preserve">
+    <value>Produkt</value>
+  </data>
+  <data name="Produttivita costante" xml:space="preserve">
+    <value />
+  </data>
+  <data name="produttivita media costante" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProduttivitaGantt" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProduttivitaH" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Profilo utente" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Progetti di" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Progettisti" xml:space="preserve">
+    <value>Entwurfsingenieure</value>
+  </data>
+  <data name="Progetto" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="Progetto&gt;Attivita" xml:space="preserve">
+    <value>Aufgabe</value>
+  </data>
+  <data name="Progetto&gt;Computo" xml:space="preserve">
+    <value>Massenermittlung</value>
+  </data>
+  <data name="Progetto&gt;Contatti" xml:space="preserve">
+    <value>Kontakte</value>
+  </data>
+  <data name="Progetto&gt;DatiGenerali" xml:space="preserve">
+    <value>Projekt Infos</value>
+  </data>
+  <data name="Progetto&gt;Divisioni" xml:space="preserve">
+    <value>weitere Abschnitte</value>
+  </data>
+  <data name="Progetto&gt;Elementi" xml:space="preserve">
+    <value>Elemente</value>
+  </data>
+  <data name="Progetto&gt;ElencoPrezzi" xml:space="preserve">
+    <value>Preisliste</value>
+  </data>
+  <data name="Progetto&gt;Foglio di calcolo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Progetto&gt;ModelloIFC" xml:space="preserve">
+    <value>Projekt&gt;IFC Modell</value>
+  </data>
+  <data name="Progetto&gt;Stampe" xml:space="preserve">
+    <value>Projekt&gt;Drucken</value>
+  </data>
+  <data name="ProgettoArchitettonico" xml:space="preserve">
+    <value>Architektonischer Entwurf</value>
+  </data>
+  <data name="ProgettoImpianti" xml:space="preserve">
+    <value>TGA Planung</value>
+  </data>
+  <data name="ProgettoNonTrovato" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProgettoStrutture" xml:space="preserve">
+    <value>Tragwerksplanung</value>
+  </data>
+  <data name="Programma" xml:space="preserve">
+    <value>Programm</value>
+  </data>
+  <data name="ProgrammaLavori" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Programmazione SAL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Programmazione SAL a" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProgrammazioneSALData" xml:space="preserve">
+    <value />
+  </data>
+  <data name="progressiva" xml:space="preserve">
+    <value>progressiv</value>
+  </data>
+  <data name="Progressiva2" xml:space="preserve">
+    <value>progressiv</value>
+  </data>
+  <data name="Progressivo" xml:space="preserve">
+    <value> </value>
+  </data>
+  <data name="Progresso" xml:space="preserve">
+    <value>Aufgabenabwicklung</value>
+  </data>
+  <data name="ProjectGlobalId" xml:space="preserve">
+    <value>Projekt GlobalId</value>
+  </data>
+  <data name="Proprietà" xml:space="preserve">
+    <value>Eigenschaften</value>
+  </data>
+  <data name="Proprietà non trovata in" xml:space="preserve">
+    <value>Eigenschaft nicht gefunden in:</value>
+  </data>
+  <data name="Proprietà pari a zero in" xml:space="preserve">
+    <value>Eigenschaftswert = 0 in</value>
+  </data>
+  <data name="Provincia" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="Puoi inserire un prefisso ed ENTER per selezionare" xml:space="preserve">
+    <value>ENTER eintippen, um auszuwählen</value>
+  </data>
+  <data name="Quantita" xml:space="preserve">
+    <value>Menge</value>
+  </data>
+  <data name="QuantitaTotale" xml:space="preserve">
+    <value>gesamte Menge </value>
+  </data>
+  <data name="Quantità" xml:space="preserve">
+    <value>Menge</value>
+  </data>
+  <data name="Quantità elemento" xml:space="preserve">
+    <value>Element-Menge</value>
+  </data>
+  <data name="Quantità totale" xml:space="preserve">
+    <value>gesamte Menge</value>
+  </data>
+  <data name="Questa classe non contiene alcuna proprietà" xml:space="preserve">
+    <value>diese Klasse enthält keine Eigenschaften</value>
+  </data>
+  <data name="Questa operazione non è consentita per valore _Multi" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Raggio" xml:space="preserve">
+    <value>Radius</value>
+  </data>
+  <data name="Raggio della sfera" xml:space="preserve">
+    <value>Radius des Bereichs</value>
+  </data>
+  <data name="Raggruppa" xml:space="preserve">
+    <value>gruppieren</value>
+  </data>
+  <data name="Raggruppamenti" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
+  <data name="RaggruppatoreSenzaAttributo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Raggruppatori" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
+  <data name="REGOLA NON COERENTE" xml:space="preserve">
+    <value>ungültige Regel</value>
+  </data>
+  <data name="Regole" xml:space="preserve">
+    <value>Regeln</value>
+  </data>
+  <data name="Release" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="RemainingUniqueUsageDays" xml:space="preserve">
+    <value>verbleibende Tage</value>
+  </data>
+  <data name="RemainingUsageDays" xml:space="preserve">
+    <value>verbleibende Tage</value>
+  </data>
+  <data name="Report" xml:space="preserve">
+    <value>Bericht</value>
+  </data>
+  <data name="ReportWizardSetting" xml:space="preserve">
+    <value>Bericht Einstellungen</value>
+  </data>
+  <data name="Reset default" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ResetPageLayout" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Resetta le traslazioni del modello selezionato" xml:space="preserve">
+    <value>Versetzung vom ausgewälten Modell zurücksetzen</value>
+  </data>
+  <data name="RiavviaOra" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Ricalcolo in corso (voci riferite)..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Ricalcolo in corso..." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Ricarica classi nel modello" xml:space="preserve">
+    <value>Modell-Klassen neu laden</value>
+  </data>
+  <data name="Ricerche speciali" xml:space="preserve">
+    <value>erweiterte Suche</value>
+  </data>
+  <data name="RichiestoFileDiEstensione" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Ricodifica" xml:space="preserve">
+    <value>codieren</value>
+  </data>
+  <data name="Ricordami" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Riepilogo" xml:space="preserve">
+    <value>Zusammenfassung</value>
+  </data>
+  <data name="Riepilogo eccezioni" xml:space="preserve">
+    <value>Ausnahmen Übersicht</value>
+  </data>
+  <data name="Riferiemento ciclico tra le voci" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Riferimenti" xml:space="preserve">
+    <value>Verweise</value>
+  </data>
+  <data name="RiferimentiAttributoNonSarannoSoddisfatti" xml:space="preserve">
+    <value>Verweisattribut nicht gültig</value>
+  </data>
+  <data name="Riferimento" xml:space="preserve">
+    <value>Verwies</value>
+  </data>
+  <data name="Rimuovi" xml:space="preserve">
+    <value>löschen</value>
+  </data>
+  <data name="Rimuovi TAG dai filtri selezionati" xml:space="preserve">
+    <value>Tag von ausgewählten Filtern entfernen</value>
+  </data>
+  <data name="RimuoviDaAttributoMultivalore" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RimuoviModello" xml:space="preserve">
+    <value>Modell löschen</value>
+  </data>
+  <data name="RimuoviTag" xml:space="preserve">
+    <value>Tag entfernen</value>
+  </data>
+  <data name="RimuoviVoce" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RinominaSuddivisione" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Ripeti l'ultimo IfcElement" xml:space="preserve">
+    <value>leztes IFC Element wiederholen</value>
+  </data>
+  <data name="Ripeti ogni" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RiportarePagina" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RiportareRaggruppamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RiportoPagina" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RiportoRaggruppamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Ripristina colore" xml:space="preserve">
+    <value>Farbe zurücksetzen</value>
+  </data>
+  <data name="Ripristina formato" xml:space="preserve">
+    <value>Format zurücksetzen</value>
+  </data>
+  <data name="Ripristina i piani" xml:space="preserve">
+    <value>Gebäude Geschosse  zurücksetzen</value>
+  </data>
+  <data name="Ripristina la posizione dei piani del modello" xml:space="preserve">
+    <value>Gebäude Geschosse  zurücksetzen</value>
+  </data>
+  <data name="Ripristina tutto" xml:space="preserve">
+    <value>Alles zurücksetzen</value>
+  </data>
+  <data name="Risultati" xml:space="preserve">
+    <value>Ergebnisse auf der ersten Ebene</value>
+  </data>
+  <data name="Ritardo" xml:space="preserve">
+    <value>Verzögerung</value>
+  </data>
+  <data name="Ritorna alla selezione precedente" xml:space="preserve">
+    <value>Rückgängig zur vorherigen Auswahl</value>
+  </data>
+  <data name="roundup_arg_div" xml:space="preserve">
+    <value>Roundup(Argument; Divisor)</value>
+  </data>
+  <data name="RTF" xml:space="preserve">
+    <value>RTF</value>
+  </data>
+  <data name="Sabato" xml:space="preserve">
+    <value>Samstag</value>
+  </data>
+  <data name="SAL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SAL Programmati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Salva" xml:space="preserve">
+    <value>speichern</value>
+  </data>
+  <data name="Salva i TAG ed esci" xml:space="preserve">
+    <value>Tag speichern und beenden</value>
+  </data>
+  <data name="Salva il filtro ed esci" xml:space="preserve">
+    <value>Filter speichern und beenden</value>
+  </data>
+  <data name="Salva il modello ifc" xml:space="preserve">
+    <value>Modell + IFC Kosten exportieren</value>
+  </data>
+  <data name="Salva il progetto" xml:space="preserve">
+    <value>Projekt speichern</value>
+  </data>
+  <data name="Salva la vista" xml:space="preserve">
+    <value>Ansichtfenster speichern</value>
+  </data>
+  <data name="Salva la vista ed i costi su file IFC" xml:space="preserve">
+    <value>Ansichtfenster + IFC Kosten speichern</value>
+  </data>
+  <data name="Salva la vista su file" xml:space="preserve">
+    <value>Ansicht in einer Datei speichern</value>
+  </data>
+  <data name="Salva modello su file IFC" xml:space="preserve">
+    <value>Modell + IFC Kosten exportieren</value>
+  </data>
+  <data name="SalvaCome" xml:space="preserve">
+    <value>speichern als</value>
+  </data>
+  <data name="SalvareIlProgettoCorrente" xml:space="preserve">
+    <value>speichern aktuelles Projekt?</value>
+  </data>
+  <data name="SalvaSuWeb" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Salvataggio su Web avvenuto correttamente" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SalvataggioInCorso" xml:space="preserve">
+    <value>speichern…</value>
+  </data>
+  <data name="SaveGantt" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Scala" xml:space="preserve">
+    <value>Maßstab</value>
+  </data>
+  <data name="Scala cronologica" xml:space="preserve">
+    <value>Zeitplan</value>
+  </data>
+  <data name="Scegliere il file JOIN di destinazione" xml:space="preserve">
+    <value>Punkt in der Zieldatei wählen</value>
+  </data>
+  <data name="Scegliere la vista da caricare" xml:space="preserve">
+    <value>Ansicht zum Laden auswählen</value>
+  </data>
+  <data name="Scelta della scena" xml:space="preserve">
+    <value>Ansicht auswählen</value>
+  </data>
+  <data name="Schedulazione Valori Periodo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Schedulazione valori periodo1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Scollega" xml:space="preserve">
+    <value>Balken trennen</value>
+  </data>
+  <data name="Se il valore è numerico il separatore decimale deve essere il punto" xml:space="preserve">
+    <value>Dezimaltrennzeichen muss einen Punkt</value>
+  </data>
+  <data name="segnalazioni" xml:space="preserve">
+    <value>Warnhinweise</value>
+  </data>
+  <data name="Seleziona" xml:space="preserve">
+    <value>wählen</value>
+  </data>
+  <data name="Seleziona allegati" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona almeno una voce prima di procedere." xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona attivita" xml:space="preserve">
+    <value>Aufgabe auswählen</value>
+  </data>
+  <data name="Seleziona classe" xml:space="preserve">
+    <value>Klasse auswählen</value>
+  </data>
+  <data name="Seleziona contatti" xml:space="preserve">
+    <value>Kontakte auswählen</value>
+  </data>
+  <data name="Seleziona data" xml:space="preserve">
+    <value>Datum auswählen</value>
+  </data>
+  <data name="Seleziona elementi con lo stesso valore" xml:space="preserve">
+    <value>Artikel mit gleichem Wert auswählen</value>
+  </data>
+  <data name="Seleziona entità aggregate" xml:space="preserve">
+    <value>Enthaltene Elemente auswählen</value>
+  </data>
+  <data name="Seleziona filtri con Articolo" xml:space="preserve">
+    <value>Filters mit Atikel auswählen</value>
+  </data>
+  <data name="Seleziona filtri e regole" xml:space="preserve">
+    <value>Filters auswählen</value>
+  </data>
+  <data name="Seleziona foglio" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona gli elementi visibili" xml:space="preserve">
+    <value>Sichtbare Elemente auswählen</value>
+  </data>
+  <data name="Seleziona l'opera" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona prezzario" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona tag" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona tutti" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="Seleziona tutto" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="Seleziona un documento collegato ad un report prima di procedere all'editazione dello stesso" xml:space="preserve">
+    <value>wählen Sie ein Dokument mit einem Bericht verknüpft aus, bevor Sie das bearbeiten</value>
+  </data>
+  <data name="Seleziona un gruppo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Seleziona una voce prima di procedere." xml:space="preserve">
+    <value />
+  </data>
+  <data name="SelezionaArticoli" xml:space="preserve">
+    <value>Artikel auswählen</value>
+  </data>
+  <data name="SelezionaArticoliNonRiferiti" xml:space="preserve">
+    <value>unbenutzte Artikel auswählen</value>
+  </data>
+  <data name="SelezionaArticoliRiferitiNelComputo" xml:space="preserve">
+    <value>Artikel in Massenermittlung auswählen</value>
+  </data>
+  <data name="SelezionaCapitoli" xml:space="preserve">
+    <value>Paragraph auswählen</value>
+  </data>
+  <data name="SelezionaCartellaModelli" xml:space="preserve">
+    <value>Modellen-Ordner  auswählen</value>
+  </data>
+  <data name="SelezionaCartellaPrezzari" xml:space="preserve">
+    <value>Preisliste-Ordner  auswählen</value>
+  </data>
+  <data name="SelezionaDocumenti" xml:space="preserve">
+    <value>Dokumente auswählen</value>
+  </data>
+  <data name="SelezionaFormati" xml:space="preserve">
+    <value>Formate auswählen</value>
+  </data>
+  <data name="SelezionaGliElementi" xml:space="preserve">
+    <value>Elemente auswählen</value>
+  </data>
+  <data name="SelezionaLeVociDiComputo" xml:space="preserve">
+    <value>Massenermittlung-Einträge auswählen</value>
+  </data>
+  <data name="SelezionaPrezzari" xml:space="preserve">
+    <value>Preislisten auswählen</value>
+  </data>
+  <data name="Selezionare almeno una voce" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Selezionare documento prima di proseugire con la preview" xml:space="preserve">
+    <value>wählen Sie ein Dokument aus, bevor Sie mit der Vorschau fortfahren</value>
+  </data>
+  <data name="Selezionare il modello da traslare click su un suo punto" xml:space="preserve">
+    <value>auswählen Model zu versetzen</value>
+  </data>
+  <data name="Selezionare tre punti" xml:space="preserve">
+    <value>drei Punkte auswählen</value>
+  </data>
+  <data name="Selezionare un punto" xml:space="preserve">
+    <value>Punkt auswählen</value>
+  </data>
+  <data name="Selezionare una superficie" xml:space="preserve">
+    <value>Fläche auswählen</value>
+  </data>
+  <data name="Selezionare voci con codice univoco" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SelezionareAttivitaDestinazione" xml:space="preserve">
+    <value>Ziel Aufgabe auswählen</value>
+  </data>
+  <data name="SelezionareDestinazione" xml:space="preserve">
+    <value>Ziel auswählen</value>
+  </data>
+  <data name="SelezionareLAttributoPrimaDiSpostareLaRigaDiRaggruppamento" xml:space="preserve">
+    <value>wählen Sie das Attribut aus, bevor Sie die Gruppe verschieben</value>
+  </data>
+  <data name="SelezionareModelli" xml:space="preserve">
+    <value>ein oder mehrere Vorlage auswählen</value>
+  </data>
+  <data name="SelezionaReport" xml:space="preserve">
+    <value>Bericht auswählen</value>
+  </data>
+  <data name="SelezionareTargetSeFiltroAttivo" xml:space="preserve">
+    <value>Element auswählen</value>
+  </data>
+  <data name="SelezionareUnaSezionePerPoterProcedereAllEditazioneDelReport" xml:space="preserve">
+    <value>wählen Sie einen Abschnitt aus, damit Sie den Bericht bearbeiten können</value>
+  </data>
+  <data name="SelezionareUnModello" xml:space="preserve">
+    <value>Vorlage auswählen</value>
+  </data>
+  <data name="SelezionareUnReportPrimaDiProseugireAltrimentiCreareUnoNuovo" xml:space="preserve">
+    <value>Bericht auswählen oder erstellen</value>
+  </data>
+  <data name="SelezionaStili" xml:space="preserve">
+    <value>Format auswählen</value>
+  </data>
+  <data name="SelezionaSuModello3d" xml:space="preserve">
+    <value>im IFC Modell markieren</value>
+  </data>
+  <data name="Selezionate" xml:space="preserve">
+    <value>ausgewählt</value>
+  </data>
+  <data name="selezionati" xml:space="preserve">
+    <value>ausgewählt</value>
+  </data>
+  <data name="SelezionaTutti" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="SelezionaTutto" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="SelezionaTutto (CTRL+A)" xml:space="preserve">
+    <value>Alles auswählen (CTRL + A)</value>
+  </data>
+  <data name="SelezionaUnaVoce" xml:space="preserve">
+    <value>Eintrag auswählen</value>
+  </data>
+  <data name="SelezionaVoci" xml:space="preserve">
+    <value>Eintrag auswählen</value>
+  </data>
+  <data name="SelezionaVociComputo" xml:space="preserve">
+    <value>Massenermittlung-Einträge auswählen</value>
+  </data>
+  <data name="SelezionaVociDa" xml:space="preserve">
+    <value>Eintrag auswählen aus</value>
+  </data>
+  <data name="SelezionaWBS" xml:space="preserve">
+    <value>PSP auswählen</value>
+  </data>
+  <data name="Selezione" xml:space="preserve">
+    <value>Auswahl</value>
+  </data>
+  <data name="Selezione di selezione   CTRL per selezionare una o più classi prima di utilizzare il comando" xml:space="preserve">
+    <value>geschachtelte Auswahl - [CTRL] um eine oder mehrere Klassen auszuwählen, bevor Sie den Befehl verwenden</value>
+  </data>
+  <data name="Selezione voci" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SelezioneDaModello3d" xml:space="preserve">
+    <value>Auswahl aus IFC Modell</value>
+  </data>
+  <data name="Semestri" xml:space="preserve">
+    <value>Semester</value>
+  </data>
+  <data name="SenzaNome" xml:space="preserve">
+    <value>unbennant</value>
+  </data>
+  <data name="Separa i piani" xml:space="preserve">
+    <value>Gebäude Geschosse versetzen</value>
+  </data>
+  <data name="Separa i piani del modello" xml:space="preserve">
+    <value>Modell Geschosse versetzen</value>
+  </data>
+  <data name="SeparaSimbolo" xml:space="preserve">
+    <value>Symbol trennen</value>
+  </data>
+  <data name="Separatore Orizzontale" xml:space="preserve">
+    <value>Horizontal Trennzeichen</value>
+  </data>
+  <data name="Separatore verticale" xml:space="preserve">
+    <value>Vertikal Trennzeichen</value>
+  </data>
+  <data name="ServizioAssistenzaGratuito" xml:space="preserve">
+    <value>kostenlos Kundendienst</value>
+  </data>
+  <data name="ServizioAssistenzaPerClientiInContratto" xml:space="preserve">
+    <value>Kundendienst für Vertragskunden</value>
+  </data>
+  <data name="Settimana" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Settimane" xml:space="preserve">
+    <value>Wochen</value>
+  </data>
+  <data name="Sezione" xml:space="preserve">
+    <value>Abschnitt</value>
+  </data>
+  <data name="Sezione riferita" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SezioneDiRiferimento" xml:space="preserve">
+    <value>Referenzabschnitt</value>
+  </data>
+  <data name="SezioneRiferimentoAttributo" xml:space="preserve">
+    <value>Abschnitt&gt;Verweis&gt;Attribut</value>
+  </data>
+  <data name="SezioneSorgenteNonTrovata" xml:space="preserve">
+    <value>keiner passender Abschnitt in Quelldatei vorhanden</value>
+  </data>
+  <data name="Sezioni" xml:space="preserve">
+    <value>Abschnitte</value>
+  </data>
+  <data name="Sfera" xml:space="preserve">
+    <value>Kugel-Bereich</value>
+  </data>
+  <data name="Sfoglia" xml:space="preserve">
+    <value>durchsuchen</value>
+  </data>
+  <data name="si consiglia di effettuare filtri singoli per ogni" xml:space="preserve">
+    <value>einzelner Filter anwenden</value>
+  </data>
+  <data name="Simbolo" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="SimboloAllInizio" xml:space="preserve">
+    <value>Symbol am Anfang</value>
+  </data>
+  <data name="Sinistra" xml:space="preserve">
+    <value>links</value>
+  </data>
+  <data name="Sinistro" xml:space="preserve">
+    <value>links</value>
+  </data>
+  <data name="Solo una volta" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Somma" xml:space="preserve">
+    <value>Summe</value>
+  </data>
+  <data name="Somma dei valori di" xml:space="preserve">
+    <value>Summe der Werte von</value>
+  </data>
+  <data name="Sommario articoli" xml:space="preserve">
+    <value>Artikel Inhaltsangabe</value>
+  </data>
+  <data name="Sommario articolo" xml:space="preserve">
+    <value>Artikel Inhaltsangabe</value>
+  </data>
+  <data name="SommaStruttura" xml:space="preserve">
+    <value>Struktur Summe</value>
+  </data>
+  <data name="Sono presenti" xml:space="preserve">
+    <value>sind vorhanden</value>
+  </data>
+  <data name="Sostituisci" xml:space="preserve">
+    <value>ersetzen</value>
+  </data>
+  <data name="Sostituisci codice esistente" xml:space="preserve">
+    <value>bestehenden Code ersetzen</value>
+  </data>
+  <data name="Sostituisci nel testo" xml:space="preserve">
+    <value>im Text ersetzen</value>
+  </data>
+  <data name="SostituisciInAttributoMultivalore" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SostituisciInTutteLeSezioni" xml:space="preserve">
+    <value>Einträge im Abschnitt ersetzen</value>
+  </data>
+  <data name="SostituisciLaVoce" xml:space="preserve">
+    <value>Eintrag ersetzen</value>
+  </data>
+  <data name="SostituisciNellaSezione" xml:space="preserve">
+    <value>Einträge im Abschnitt ersetzen</value>
+  </data>
+  <data name="SostituisciNelTesto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Sottolineato" xml:space="preserve">
+    <value>unterstreichen</value>
+  </data>
+  <data name="Speciali" xml:space="preserve">
+    <value>besonderes</value>
+  </data>
+  <data name="Spessore bordo" xml:space="preserve">
+    <value>Rahmenlinien Stärke</value>
+  </data>
+  <data name="Spessore linea" xml:space="preserve">
+    <value>Linienstärke</value>
+  </data>
+  <data name="Sposta" xml:space="preserve">
+    <value>verschieben</value>
+  </data>
+  <data name="Sposta dopo l'elemento corrente" xml:space="preserve">
+    <value>raus von der Gruppe schieben</value>
+  </data>
+  <data name="Sposta inferiore dell'elemento corrente" xml:space="preserve">
+    <value>in der Gruppe schieben</value>
+  </data>
+  <data name="Sposta riga in giù" xml:space="preserve">
+    <value>nach unten verschieben</value>
+  </data>
+  <data name="Sposta riga in su" xml:space="preserve">
+    <value>nach oben verschieben</value>
+  </data>
+  <data name="Sposta sopra" xml:space="preserve">
+    <value>nach oben verschieben</value>
+  </data>
+  <data name="Sposta sotto" xml:space="preserve">
+    <value>nach unten verschieben</value>
+  </data>
+  <data name="SpostaSuddivisioni" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SpostaVoce" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Stampa fogli" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Stampa riporto pagina" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Stampa riporto raggruppamento" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StampaFormula" xml:space="preserve">
+    <value>Formel drucken</value>
+  </data>
+  <data name="StampaNuovaPagina" xml:space="preserve">
+    <value>neue Seite drucken</value>
+  </data>
+  <data name="StampaVoci" xml:space="preserve">
+    <value>Einträge drucken</value>
+  </data>
+  <data name="Stampe" xml:space="preserve">
+    <value>drucken</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Beginn Datum</value>
+  </data>
+  <data name="Stato" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="Stile" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Stile cotenuto" xml:space="preserve">
+    <value>Inhaltsart</value>
+  </data>
+  <data name="Stile linea" xml:space="preserve">
+    <value>Linienart</value>
+  </data>
+  <data name="Stile note" xml:space="preserve">
+    <value>Noten Stil</value>
+  </data>
+  <data name="StileCarattere" xml:space="preserve">
+    <value>Schritftart</value>
+  </data>
+  <data name="StileIntestazione" xml:space="preserve">
+    <value>Fopfzeile Format</value>
+  </data>
+  <data name="StileNumerazione" xml:space="preserve">
+    <value>Seitennummerierungsformat</value>
+  </data>
+  <data name="StilePiePagina" xml:space="preserve">
+    <value>Fußzeile Format</value>
+  </data>
+  <data name="Stili" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Stili applicati nel progetto" xml:space="preserve">
+    <value>Formate im Projekt verwendet</value>
+  </data>
+  <data name="Strumento di misura" xml:space="preserve">
+    <value>messen</value>
+  </data>
+  <data name="Struttura" xml:space="preserve">
+    <value>Struktur</value>
+  </data>
+  <data name="Struttura delle attività del progetto" xml:space="preserve">
+    <value>Projektstrukturplan</value>
+  </data>
+  <data name="StrutturaWBS" xml:space="preserve">
+    <value>PSP Struktur</value>
+  </data>
+  <data name="Suddivisione non trovata" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Suddivisioni di articoli del progetto" xml:space="preserve">
+    <value>Artikel Gruppen</value>
+  </data>
+  <data name="Suffisso" xml:space="preserve">
+    <value>Suffix</value>
+  </data>
+  <data name="Superiore" xml:space="preserve">
+    <value>oben</value>
+  </data>
+  <data name="Svuota" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SvuotaAppunti" xml:space="preserve">
+    <value>Notizen löschen</value>
+  </data>
+  <data name="SynGanttModel" xml:space="preserve">
+    <value>Bis heute gehen</value>
+  </data>
+  <data name="Sì" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Tabella" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TabellaBordata" xml:space="preserve">
+    <value>gerahmte Tabelle</value>
+  </data>
+  <data name="Tag" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="Tag del progetto" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Tedesco" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Teleassistenza" xml:space="preserve">
+    <value>Fernunterstützung</value>
+  </data>
+  <data name="Telefono" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="tel_" xml:space="preserve">
+    <value>Telefon +39 0434 28567 / +39 0434 247102</value>
+  </data>
+  <data name="TerminaCon" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Testa" xml:space="preserve">
+    <value>(Kopf)</value>
+  </data>
+  <data name="Testo" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Testo e Valori numerici" xml:space="preserve">
+    <value>Text + Zahlenwerte</value>
+  </data>
+  <data name="TestoCollection" xml:space="preserve">
+    <value>Multi-Wert</value>
+  </data>
+  <data name="TestoRTF" xml:space="preserve">
+    <value>RTF Text</value>
+  </data>
+  <data name="Tipo" xml:space="preserve">
+    <value>Typus</value>
+  </data>
+  <data name="Tipo filtro" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TipoCarattere" xml:space="preserve">
+    <value>Schriftart</value>
+  </data>
+  <data name="Togli filtro elementi visibili" xml:space="preserve">
+    <value>sichtbare Elementen-Filter entfernen</value>
+  </data>
+  <data name="Torna al Filtro" xml:space="preserve">
+    <value>zurück zum Filter</value>
+  </data>
+  <data name="totale" xml:space="preserve">
+    <value>gesamt</value>
+  </data>
+  <data name="Totale ore" xml:space="preserve">
+    <value>gesamte Stunden</value>
+  </data>
+  <data name="Totale1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TotaleProgressivo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Trascina le colonne da nascondere" xml:space="preserve">
+    <value>Spalten zum Ausblenden hier ziehen</value>
+  </data>
+  <data name="Trascina qui lattributo da cercare o filtrare" xml:space="preserve">
+    <value>Attribut zum Suchen oder Filtern hier ziehen</value>
+  </data>
+  <data name="Trascina qui lattributo da ordinare" xml:space="preserve">
+    <value>Attribut zum Sortieren  hier ziehen</value>
+  </data>
+  <data name="Trascina qui lattributo da raggruppare" xml:space="preserve">
+    <value>Attribut zum Gruppieren hier ziehen</value>
+  </data>
+  <data name="TrascinaQuiIlTag" xml:space="preserve">
+    <value>Tag zum Verknüpfen hier ziehen</value>
+  </data>
+  <data name="Trasla in x-y-z" xml:space="preserve">
+    <value>x-y-z Versetzung</value>
+  </data>
+  <data name="Traslazione" xml:space="preserve">
+    <value>Versetzung</value>
+  </data>
+  <data name="Traslazione file IFC" xml:space="preserve">
+    <value>Versetzung IFC Datei</value>
+  </data>
+  <data name="Trasparente" xml:space="preserve">
+    <value>Transparent</value>
+  </data>
+  <data name="Trasparente tutto" xml:space="preserve">
+    <value>Alles Transparent</value>
+  </data>
+  <data name="Trasparente-Opaco" xml:space="preserve">
+    <value>Transparent / Opak</value>
+  </data>
+  <data name="Tre livelli (superiore, intermedio, inferiore)" xml:space="preserve">
+    <value>dreistufig (obere, mittelere, untere)</value>
+  </data>
+  <data name="Trimestri" xml:space="preserve">
+    <value>Quartal</value>
+  </data>
+  <data name="Trova" xml:space="preserve">
+    <value>finden</value>
+  </data>
+  <data name="Trova conflitti" xml:space="preserve">
+    <value>Kollisionsprüfung</value>
+  </data>
+  <data name="Trova gli elementi che contengono la stringa" xml:space="preserve">
+    <value>Elemente finden, die Zeichenkette enthalten</value>
+  </data>
+  <data name="Trova le proprietà degli elementi filtrati" xml:space="preserve">
+    <value>Eigenschaften von gefilterten Elementen finden</value>
+  </data>
+  <data name="Trova precedente" xml:space="preserve">
+    <value>vorherige finden</value>
+  </data>
+  <data name="Trova su finestra principale" xml:space="preserve">
+    <value>im Hauptfenster finden</value>
+  </data>
+  <data name="Trova successivo" xml:space="preserve">
+    <value>nächste finden</value>
+  </data>
+  <data name="Trova/Filtra" xml:space="preserve">
+    <value>suchen/filtern</value>
+  </data>
+  <data name="TrovaFiltra" xml:space="preserve">
+    <value>suchen/filtern</value>
+  </data>
+  <data name="TrovaFiltraPer" xml:space="preserve">
+    <value>suchen/filtern</value>
+  </data>
+  <data name="Tutte" xml:space="preserve">
+    <value>alle</value>
+  </data>
+  <data name="Tutte le entità" xml:space="preserve">
+    <value>alle Objekte</value>
+  </data>
+  <data name="Tutti" xml:space="preserve">
+    <value>alle</value>
+  </data>
+  <data name="Tutti gli elementi" xml:space="preserve">
+    <value>[Alle elemente]</value>
+  </data>
+  <data name="type non trovato in RestoreVisibility" xml:space="preserve">
+    <value>Typus in RestoreVisibility nicht gefunden</value>
+  </data>
+  <data name="Uguale a" xml:space="preserve">
+    <value>gleich</value>
+  </data>
+  <data name="UgualeA" xml:space="preserve">
+    <value>gleich wie</value>
+  </data>
+  <data name="Ultima modifica" xml:space="preserve">
+    <value>letzte Änderung</value>
+  </data>
+  <data name="UltimiProgettiAperti" xml:space="preserve">
+    <value>zuletzt verwendet</value>
+  </data>
+  <data name="Ultimo elemento" xml:space="preserve">
+    <value>letztes Element</value>
+  </data>
+  <data name="Un livello (inferiore)" xml:space="preserve">
+    <value>einstufig (unten)</value>
+  </data>
+  <data name="Unita" xml:space="preserve">
+    <value>Maßeinheit</value>
+  </data>
+  <data name="UnitaDiMisura" xml:space="preserve">
+    <value>Maßeinheit</value>
+  </data>
+  <data name="Unità di misura" xml:space="preserve">
+    <value>Maßeinheiten</value>
+  </data>
+  <data name="Upload file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Usa calendario di progetto per tutte le attivita" xml:space="preserve">
+    <value>Projekt-Kalendar für alle Aufgabe verwenden</value>
+  </data>
+  <data name="UsaCifreSignificativeDelFormato" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UsaRftAttributi" xml:space="preserve">
+    <value>RTF Formatierung verwenden</value>
+  </data>
+  <data name="UsaSeparatoreMigliaia" xml:space="preserve">
+    <value>tausender(or 1000er)-Trennzeichen verwenden</value>
+  </data>
+  <data name="UtenteNonTrovato" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Utilizza la formattazione originale per tutti gli attributi di tipo RTF" xml:space="preserve">
+    <value>originale Formatierung auf allen RTF-Attributen verwenden</value>
+  </data>
+  <data name="Utilizza ordinamento crescente" xml:space="preserve">
+    <value>Sortierung A-Z</value>
+  </data>
+  <data name="Utilizza ordinamento decrescente" xml:space="preserve">
+    <value>Sortierung Z-A</value>
+  </data>
+  <data name="Vai a..." xml:space="preserve">
+    <value>gehe zu…</value>
+  </data>
+  <data name="Vai al menu principale" xml:space="preserve">
+    <value>gehe zum Hauptmenü</value>
+  </data>
+  <data name="Valid" xml:space="preserve">
+    <value>gültig</value>
+  </data>
+  <data name="Valore" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="Valore massimo" xml:space="preserve">
+    <value>Maximalwert</value>
+  </data>
+  <data name="Valore minimo" xml:space="preserve">
+    <value>Minimalwert</value>
+  </data>
+  <data name="Valore prog" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Valore SAL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ValoreDiDefault" xml:space="preserve">
+    <value>Default Zahlenwert</value>
+  </data>
+  <data name="ValoreIncrementale" xml:space="preserve">
+    <value>Inkremental-Wert</value>
+  </data>
+  <data name="Valori" xml:space="preserve">
+    <value />
+  </data>
+  <data name="valori di tipo testo" xml:space="preserve">
+    <value>Textart Werte</value>
+  </data>
+  <data name="Valori numerici" xml:space="preserve">
+    <value>numerische Werte</value>
+  </data>
+  <data name="valori1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Variabile" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Variabili" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Variabili numeriche utilizzabili nelle sezioni del programma" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Vedi funzioni e operatori" xml:space="preserve">
+    <value>Funktionen und Operationen anschauen</value>
+  </data>
+  <data name="Venerdi" xml:space="preserve">
+    <value>Freitag</value>
+  </data>
+  <data name="verranno riportati allo stato iniziale" xml:space="preserve">
+    <value>der Ausgangszustand wird zurückgesetzt</value>
+  </data>
+  <data name="Versione" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Versione non distribuita" xml:space="preserve">
+    <value />
+  </data>
+  <data name="VersioneDelFileSuccessiva" xml:space="preserve">
+    <value>Dieses Projekt wurde in einer neueren Version erstellt (und kann nicht geöffnet werden)</value>
+  </data>
+  <data name="versioneDimostrativa" xml:space="preserve">
+    <value>Demo-Version</value>
+  </data>
+  <data name="VersioneLocale" xml:space="preserve">
+    <value>interne Version</value>
+  </data>
+  <data name="VersioneMinima" xml:space="preserve">
+    <value>minimal Version</value>
+  </data>
+  <data name="VersioneNonDistribuita" xml:space="preserve">
+    <value>nicht verteilte Version</value>
+  </data>
+  <data name="Verticale" xml:space="preserve">
+    <value>Vertikal</value>
+  </data>
+  <data name="Visibile" xml:space="preserve">
+    <value>sichtbar</value>
+  </data>
+  <data name="Vista elenco" xml:space="preserve">
+    <value>Liste-Ansicht</value>
+  </data>
+  <data name="Vista griglia" xml:space="preserve">
+    <value>Grid-Ansicht</value>
+  </data>
+  <data name="Vista Ortografica-Prospettica" xml:space="preserve">
+    <value>orthogonale/perspektivische Ansicht </value>
+  </data>
+  <data name="Viste memorizzate" xml:space="preserve">
+    <value>gespeicherte Ansichte</value>
+  </data>
+  <data name="Visualizza" xml:space="preserve">
+    <value>Ansicht</value>
+  </data>
+  <data name="Visualizza il modello IFC" xml:space="preserve">
+    <value>IFC Modell anzeigen</value>
+  </data>
+  <data name="Visualizza la vista selezionata" xml:space="preserve">
+    <value>Ausgewählte Ansicht anzeigen</value>
+  </data>
+  <data name="Visualizza SAL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Visualizza tutto" xml:space="preserve">
+    <value>Alle anzeigen</value>
+  </data>
+  <data name="Visualizza tutto F3" xml:space="preserve">
+    <value>Alle anzeigen [F3]</value>
+  </data>
+  <data name="VisualizzaCodiciCampo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="VisualizzaSeUguale" xml:space="preserve">
+    <value>anzeigen, wenn gleich</value>
+  </data>
+  <data name="VisualizzaStruttura" xml:space="preserve">
+    <value>Struktur anzeigen</value>
+  </data>
+  <data name="VisualizzaTag" xml:space="preserve">
+    <value>Tag anzeigen</value>
+  </data>
+  <data name="Visualizzatore" xml:space="preserve">
+    <value>Viewer</value>
+  </data>
+  <data name="Visualizzazione e modifica del filtro" xml:space="preserve">
+    <value>Filter bearbeiten</value>
+  </data>
+  <data name="VociDiComputoRiferite" xml:space="preserve">
+    <value>verknüpfte Massenermittlung-Einträge </value>
+  </data>
+  <data name="VociDiElementiRiferite" xml:space="preserve">
+    <value>verknüpfte Elemente-Einträge </value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>Volumen</value>
+  </data>
+  <data name="VuoiInserireALivelloSuperiore" xml:space="preserve">
+    <value>Wollen Sie einen Eintrag oben einfügen?</value>
+  </data>
+  <data name="vuoto" xml:space="preserve">
+    <value>leer</value>
+  </data>
+  <data name="WBS" xml:space="preserve">
+    <value>PSP</value>
+  </data>
+  <data name="WBS (Parent)" xml:space="preserve">
+    <value>PSP</value>
+  </data>
+  <data name="WBSGantt" xml:space="preserve">
+    <value />
+  </data>
+  <data name="WBSGantt Aggiorna" xml:space="preserve">
+    <value />
+  </data>
+  <data name="WBSGanttSched" xml:space="preserve">
+    <value />
+  </data>
+  <data name="WBS_Gantt" xml:space="preserve">
+    <value>PSP - Gantt</value>
+  </data>
+  <data name="Web" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Web Login" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Z luce" xml:space="preserve">
+    <value>Höhe Lichtquelle</value>
+  </data>
+  <data name="Zoom avanti" xml:space="preserve">
+    <value>vergrößern</value>
+  </data>
+  <data name="Zoom Esteso F5" xml:space="preserve">
+    <value>erweiterter Zoom [F5]</value>
+  </data>
+  <data name="Zoom indietro" xml:space="preserve">
+    <value>verkleinern</value>
+  </data>
+  <data name="Zoom100" xml:space="preserve">
+    <value>Zoom 100</value>
+  </data>
+  <data name="ZoomAvanti" xml:space="preserve">
+    <value>vergrößern</value>
+  </data>
+  <data name="_AsItem" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_Condizione" xml:space="preserve">
+    <value>[Kriterium]</value>
+  </data>
+  <data name="_Multi" xml:space="preserve">
+    <value>[Multi]</value>
+  </data>
+  <data name="_Nessuno" xml:space="preserve">
+    <value>[     Ø     ]</value>
+  </data>
+  <data name="_ZeroRealResult" xml:space="preserve">
+    <value>[Wert = 0]</value>
+  </data>
+  <data name="è irregolare o inesistente" xml:space="preserve">
+    <value>falsch oder fehlt</value>
+  </data>
+  <data name="è necessario correggere gli errori" xml:space="preserve">
+    <value>Sie müssen die Fehler berichtigen</value>
+  </data>
+</root>

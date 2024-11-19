@@ -1,0 +1,31 @@
+FROM datalust/seq:latest
+COPY ./Staging/certificate.pem /usr/local/share/ca-certificates/
+COPY ./Staging/fullchain.pem /usr/local/share/ca-certificates/
+COPY ./Staging/star.digicorp.it.key /usr/local/share/ca-certificates/
+COPY ./Staging/443.pem /usr/local/share/ca-certificates/
+COPY ./Staging/45341.pem /usr/local/share/ca-certificates/
+COPY ./Staging/443-key.pem /usr/local/share/ca-certificates/
+COPY ./Staging/45341-key.pem /usr/local/share/ca-certificates/
+COPY ./Staging/45341-key.pem /usr/local/share/ca-certificates/
+COPY ./Staging/certificate.pem /data/Certificates/
+COPY ./Staging/fullchain.pem /data/Certificates/
+COPY ./Staging/star.digicorp.it.key /data/Certificates/
+COPY ./Staging/443.pem /data/Certificates/
+COPY ./Staging/45341.pem /data/Certificates/
+COPY ./Staging/443-key.pem /data/Certificates/
+COPY ./Staging/45341-key.pem /data/Certificates/
+RUN chmod 644 /usr/local/share/ca-certificates/certificate.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/fullchain.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/star.digicorp.it.key && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/443.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/45341.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/443-key.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/45341-key.pem && update-ca-certificates
+RUN chmod 644 /usr/local/share/ca-certificates/45341-key.pem && update-ca-certificates
+RUN chmod 644 /data/Certificates/certificate.pem && update-ca-certificates
+RUN chmod 644 /data/Certificates/fullchain.pem && update-ca-certificates
+RUN chmod 644 /data/Certificates/star.digicorp.it.key && update-ca-certificates
+RUN chmod 644 /data/Certificates/443.pem && update-ca-certificates
+RUN chmod 644 /data/Certificates/443-key.pem && update-ca-certificates
+RUN chmod 644 /data/Certificates/45341.pem && update-ca-certificates
+RUN chmod 644 /data/Certificates/45341-key.pem && update-ca-certificates

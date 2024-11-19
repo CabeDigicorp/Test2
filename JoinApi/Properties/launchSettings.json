@@ -1,0 +1,70 @@
+{
+  "profiles": {
+    "JoinApi": {
+      "commandName": "Project",
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "https://localhost:5100;https://0.0.0.0:5100"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development-IISExpress"
+      },
+      "dotnetRunMessages": true,
+      "nativeDebugging": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "http://localhost:5000;http://0.0.0.0:5000;https://localhost:44300;https://0.0.0.0:44300"
+    },
+    "IIS Locale": {
+      "commandName": "IIS",
+      "workingDirectory": "C:\\inetpub\\JoinWeb\\JoinAPI",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": true,
+      "applicationUrl": "https://localhost:5100;https://0.0.0.0:5100"
+    },
+    "JoinApiDockerStaging": {
+      "commandName": "Docker",
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging",
+        "ASPNETCORE_URLS": "https://0.0.0.0:5100;http://0.0.0.0:5000"
+      },
+      "dotnetRunMessages": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "http://localhost:5000;https://localhost:5100;http://0.0.0.0:5000;https://0.0.0.0:5100",
+      "useSSL": true
+    },
+    "JoinApiDockerProduction": {
+      "commandName": "Docker",
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "ASPNETCORE_URLS": "https://0.0.0.0:5100;http://0.0.0.0:5000"
+      },
+      "dotnetRunMessages": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "http://localhost:5000;https://localhost:5100;http://0.0.0.0:5000;https://0.0.0.0:5100",
+      "useSSL": true
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "https://localhost:5100",
+      "sslPort": 5100
+    },
+    "iisExpress": {
+      "applicationUrl": "http://localhost:5000",
+      "sslPort": 44300
+    }
+  }
+}

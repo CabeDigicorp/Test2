@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Sdk Name="Microsoft.NET.Sdk.BlazorWebAssembly" />
+	<PropertyGroup Label="Globals">
+		<SccProjectName>SAK</SccProjectName>
+		<SccProvider>SAK</SccProvider>
+		<SccAuxPath>SAK</SccAuxPath>
+		<SccLocalPath>SAK</SccLocalPath>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>false</Deterministic>
+  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>9da75cd1-f7d8-468c-a4e5-3ab0036cb91f</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Remove="Components\DebugObjectDisplay.razor" />
+		<Content Remove="Components\ElementTreeItem.razor" />
+		<Content Remove="Components\SpatialStructureTabItem.razor" />
+		<Content Remove="Components\SpatialTreeItem.razor" />
+		<Content Remove="Components\TagCreateForm.razor" />
+		<Content Remove="Components\TypesAndObjectsTabGrid.razor" />
+		<Content Remove="Components\TypesAndObjectsTabItem.razor" />
+		<Content Remove="Pages\ClientePermessi_old.razor" />
+		<Content Remove="Pages\Register.razor" />
+		<Content Remove="Pages\Upload.razor" />
+		<Content Remove="Shared\AccessControl.razor" />
+		<Content Remove="Shared\Header.razor" />
+
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Components\IfcViewerWrapper.razor.css" />
+		<None Remove="Shared\Header.razor.bak" />
+		<None Remove="Shared\Header.razor.css" />
+		<None Remove="Shared\MainLayout - Copy.razor.css" />
+		<None Remove="Shared\NavMenu.razor.css" />
+		<None Remove="Shared\UserMenu .razor.css" />
+	</ItemGroup>
+	<ItemGroup>
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\digicorpregistry.pubxml" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
+		<PackageReference Include="BlazorPro.BlazorSize" Version="8.0.0" />
+		<PackageReference Include="BracketPipe" Version="0.7.7232.28997" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.10" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.6.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+		<PackageReference Include="RtfPipe" Version="2.0.7677.4303" />
+		<PackageReference Include="SharpZipLib" Version="1.4.2" />
+		<PackageReference Include="Syncfusion.Blazor" Version="27.1.57" />
+		<PackageReference Include="Syncfusion.DocIO.Net.Core" Version="27.1.57" />
+		<PackageReference Include="Syncfusion.Licensing" Version="27.1.57" />
+		<PackageReference Include="System.Net.Http.Json" Version="8.0.1">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.10" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ModelData\ModelData.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Resources\SfResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>SfResources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Update="Components\ModuloProgettoRaggruppatoriAttributi.razor">
+		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Update="Pages\UtenteProfilo.razor">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Update="wwwroot\scripts\src\transparency\fragmentTransparencyStyler.d.ts.map">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\scripts\src\transparency\fragmentTransparencyStyler.js">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\scripts\src\transparency\fragmentTransparencyStyler.js.map">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\SfResources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>SfResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Deployment\Staging\nginx.conf">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Update="Deployment\Staging\zy7i0MJSTC_NojMO1hG5ueKda589A0talQgqbnEZdo4">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Dockerfile">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="nginx.conf">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+	  <TypeScriptCompile Update="wwwroot\scripts\src\transparency\fragmentTransparencyStyler.d.ts">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </TypeScriptCompile>
+	</ItemGroup>
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	</Target>
+	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+</Project>

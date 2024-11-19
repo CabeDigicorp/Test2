@@ -1,0 +1,34 @@
+﻿<Window x:Class="MasterDetailWpf.ReplaceTextWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+        xmlns:local="clr-namespace:MasterDetailView"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        Title="{lex:Loc Trova}" Height="300" Width="414">
+    <Window.Resources>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding ReplaceInTextLabel}" Grid.Row="0" Margin="5,2,5,2"/>
+        <TextBox Text="{Binding ReplaceNewText, Mode=TwoWay}" Grid.Row="1" Margin="5,2,5,2"  IsEnabled="{Binding ReplaceInTextEnabled}"/>
+        <TextBlock Grid.Row="2" Text="Per consentire la sostituzione è necessario avere effettuato una ricerca con il testo virgolettato" TextWrapping="Wrap"  Margin="5,2,5,2" Visibility="{Binding ReplaceInTextEnabled, Converter={StaticResource InverseVisibilityConverter}}" Width="400"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,2,0,2">
+            <Button Content="{lex:Loc Tutte le entità}" Command="{Binding ReplaceInTextInAllEntitiesCommand}" Margin="5,5,5,5" IsEnabled="{Binding ReplaceInTextEnabled}"/>
+            <Button Content="{lex:Loc Entità corrente}" Command="{Binding ReplaceInTextInCurrentEntityCommand}" Margin="5,5,0,5" IsEnabled="{Binding ReplaceInTextEnabled}"/>
+            <Button x:Name="SearchPrevious" Command="{Binding Path=SearchPreviousCommand}" ToolTipService.ToolTip="{lex:Loc Trova precedente}" Margin="5,5,0,5" IsEnabled="{Binding ReplaceInTextEnabled}" Style="{StaticResource smallButtonStyle}" Content="&#xe081;"/>
+            <Button x:Name="SearchNext" Command="{Binding Path=SearchNextCommand}" ToolTipService.ToolTip="{lex:Loc Trova successivo}" Margin="5,5,0,5" IsEnabled="{Binding ReplaceInTextEnabled}" Style="{StaticResource smallButtonStyle}" Content="&#xe082;"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,98 @@
+version: '3.4'
+
+services:
+  joinapi:
+    container_name: joinapi
+    image: digicorpregistry.azurecr.io/joinapi:seq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=https://0.0.0.0:5100;http://0.0.0.0:5000
+      - MONGODB_URL=mongodb://mongodb:27017/join
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=pierantonella
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/root/.dotnet/corefx/cryptography/x509stores/my/joinwebkestrel.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/usr/local/share/ca-certificates/certificate.pem
+      - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/usr/local/share/ca-certificates/star.digicorp.it.key
+      - AuthServer__RequireHttpsMetadata=false
+    ports:
+      - "5000:5000"
+      - "5100:5100"
+      - "5080:80"
+      - "58080:8080"
+    depends_on:
+      - mongodb
+    hostname: joinapi
+    volumes:
+      - joinlogs:/logs
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - node-network
+    restart: unless-stopped
+    # network_mode: "host"
+
+  joinwebui:
+    container_name: joinwebui
+    image: digicorpregistry.azurecr.io/joinwebui:seq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+    depends_on:
+      - joinapi
+    hostname: joinwebui
+    ports:
+      - "5101:5101"
+      - "5001:5001"
+      - "5002:80"
+      - "5003:443"
+    volumes:
+      - joinlogs:/logs
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    # network_mode: "host"
+    networks:
+      - node-network
+    restart: unless-stopped
+
+  mongodb:
+    container_name: mongodb
+    image: digicorpregistry.azurecr.io/mongodb:latest
+    #command: ["--tlsMode", "requireTLS", "--tlsCAFile", "/usr/local/share/ca-certificates/ca.crt", "--tlsCertificateKeyFile", "/usr/local/share/ca-certificates/server.pem"] #per ambiente di test (development)
+    #command: ["--tlsMode", "requireTLS", "--tlsCAFile", "/usr/local/share/ca-certificates/cabundle.pem", "--tlsCertificateKeyFile", "/usr/local/share/ca-certificates/joinweb.westeurope.cloudapp.azure.com.pem"] #per ambiente di produzione (da risolvere problema della key)
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+      - "27019:27017"
+    hostname: mongodb
+    # network_mode: "host"
+    networks:
+      - node-network
+    restart: unless-stopped
+
+  seq:
+    container_name: seq
+    image: digicorpregistry.azurecr.io/seq:latest #datalust/seq:latest
+    ports:
+    - "5341:80"
+    - "45443:443"
+    - "45444:45341" 
+    hostname: joinweb.westeurope.cloudapp.azure.com #deve essere questo se si usa lo stesso certificato
+    environment:
+    - ACCEPT_EULA=Y
+    - SEQ_FIRSTRUN_ADMINUSERNAME=Admin
+    - SEQ_CERTIFICATES_CERTIFICATESPATH=/usr/local/share/ca-certificates/
+    - SEQ_FIRSTRUN_ADMINPASSWORD=Pierantonella
+    depends_on:
+      - joinapi
+    networks:
+    - node-network
+    volumes:
+      - seqdata:/data
+    restart: unless-stopped
+
+volumes:
+    mongodata:
+    joinlogs:
+    seqdata:
+
+networks:
+  node-network:
+    driver: bridge

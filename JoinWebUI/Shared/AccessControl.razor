@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject IJSRuntime js
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity.Name!
+        <a href="#" @onclick="BeginLogout">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="#" @onclick="BeginLogin">Log in</a>
+    </NotAuthorized>
+
+
+</AuthorizeView>
+
+@code {
+    private async void BeginLogout(MouseEventArgs args)
+    {
+        await js.InvokeVoidAsync("sessionStorage.clear");
+        Navigation.NavigateToLogout("/authentication/logout");
+
+    }
+
+    private void BeginLogin(MouseEventArgs args)
+    {
+        Navigation.NavigateToLogin("/authentication/login");
+
+    }
+      
+}

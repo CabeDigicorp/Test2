@@ -1,0 +1,127 @@
+﻿<Window x:Class="MainApp.RtfEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MainApp"
+        
+        xmlns:dxre="http://schemas.devexpress.com/winfx/2008/xaml/richedit" 
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:dxspch="http://schemas.devexpress.com/winfx/2008/xaml/spellchecker"
+        xmlns:masterdetailwpf="clr-namespace:MasterDetailWpf;assembly=DigiCorp.MasterDetailWpf"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        
+        Title="{lex:Loc EditaTesto}"
+        Height="500" Width="900">
+    <Grid>
+        <masterdetailwpf:RichTextBoxCustom_devExpress Name="richTextBox" CommandBarStyle="Ribbon" Unit="Centimeter" dx:ThemeManager.ThemeName="Win11Light"
+                                          >
+            <masterdetailwpf:RichTextBoxCustom_devExpress.SpellCheckerOptions>
+                <dxre:DXRichEditSpellCheckerOptions AutoDetectDocumentCulture="False"/>
+            </masterdetailwpf:RichTextBoxCustom_devExpress.SpellCheckerOptions>
+            <dxmvvm:Interaction.Behaviors>
+                <dxspch:RichEditSpellChecker CheckAsYouType="False"
+                                     IgnoreMixedCaseWords="False"
+                                     IgnoreUri="False"
+                                     SpellingFormType="Word">
+                    <dxspch:RichEditSpellChecker.Dictionaries>
+                        <dxspch:HunspellDictionary Culture="en-US" 
+                                           DictionaryUri="pack://application:,,,/Dictionaries/en_US.dic"
+                                           GrammarUri="pack://application:,,,/Dictionaries/en_US.aff"/>
+                        <dxspch:HunspellDictionary Culture="it-IT" 
+                                           DictionaryUri="pack://application:,,,/Dictionaries/it_IT.dic"
+                                           GrammarUri="pack://application:,,,/Dictionaries/it_IT.aff"/>
+                        <dxspch:HunspellDictionary Culture="de-DE" 
+                                           DictionaryUri="pack://application:,,,/Dictionaries/de_DE_frami.dic"
+                                           GrammarUri="pack://application:,,,/Dictionaries/de_DE_frami.aff"/>
+                    </dxspch:RichEditSpellChecker.Dictionaries>
+                </dxspch:RichEditSpellChecker>
+            </dxmvvm:Interaction.Behaviors>
+            <masterdetailwpf:RichTextBoxCustom_devExpress.RibbonActions>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_File_Info}"/>
+                <dxb:InsertAction ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_Home_Editing}">
+                    <dxb:BarButtonItem Name="SelectAllBtn" Content="{lex:Loc SelezionaTutto}"
+                            LargeGlyph="/Resources/IconSelectAll.png"
+                            ItemClick="SelectAllBtn_Click"
+                            ><!---->
+                        <dxb:BarButtonItem.SuperTip>
+                            <dx:SuperTip>
+                                <dx:SuperTipHeaderItem Content="{lex:Loc SelezionaTutto (CTRL+A)}"/>
+                                <dx:SuperTipItem Content="{lex:Loc Consente di selezionare tutto il testo e gli oggetti}" />
+                            </dx:SuperTip>
+                        </dxb:BarButtonItem.SuperTip>
+                    </dxb:BarButtonItem>
+                </dxb:InsertAction>
+                <dxb:InsertAction ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_PageLayout_PageSetup}">
+                    <dxb:BarButtonItem Name="ResetPageLayout" Content="{lex:Loc ResetPageLayout}"
+                            ItemClick="ResetPageLayout_ItemClick"
+                            Background="{StaticResource AdvancedModeColor}"
+                                       ><!---->
+                    </dxb:BarButtonItem>
+                </dxb:InsertAction>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_Insert_HeaderFooter}"/>
+                <dxb:InsertAction Index="0" ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonPage_Insert}">
+                    <dxr:RibbonPageGroup Caption="{lex:Loc Campi}">
+                        <dxb:BarSubItem Name="FieldsBtn" Content="{lex:Loc Campi}" LargeGlyph="/Resources/RtfEditor/Campi.png" ItemClick="PasteFieldBtn_Click"><!---->
+                            <dxb:BarSubItem Name="PasteFieldBtn" Content="{lex:Loc IncollaCampo}" Glyph="/Resources/RtfEditor/IncollaCampo16.png" >
+                                <dxb:BarButtonItem Name="RemoveFieldsBtn" Content="{lex:Loc SvuotaAppunti}" Glyph="/Resources/RtfEditor/SvuotaAppunti16.png" ItemClick="RemoveFieldsBtn_Click"/><!---->
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn0" Content="{lex:Loc AAA0}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn1" Content="{lex:Loc AAA1}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn2" Content="{lex:Loc AAA2}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn3" Content="{lex:Loc AAA3}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn4" Content="{lex:Loc AAA4}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn5" Content="{lex:Loc AAA5}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn6" Content="{lex:Loc AAA6}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn7" Content="{lex:Loc AAA7}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn8" Content="{lex:Loc AAA8}"/>
+                                <dxb:BarButtonItem Name="PasteFieldPathBtn9" Content="{lex:Loc AAA9}"/>
+                            </dxb:BarSubItem>
+                            <dxb:BarButtonItem Name="AddPageNumberFieldBtnContent" Content="{lex:Loc NumeroPagina}" Glyph="/Resources/RtfEditor/InserisciNumeroPagina16.png" ItemClick="AddPageNumberFieldBtn_Click"/><!---->
+                            <dxb:BarButtonItem Name="AddNumberPagesFieldBtn" Content="{lex:Loc NumeroTotalePagine}" Glyph="/Resources/RtfEditor/InserisciNumeroDiPagine16.png" ItemClick="AddNumberPagesFieldBtn_Click"/><!---->
+                            <dxb:BarButtonItem Name="AddFileNameFieldBtn" Content="{lex:Loc NomeFile}" Glyph="/Resources/RtfEditor/InserisciNomeFile16.png" ItemClick="AddFileNameFieldBtn_Click"/><!---->
+                        </dxb:BarSubItem>
+                        <dxb:BarCheckItem Name="ShowFieldCodes" Content="{lex:Loc VisualizzaCodiciCampo}"
+                                          LargeGlyph="/Resources/RtfEditor/AnteprimaCampi.png"
+                                          Glyph="/Resources/RtfEditor/AnteprimaCampi16.png"
+                                          CheckedChanged="ShowFieldPreview_Checked"><!---->
+                        </dxb:BarCheckItem>
+                    </dxr:RibbonPageGroup>
+                </dxb:InsertAction>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_MarginsCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_OrientationCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_MarginsCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_SizeCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_PageLayout_PageBackground}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonPage_References}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonPage_MailMerge}"/>
+                <!--<dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonPage_Review}"/>-->
+
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_Review_Proofing_Spelling}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_Review_Proofing_Language}"/>
+                <dxb:InsertAction ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_Review_Proofing}">
+                    <dxb:BarCheckItem Name="SpellCheck" Content="{lex:Loc ControlloOrtografico}"
+                                        CheckedChanged="SpellCheck_CheckedChanged"
+                                        Glyph="/Resources/RtfEditor/Correttore16.png"
+                                        LargeGlyph="/Resources/RtfEditor/Correttore64.png"
+                                      />
+                </dxb:InsertAction>
+                <dxb:InsertAction ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_Review_Proofing}">
+                    <dxb:BarSubItem Name="SelectedLanguage" Glyph="/Resources/RtfEditor/Lingua16.png" LargeGlyph="/Resources/RtfEditor/Lingua64.png">
+                        <dxb:BarButtonItem Name="ItalianLanguage" Content="{lex:Loc Italiano}" ItemClick="ItalianLanguage_ItemClick" Glyph="/Resources/RtfEditor/icons8-italia-16.png"/>
+                        <dxb:BarButtonItem Name="EnglishLanguage" Content="{lex:Loc Inglese}" ItemClick="EnglishLanguage_ItemClick" Glyph="/Resources/RtfEditor/icons8-gran-bretagna-16.png"/>
+                        <dxb:BarButtonItem Name="GermanLanguage" Content="{lex:Loc Tedesco}" ItemClick="GermanLanguage_ItemClick" Glyph="/Resources/RtfEditor/icons8-germania-16.png"/>
+                    </dxb:BarSubItem>
+                </dxb:InsertAction>
+            </masterdetailwpf:RichTextBoxCustom_devExpress.RibbonActions>
+        </masterdetailwpf:RichTextBoxCustom_devExpress>
+    </Grid>
+</Window>

@@ -1,0 +1,700 @@
+﻿@page "/admin-clienti/{ClienteId:guid}/permessi"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Data
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navMan
+@inject SfDialogService _dialogService
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - utenti del Cliente</PageTitle>
+
+<PageHeader Title="Permessi"
+            ObjectType="Cliente"
+            ObjectName="@_cliente.FullInfo"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestErrorMessage="@_requestErrorMessage" />
+
+
+<br>
+
+
+<div id="domains" class="control-section row" style="min-height:300px">
+    <div class="col my-3" style="min-width:100%;max-width:100%;height:stretch;min-height:180px">
+        <SfCard CssClass="e-card">
+            <CardHeader Title="Permessi legati al Cliente">
+                <div>
+                    <SfButton CssClass="e-btn-card" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" OnClick="OnClickAddPermesso"></SfButton>
+                    <SfButton CssClass="e-btn-card" IconCss="e-icons icon-edita" IconPosition="IconPosition.Left" Disabled="@(!OnePermessoSelected)" OnClick="OnClickEditPermesso"></SfButton>
+                    <SfButton CssClass="e-btn-card" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" Disabled="@(!OnePermessoSelected)" OnClick="OnClickDeletePermesso"></SfButton>
+                    <SfButton CssClass="e-btn-card" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" OnClick="OnClickRefreshPermessi"></SfButton>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <SfGrid DataSource="@_permessi"
+                        TValue="PermessoModelWithInfo"
+                        @ref="_gridP"
+                        AllowSelection="true"
+                        AllowGrouping="false"
+                        AllowFiltering="true"
+                        AllowReordering="true"
+                        AllowResizing="true"
+                        AllowSorting="true"
+                        AllowMultiSorting="true">
+                    <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" Mode="EditMode.Dialog" />
+                    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"
+                                           EnableSimpleMultiRowSelection="false"
+                                           CheckboxOnly="false"
+                                           Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" ImmediateModeDelay="500" >
+@*                        <GridFilterColumns>
+                            <GridFilterColumn Field="@nameof(PermessoModelWithInfo.TipiSoggetto)" Operator="Operator.Equal" Predicate="and" Value="PermessoModelWithInfo.TipiSoggetto.Team"></GridFilterColumn>
+                        </GridFilterColumns>*@
+                    </GridFilterSettings>
+                    <GridEvents TValue="PermessoModelWithInfo" RowSelected="@OnPermessoSelectedChanged" RowDeselected="@OnPermessoSelectedChanged" />
+                    <GridColumns>
+                        <GridColumn HeaderText="Id" Field=@nameof(PermessoModelWithInfo.Id) IsPrimaryKey="true" Visible="false" />
+                        <GridColumn HeaderText="Nome" Field=@nameof(PermessoModelWithInfo.Nome) Type="ColumnType.String" EditType="EditType.DefaultEdit" Width="28%"></GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </CardContent>
+        </SfCard>
+    </div>
+</div>
+
+<SfDialog @ref="_addEditDialog" Width="480px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="@AddEditDialogClosed"></DialogEvents>
+    <DialogTemplates>
+        <Header>@AddEditDialogHeader</Header>
+        <Content>
+            <span>Nome:</span><br>
+            <SfTextBox Value="@_editedName" Input="@ValidateNome" /><br><br>
+            <span>Soggetto:</span><br>
+            <SfDropDownList TValue="PermessoModelWithInfo.TipiSoggetto" TItem="KeyValuePair<PermessoModelWithInfo.TipiSoggetto, string>"
+                            DataSource="@PermessoModelWithInfo.InfoTipiSoggetto"
+                            Value="@_editedSoggettoTipo"
+                            ValueChanged="@OnChosenTipoSoggetto"
+                            Width="100%"
+                            @ref="@_tipiSoggettoCombo">
+                <DropDownListFieldSettings Value="Key" Text="Value"></DropDownListFieldSettings>
+            </SfDropDownList><br>
+            <SfDropDownList TValue="Guid" TItem="IPermessiModelEntity"
+                            DataSource="@_soggetti"
+                            Value="@_editedSoggettoId"
+                            Query="@SoggettiQuery"
+                            SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                            Width="100%"
+                            @ref="@_soggettiCombo">
+                <DropDownListFieldSettings Value="IdString" Text="Info"></DropDownListFieldSettings>
+            </SfDropDownList><br><br>
+            <span>Oggetto:</span><br>
+            <SfDropDownList TValue="PermessoModelWithInfo.TipiOggetto" TItem="KeyValuePair<PermessoModelWithInfo.TipiOggetto, string>"
+                            DataSource="@PermessoModelWithInfo.InfoTipiOggetto"
+                            Value="@_editedOggettoTipo"
+                            ValueChanged="@OnChosenTipoOggetto"
+                            Width="100%"
+                            @ref="@_tipiOggettoCombo">
+                <DropDownListFieldSettings Value="Key" Text="Value"></DropDownListFieldSettings>
+            </SfDropDownList><br>
+            <SfDropDownList TValue="Guid" TItem="IPermessiModelEntity"
+                            DataSource="@_oggetti"
+                            Value="@_editedOggettoId"
+                            Query="@OggettiQuery"
+                            SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                            Width="100%"
+                            @ref="@_oggettiCombo">
+                <DropDownListFieldSettings Value="IdString" Text="Info"></DropDownListFieldSettings>
+            </SfDropDownList><br><br>
+            <span>Ruolo:</span><br>
+            <SfDropDownList TValue="Guid" TItem="RuoloModel"
+                            DataSource="@_ruoli"
+                            Value="@_editedRuoloId"
+                            SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                            Width="100%"
+                            @ref="@_ruoliCombo">
+            <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+            </SfDropDownList>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@AddEditOkClick" Content="OK" IsPrimary="true" Disabled="@InvalidInput"></DialogButton>
+        <DialogButton OnClick="@AddEditCancelClick" Content="Annulla"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+<SfDialog @ref="_deleteDialog" Width="250px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="@DeleteDialogClosed"></DialogEvents>
+    <DialogTemplates>
+        <Header>Cancella peremesso</Header>
+        <Content>
+             Cancellare il permesso "@(_editedName)"?
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@DeleteOkClick" Content="OK" IsPrimary="true"></DialogButton>
+        <DialogButton OnClick="@DeleteCancelClick" Content="Cancel"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+@code {
+
+    [Parameter]
+    public Guid? ClienteId { get; set; }
+
+    private ClienteModel _cliente = new ClienteModel();
+    private List<TeamModel> _teams = new List<TeamModel>();
+    private List<GruppoUtentiModel> _gruppi = new List<GruppoUtentiModel>();
+    private List<SettoreModel> _settori = new List<SettoreModel>();
+    private List<OperaModel> _opere = new List<OperaModel>();
+    private List<ProgettoModel> _progetti = new List<ProgettoModel>();
+    //private List<> _ = new List<>(); //Computi
+    private List<RuoloModel> _ruoli = new List<RuoloModel>();
+
+
+    private ObservableCollection<IPermessiModelEntity> _soggetti = new ObservableCollection<IPermessiModelEntity>();
+    public Query SoggettiQuery { get; set; } = null;
+    private ObservableCollection<IPermessiModelEntity> _oggetti = new ObservableCollection<IPermessiModelEntity>();
+    public Query OggettiQuery { get; set; } = null;
+
+    private bool _editMode;
+
+    private SfGrid<PermessoModelWithInfo> _gridP;
+
+    private ObservableCollection<PermessoModelWithInfo> _permessi = new ObservableCollection<PermessoModelWithInfo>();
+    private bool OnePermessoSelected { get; set; } = false;
+
+    //private ObservableCollection<TeamModel> _teams = new ObservableCollection<TeamModel>();
+    //private bool TeamSelected { get; set; } = false;
+
+    //private int _disabledFilterValue;
+    //private int _privacyFilterValue;
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private SfDialog _addEditDialog, _deleteDialog;
+    private bool _addDialogOpen = false, _editDialogOpen = false;
+
+    private SfDropDownList<PermessoModelWithInfo.TipiSoggetto, KeyValuePair<PermessoModelWithInfo.TipiSoggetto, string>> _tipiSoggettoCombo;
+    private SfDropDownList<Guid, IPermessiModelEntity> _soggettiCombo;
+    private SfDropDownList<PermessoModelWithInfo.TipiOggetto, KeyValuePair<PermessoModelWithInfo.TipiOggetto, string>> _tipiOggettoCombo;
+    private SfDropDownList<Guid, IPermessiModelEntity> _oggettiCombo;
+    private SfDropDownList<Guid, RuoloModel> _ruoliCombo;
+
+    private string AddEditDialogHeader { get { return (_addDialogOpen ? "Crea permesso" : "Modifica permesso"); } }
+
+
+    private string _editedName = string.Empty;
+    private PermessoModelWithInfo.TipiSoggetto _editedSoggettoTipo = PermessoModelWithInfo.TipiSoggetto.Team;
+    private Guid _editedSoggettoId = Guid.Empty;
+    private PermessoModelWithInfo.TipiOggetto _editedOggettoTipo = PermessoModelWithInfo.TipiOggetto.Cliente;
+    private Guid _editedOggettoId = Guid.Empty;
+    private Guid _editedRuoloId = Guid.Empty;
+
+
+
+    private bool InvalidName { get; set; } = false;
+    private bool InvalidSoggetto { get; set; } = false;
+    private bool InvalidOggetto { get; set; } = false;
+    private bool InvalidRuolo { get; set; } = false;
+
+    private bool InvalidInput { get { return InvalidName || InvalidSoggetto || InvalidOggetto || InvalidRuolo; } }
+
+    private bool _showTeamSearch = false;
+
+    private class MyKVP
+    {
+        public MyKVP(int k, string v)
+        {
+            Key = k;
+            Value = v;
+        }
+
+        public int Key { get; }
+        public string Value { get; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            _editMode = true;
+
+            var clienteResult = await _apiClient.JsonGetAsync<ClienteInfoDto>("clienti", ClienteId.ToString());
+            if (!clienteResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #1 - Cliente";
+                return;
+            }
+            _cliente = _mapper.Map<ClienteModel>(clienteResult.ResponseContentData!);
+
+            _breadcrumbs = new List<(string, string)>()
+                                {
+                ("Amministrazione Clienti", "/admin-clienti"),
+                (_cliente.FullInfo, "/admin-clienti/" + ClienteId.ToString()),
+                ("Permessi", "/admin-clienti/" + ClienteId.ToString() + "/permessi")
+                                };
+
+            await GetAuxData();
+            await GetPermessi();
+
+            //_disabledFilterValue = 0;
+            //_privacyFilterValue = -1;
+
+            //var sort1 = new SortColumn();
+            //sort1.Field = nameof(UtenteModel.Cognome);
+            //sort1.Direction = SortDirection.Ascending;
+
+            //var sort2 = new SortColumn();
+            //sort2.Field = nameof(UtenteModel.Nome);
+            //sort2.Direction = SortDirection.Ascending;
+
+            //await _gridP.SortColumnsAsync(new List<SortColumn>() { sort1, sort2 });
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+
+    private async Task GetAuxData()
+    {
+        var query = new Dictionary<string, string>()
+                {
+                    { "clienteId", _cliente.IdString }
+                };
+
+        _soggetti.Clear();
+        _oggetti.Clear();
+
+        var result1 = await _apiClient.JsonGetAsync<IEnumerable<TeamInfoDto>>("teams/get-by-cliente", query: query);
+        if (!result1.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #2 - Teams";
+            return;
+        }
+        _teams = _mapper.Map<List<TeamModel>>(result1.ResponseContentData!);
+        foreach (var x in _teams) _soggetti.Add(x);
+
+
+        var result2 = await _apiClient.JsonGetAsync<IEnumerable<GruppoUtentiInfoDto>>("gruppiutenti/get-by-cliente", query: query);
+        if (!result2.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #3 - Gruppi utenti";
+            return;
+        }
+        _gruppi = _mapper.Map<List<GruppoUtentiModel>>(result2.ResponseContentData!);
+        foreach (var x in _gruppi) _soggetti.Add(x);
+
+        _oggetti.Add(_cliente);
+
+        var result3 = await _apiClient.JsonGetAsync<IEnumerable<SettoreInfoDto>>("settori/get-by-cliente", query: query);
+        if (!result3.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #4 - Settori";
+            return;
+        }
+        _settori = _mapper.Map<List<SettoreModel>>(result3.ResponseContentData!);
+        foreach (var x in _settori) _oggetti.Add(x);
+
+        var result4 = await _apiClient.JsonGetAsync<IEnumerable<OperaInfoDto>>("opere/get-by-cliente", query: query);
+        if (!result4.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #5 - Opere";
+            return;
+        }
+        _opere = _mapper.Map<List<OperaModel>>(result4.ResponseContentData!);
+        foreach (var x in _opere) _oggetti.Add(x);
+
+        var result5 = await _apiClient.JsonGetAsync<IEnumerable<ProgettoInfoDto>>("progetti/get-by-cliente", query: query);
+        if (!result5.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #6 - Progetti";
+            return;
+        }
+        _progetti = _mapper.Map<List<ProgettoModel>>(result5.ResponseContentData!);
+        foreach (var x in _progetti) _oggetti.Add(x);
+
+        var result7 = await _apiClient.JsonGetAsync<IEnumerable<RuoloInfoDto>>("ruoli");
+        if (!result7.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #8 - Ruolo";
+            return;
+        }
+        _ruoli = _mapper.Map<List<RuoloModel>>(result7.ResponseContentData!);
+
+    }
+
+    private async Task GetPermessi()
+    {
+        var query = new Dictionary<string, string>()
+                {
+                    { "clienteId", _cliente.IdString }
+                };
+
+        var result1 = await _apiClient.JsonGetAsync<IEnumerable<PermessoModel>>("permessi/get-by-cliente", query: query);
+        if (!result1.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #9 - Permessi";
+            return;
+        }
+        var permessi = _mapper.Map<ObservableCollection<PermessoModel>>(result1.ResponseContentData!);
+
+        _permessi = new ObservableCollection<PermessoModelWithInfo>();
+        foreach (var p in permessi)
+        {
+            _permessi.Add(GetPermessoWithInfo(p));
+
+        }
+
+    }
+
+    private PermessoModelWithInfo GetPermessoWithInfo(PermessoModel p)
+    {
+        PermessoModelWithInfo pwi = new PermessoModelWithInfo()
+            {
+                Id = p.Id,
+                Nome = p.Nome,
+                SoggettoId = p.SoggettoId,
+                OggettoId = p.OggettoId,
+                RuoloId = p.RuoloId
+            };
+
+        var team = _teams.Find(x => x.Id == p.SoggettoId);
+        var gruppo = _gruppi.Find(x => x.Id == p.SoggettoId);
+        if (team != null)
+        {
+            pwi.SoggettoTipo = PermessoModelWithInfo.TipiSoggetto.Team;
+            pwi.SoggettoInfo = team.Nome;
+        }
+        else if (gruppo != null)
+        {
+            pwi.SoggettoTipo = PermessoModelWithInfo.TipiSoggetto.Gruppo;
+            pwi.SoggettoInfo = gruppo.Nome;
+        }
+
+        if (_cliente.Id == p.OggettoId)
+        {
+            pwi.OggettoTipo = PermessoModelWithInfo.TipiOggetto.Cliente;
+            pwi.OggettoInfo = _cliente.FullInfo;
+        }
+        else
+        {
+            var settore = _settori.Find(x => x.Id == p.OggettoId);
+            var opera = _opere.Find(x => x.Id == p.OggettoId);
+            var progetto = _progetti.Find(x => x.Id == p.OggettoId);
+            //var computo = _opere.Find(x => x.Id == p.OggettoId);
+
+            if (settore != null)
+            {
+                pwi.OggettoTipo = PermessoModelWithInfo.TipiOggetto.Settore;
+                pwi.OggettoInfo = settore.Nome;
+            }
+            else if (opera != null)
+            {
+                pwi.OggettoTipo = PermessoModelWithInfo.TipiOggetto.Opera;
+                pwi.OggettoInfo = opera.Nome;
+            }
+            else if (progetto != null)
+            {
+                pwi.OggettoTipo = PermessoModelWithInfo.TipiOggetto.Progetto;
+                pwi.OggettoInfo = progetto.Nome;
+            }
+        }
+
+        var ruolo = _ruoli.Find(x => x.Id == p.RuoloId);
+        pwi.RuoloNome = ruolo?.Name ?? string.Empty;
+
+        return pwi;
+
+    }
+
+    private async Task OnClickRefreshPermessi()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if (_cliente?.Id != null && _cliente.Id != Guid.Empty)
+        {
+            await GetPermessi();
+            _gridP.ForceUpdate = true;
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+
+    private void OnPermessoSelectedChanged()
+    {
+        OnePermessoSelected = (_gridP.SelectedRowIndexes?.Count() ?? -1) == 1;
+
+        //OnClickRefreshTeams();
+
+    }
+
+
+    private void OnClickAddPermesso()
+    {
+        _editedName = string.Empty;
+        InvalidName = true;
+        _editedSoggettoTipo = (int)PermessoModelWithInfo.TipiSoggetto.Team;
+        _editedSoggettoId = Guid.Empty;
+        OnChosenTipoSoggetto(_editedSoggettoTipo);
+        InvalidSoggetto = true;
+        _editedOggettoTipo = (int)PermessoModelWithInfo.TipiOggetto.Cliente;
+        _editedOggettoId = Guid.Empty;
+        OnChosenTipoOggetto(_editedOggettoTipo);
+        InvalidOggetto = true;
+        _editedRuoloId = _ruoli[0].Id; //Guid.Empty;
+        InvalidRuolo = true;
+        _addDialogOpen = true;
+        _addEditDialog.ShowAsync();
+
+    }
+
+    private void OnClickEditPermesso()
+    {
+        if (OnePermessoSelected)
+        {
+            _editedName = _gridP.SelectedRecords[0].Nome ?? string.Empty;
+            ValidateNome(new InputEventArgs() { Value = _editedName });
+            _editedSoggettoTipo = _gridP.SelectedRecords[0].SoggettoTipo;
+            _editedSoggettoId = _gridP.SelectedRecords[0].SoggettoId;
+            _editedOggettoTipo = _gridP.SelectedRecords[0].OggettoTipo;
+            _editedOggettoId = _gridP.SelectedRecords[0].OggettoId;
+            _editedRuoloId = _gridP.SelectedRecords[0].RuoloId;
+            _editDialogOpen = true;
+            _addEditDialog.ShowAsync();
+        }
+    }
+
+    private void OnClickDeletePermesso()
+    {
+        if (OnePermessoSelected)
+        {
+            _editedName = _gridP.SelectedRecords[0].Nome;
+            _deleteDialog.ShowAsync();
+        }
+    }
+
+
+    private void ValidateNome(Syncfusion.Blazor.Inputs.InputEventArgs args)
+    {
+        _editedName = args.Value;
+        InvalidName = string.IsNullOrWhiteSpace(_editedName);
+    }
+
+
+
+    private async Task AddEditOkClick()
+    {
+        _requestError = false;
+        _requestErrorMessage = string.Empty;
+
+        if (!InvalidInput)
+        {
+            if (_addDialogOpen)
+            {
+                PermessoInfoDto dto = new PermessoInfoDto()
+                    {
+                        Nome = _editedName,
+                        SoggettoId = _editedSoggettoId,
+                        OggettoId = _editedOggettoId,
+                        RuoloId = _editedRuoloId
+                    };
+
+                var result = await _apiClient.JsonPostAsync<PermessoInfoDto>("permessi", dto);
+                if (result.Success)
+                {
+                    PermessoModel newPermesso = _mapper.Map<PermessoModel>(result.ResponseContentData);
+                    _permessi.Add(GetPermessoWithInfo(newPermesso));
+                    _gridP.ForceUpdate = true;
+                }
+                else
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore creazione nuovo utente";
+                }
+            }
+            else if (_editDialogOpen)
+            {
+                PermessoInfoDto dto = _mapper.Map<PermessoInfoDto>(_gridP.SelectedRecords[0] as PermessoModel);
+                dto.Nome = _editedName;
+                //gli altri campi non sono editabili               
+
+                var result = await _apiClient.JsonPutAsync("permessi", _gridP.SelectedRecords[0].IdString, dto);
+                if (result.Success)
+                {
+                    _gridP.SelectedRecords[0].Nome = _editedName;
+                    _gridP.ForceUpdate = true;
+                }
+                else
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore in modifica utente";
+                }
+            }
+            else
+            {
+                _requestError = true;
+                _requestErrorMessage = "Operazione non valida";
+            }
+
+            await _addEditDialog.HideAsync();
+            StateHasChanged();
+
+        }
+    }
+
+    private void AddEditCancelClick()
+    {
+
+        _addEditDialog.HideAsync();
+    }
+
+    private void AddEditDialogClosed()
+    {
+        _addDialogOpen = false;
+        _editDialogOpen = false;
+        _editedName = string.Empty;
+        _editedSoggettoId = Guid.Empty;
+        _editedOggettoId = Guid.Empty;
+        _editedRuoloId = Guid.Empty;
+
+    }
+
+
+    private async Task DeleteOkClick()
+    {
+        _requestError = false;
+        _requestErrorMessage = string.Empty;
+
+        var result = await _apiClient.JsonDeleteAsync("permessi", _gridP.SelectedRecords[0].IdString);
+        if (result.Success)
+        {
+            _permessi.Remove(_gridP.SelectedRecords[0]);
+            await _gridP.ClearSelectionAsync();
+            _gridP.ForceUpdate = true;
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore eliminazione team";
+        }
+
+        await _deleteDialog.HideAsync();
+        StateHasChanged();
+
+    }
+
+    private void DeleteCancelClick()
+    {
+        _deleteDialog.HideAsync();
+    }
+
+    private void DeleteDialogClosed()
+    {
+        _editedName = string.Empty;
+        _editedSoggettoId = Guid.Empty;
+        _editedOggettoId = Guid.Empty;
+        _editedRuoloId = Guid.Empty;
+    }
+
+    private void OnChosenTipoSoggetto(PermessoModelWithInfo.TipiSoggetto value)
+    {
+        _editedSoggettoTipo = value;
+        switch (value)
+        {
+            case PermessoModelWithInfo.TipiSoggetto.Team:
+                SoggettiQuery = new Query().Where(fieldName: "Type", @operator: "equal", value: nameof(TeamModel));
+                break;
+            case PermessoModelWithInfo.TipiSoggetto.Gruppo:
+                SoggettiQuery = new Query().Where(fieldName: "Type", @operator: "equal", value: nameof(GruppoUtentiModel));
+                break;
+            default:
+                SoggettiQuery = null;
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+
+    private void OnChosenTipoOggetto(PermessoModelWithInfo.TipiOggetto value)
+    {
+        _editedOggettoTipo = value;
+        switch (value)
+        {
+            case PermessoModelWithInfo.TipiOggetto.Cliente:
+                OggettiQuery = new Query().Where(fieldName: "Type", @operator: "equal", value: nameof(ClienteModel));
+                break;
+            case PermessoModelWithInfo.TipiOggetto.Settore:
+                OggettiQuery = new Query().Where(fieldName: "Type", @operator: "equal", value: nameof(SettoreModel));
+                break;
+            case PermessoModelWithInfo.TipiOggetto.Opera:
+                OggettiQuery = new Query().Where(fieldName: "Type", @operator: "equal", value: nameof(OperaModel));
+                break;
+            case PermessoModelWithInfo.TipiOggetto.Progetto:
+                OggettiQuery = new Query().Where(fieldName: "Type", @operator: "equal", value: nameof(ProgettoModel));
+                break;
+            case PermessoModelWithInfo.TipiOggetto.Computo:
+            //TODO
+            default:
+                OggettiQuery = null;
+                break;
+        }
+
+        StateHasChanged();
+
+    }
+
+  
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+
+</style>

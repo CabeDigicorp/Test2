@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.AttributiSettingsView">
+    <Position X="6" Y="0.5" Width="2.5" />
+    <AssociationLine Name="_attributiFirstLevelItems" Type="MasterDetailView.AttributoSettingsView" FixedToPoint="true">
+      <Path>
+        <Point X="8.5" Y="2.062" />
+        <Point X="11.25" Y="2.062" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.141" Y="0.183" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="_attributiItems" Type="MasterDetailView.AttributoSettingsView" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="8.5" Y="1.552" />
+        <Point X="8.624" Y="1.552" />
+        <Point X="8.624" Y="1.642" />
+        <Point X="11.25" Y="1.642" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>UIFYwMgAGAGAGJKBDAJAKCDAQECAAODBECJCwAoAgAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_attributiFirstLevelItems" />
+      <Field Name="_attributiItems" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsView" Collapsed="true">
+    <Position X="11.25" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>EgAQgAJBAAgEEAAAACAACAAhEEYABAhAAEGEoAAAEAE=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsTestoView">
+    <Position X="17.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsTestoRtfView">
+    <Position X="22.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsRealeView">
+    <Position X="9.75" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAACAAAAAAAACAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsContabilitaView">
+    <Position X="14.75" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAACAAAAAAAACAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsGuidView">
+    <Position X="20" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsRiferimentoView">
+    <Position X="25" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAFgACACCAIIAAAAAAAQBAAAEACAAAAAIAAgAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsDataView">
+    <Position X="12.25" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsTestoCollectionView">
+    <Position X="28" Y="3.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailView.AttributoSettingsGuidCollectionView">
+    <Position X="32" Y="3.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\AttributiSettingsView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

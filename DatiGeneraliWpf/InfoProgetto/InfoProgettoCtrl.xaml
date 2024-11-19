@@ -1,0 +1,289 @@
+﻿<UserControl x:Class="DatiGeneraliWpf.InfoProgettoCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+             xmlns:masterDetailView="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.OutputMissingKeys="True"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             xmlns:local="clr-namespace:DatiGeneraliWpf"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+            
+             >
+    <!--DataContext="{StaticResource InfoProgettoViewKey}"-->
+    <UserControl.Resources>
+        <commons:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
+        <commons:StaticResourceConverter x:Key="StaticResourceConverter"/>
+        <commons:ColorConverter x:Key="ColorConverter"/>
+        <Style TargetType="{x:Type Control}" x:Key="baseStyle">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <!--<Style TargetType="{x:Type Button}" BasedOn="{StaticResource baseStyle}"></Style>-->
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <!-- Setting VirtualListItemBase.AutoLoad to true will load the item when it's set to ListViewItem.Content property -->
+        <Style TargetType="ListViewItem">
+            <!--<Setter Property="dz:VirtualListItemBase.AutoLoad" Value="true" />-->
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" Padding="0" SnapsToDevicePixels="true">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="Gray"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="2,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="templateTesto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap" Grid.Column="0" KeyDown="TextBox_KeyDown" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"/>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                        Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <!--<DataTemplate x:Key="templateTestoRtfOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <ContentControl x:Name="RichTextContent" Grid.Column="0" IsTabStop="False" VerticalAlignment="Top" MinHeight="20" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick">
+                    <ExtendedWPFToolkit:RichTextBox x:Name="ShortRichTextBox" Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" ScrollViewer.VerticalScrollBarVisibility="Auto"  AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1" />
+                </ContentControl>
+                <Grid Grid.Column="1" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="EditRtfButton" Grid.Column="0" Command="{Binding EditRtfCommand}" Style="{StaticResource detailListViewItemButtonStyle}" Content="&#xe040;" IsTabStop="False" Height="20" Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityHiddenConverter}}"/>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                        Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>-->
+        <DataTemplate x:Key="templateContabilita">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" InputScope="CurrencyAmount" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick"  BorderThickness="0,0,0,1"/>
+                <Button Name="HelpButton" Grid.Column="2" Content="&#xe057;" Command="{Binding HelpCommand}"
+                                    Width="Auto" HorizontalAlignment="Left" Style="{StaticResource detailListViewItemButtonStyle}"
+                                    ToolTip="{lex:Loc Funzioni e operatori utilizzabili}"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <DataTemplate x:Key="templateReale">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" BorderThickness="0,0,0,1"/>
+                <Button Name="HelpButton" Grid.Column="2" Content="&#xe057;" Command="{Binding HelpCommand}"
+                                    Width="Auto" HorizontalAlignment="Left" Style="{StaticResource detailListViewItemButtonStyle}"
+                                    ToolTip="{lex:Loc Funzioni e operatori utilizzabili}"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <DataTemplate x:Key="templateDataOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <DatePicker SelectedDate="{Binding Data, Mode=TwoWay}" Grid.Column="0" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" BorderThickness="0,0,0,1"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="templateGuidOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </DataTemplate>
+        <masterDetailView:ValoreAttributoTemplateSelector x:Key="ValoreAttributoTemplateSelector" />
+    </UserControl.Resources>
+
+    <Grid PreviewMouseWheel="Grid_PreviewMouseWheel" PreviewMouseDown="Grid_PreviewMouseDown">
+        <Grid.LayoutTransform>
+            <ScaleTransform x:Name="MasterDetailScale" CenterX="0" CenterY="0" ScaleX="1" ScaleY="1"/>
+        </Grid.LayoutTransform>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <!--<ColumnDefinition Width="5"/>-->
+            <!--<ColumnDefinition Width="Auto"/>-->
+        </Grid.ColumnDefinitions>
+        <Grid Name="MainGrid" Grid.Column="0" Style="{StaticResource mainGridStyle}" Margin="0">
+            <Grid.ColumnDefinitions>
+                <!--<ColumnDefinition Width="400" MinWidth="200"/>
+                <ColumnDefinition Width="5"/>-->
+                <ColumnDefinition Width="*" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <Grid Name="DetailGrid" Grid.Column="2" HorizontalAlignment="Stretch" MinWidth="200" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Style="{StaticResource menuStackPanelStyle}">
+                    <Button Name="SetAttributi" ToolTip="{lex:Loc Imposta attributi}" Click="SetAttributi_Click"
+                            Style="{StaticResource menuButtonStyle}" Content="&#xe069;" IsEnabled="True"/>
+                </StackPanel>
+                <ListView x:Name="DetailListView" ItemsSource="{Binding ItemsView.AttributiEntities.AttributiValoriComuniView}" Margin="10"
+                          Background="White" RenderTransformOrigin="0.5,0.5" Grid.Row="1"  HorizontalContentAlignment="Stretch"
+                          HorizontalAlignment="Stretch" BorderThickness="0"
+                          KeyboardNavigation.TabNavigation="Cycle" PreviewMouseLeftButtonDown="listViewDetail_PreviewMouseLeftButtonDown"
+                          PreviewMouseMove="listViewDetail_PreviewMouseMove" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False"
+                          SelectedItem="{Binding ItemsView.AttributiEntities.SelectedItem}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Name="DetailListViewItem" Background="Transparent">
+                                <Grid.Resources>
+                                    <ContextMenu x:Key="ItemContextMenu">
+                                        <MenuItem x:Name="CopyRtfField" Header="{lex:Loc Copia campo}" Command="{Binding CopyRtfFieldCommand}"
+                                                  HorizontalAlignment="Left" Margin="0" Padding="0">
+                                            <MenuItem.Icon>
+                                                <TextBlock Text="&#xe0CC;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"
+                                                           />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxMenuItemHeader}"
+							                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxCommand}">
+                                            <MenuItem.Icon>
+                                                <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" FontSize="13"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.Resources>
+                                <Grid.Style>
+                                    <Style TargetType="{x:Type Grid}" >
+                                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Name="DragRectangle" Text="{Binding Etichetta}" VerticalAlignment="Top" Grid.Column="0" HorizontalAlignment="Stretch" Width="{Binding EtichettaWidth}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <!--IsHilighted-->
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="true">
+                                                        <Setter Property="Background" Value="{StaticResource SelectedColor}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="false">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </DataTrigger>
+                                                    <!--IsGuid-->
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="true">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="false">
+                                                        <Setter Property="FontWeight" Value="Normal"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <!--<Popup Style="{StaticResource popupStyle}"
+											IsOpen="{Binding IsHilighted}" 
+											PlacementTarget="{Binding ElementName=DragRectangle}">
+                                        <Border Style="{StaticResource popupBorderStyle}">
+                                            <TextBlock Text="{lex:Loc Attributi}"/>
+                                        </Border>
+                                    </Popup>-->
+                                    <!--<dxe:FlyoutControl IsOpen="{Binding IsHilighted, Mode=TwoWay}" 
+										   PlacementTarget="{Binding ElementName=DragRectangle}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                                        <dxe:FlyoutControl.Settings>
+                                            <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                            </dxe:FlyoutSettings>
+                                        </dxe:FlyoutControl.Settings>
+                                        --><!--<commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                                        LoadedBehavior="Play" UnloadedBehavior="Manual" MaxWidth="200" MaxHeight="200"/>--><!--
+                                    </dxe:FlyoutControl>-->
+                                    <Button x:Name="ExpandButton" Command="{Binding ExpandCommand}" Visibility="{Binding IsExpandable, Converter={StaticResource VisibilityConverter}}" Grid.Column="1" Content="{Binding Path=IsExpanded, Mode=TwoWay, Converter={StaticResource expandCollapseVerticalGlyphConverter}}" IsTabStop="False" VerticalAlignment="Top" Style="{StaticResource smallButtonStyle}" Foreground="Gray"/>
+
+                                </Grid>
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" Background="Transparent" DragCompleted="GridSplitter_DragCompleted" IsTabStop="False"/>
+                                <ContentControl Name="ValoreControl" Content="{Binding ValoreView, Mode=OneWay}" Grid.Column="2" ContentTemplateSelector="{StaticResource ValoreAttributoTemplateSelector}"  Visibility="{Binding IsValoreViewVisible, Mode=TwoWay, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" TabIndex="{Binding TabIndex}" IsTabStop="False" Height="{Binding Height}" Padding="0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <Expander IsExpanded="{Binding Items[0].IsGroupExpanded}" Style="{StaticResource expanderStyle}">
+                                                    <Expander.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="16" />
+                                                        </StackPanel>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter/>
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

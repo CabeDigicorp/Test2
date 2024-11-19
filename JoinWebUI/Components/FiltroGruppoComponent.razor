@@ -1,0 +1,446 @@
+﻿@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using System.Collections.Generic
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using JoinWebUI.Models.Filtri
+@using ModelData.Model
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Layouts
+@using System.Collections.Specialized
+@using Syncfusion.Blazor.Inputs
+
+@inject JoinWebApiClient _apiClient
+@inject NavigationManager _navigation
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject IResizeListener _listener
+@inject Log Log
+@inject IJSRuntime _jsRuntime
+
+
+<div class="group-container-inner level-@Level">
+    <div class="firstline">
+        <SfComboBox CssClass="filtro-gruppo-combobox"
+                    EnablePersistence=true
+                    TValue="string"
+                    ShowClearButton=true
+                    FloatLabelType="FloatLabelType.Never"
+                    Enabled=true
+                    TItem="string"
+                    Placeholder="Operatore logico"
+                    @bind-Value="LogicalOperationOperator"
+                    @ref=@_sfValoreComboBox
+                    DataSource="@OperatoreLogicoOptions"
+                    AllowFiltering=true
+                    AllowCustom="false"
+                    FilterType="Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                    Autofill="true">
+        </SfComboBox>
+        @if (Level < 9)
+        {
+            <SfButton CssClass="e-btn-grey condition-button"
+                      OnClick="@AddCondition"
+                      IconPosition="IconPosition.Left"
+                      IsPrimary="true">
+                <span class="long-text">Aggiungi condizione</span>
+                <span class="short-text">Condizione</span>
+            </SfButton>
+            <SfButton CssClass="e-btn-grey group-button"
+                      OnClick="@AddGroup"
+                      IconPosition="IconPosition.Left"
+                      IsPrimary="true">
+                <span class="long-text">Aggiungi gruppo</span>
+                <span class="short-text">Gruppo</span>
+            </SfButton>
+        }
+        @if (!IsFirstBlock)
+        {
+            <SfButton CssClass="e-btn-grey remove-button"
+                      OnClick="@RemoveGroup"
+                      IconCss="icon-elimina"
+                      IconPosition="IconPosition.Left">
+            </SfButton>
+        }
+    </div>
+    @foreach ((var subComponent, int index) in (LogicalOperation.Parameters.Select((item, index) => (item, index))))
+    {
+        if (subComponent is FilterParameter<AttributoFiltroDto> parameter)
+        {
+            ValoreConditionObj valueCondition = new ValoreConditionObj();
+            valueCondition.ValoreCondition = parameter.Condition;
+            <FiltroCondizioneComponent @key="subComponent.GetHashCode()"
+                                       AttributiFiltriSelezionabili=@(parameter.AttributiFiltriSelezionabili)
+                                       @ref="_filtroCondizioneComponents[index]"
+                                       ValoreConditionEnums=@ValoreConditionOptions
+                                       AttributoFiltroSelezionatoInput=@(parameter.AttributoFiltroSelezionato)
+                                       AttributoFiltroSelezionatoChanged="@(value => OnAttributoFiltroSelezionatoChanged(parameter, value))"
+                                       CondizioneSelezionataInput=@(valueCondition)
+                                       CondizioneSelezionataChanged="@(value => OnCondizioneSelezionataChanged(parameter, value))"
+                                       ValoreAttributoSelezionatoInput=@(parameter.ValoreAttributoSelezionato)
+                                       ValoreAttributoSelezionatoChanged="@(value => OnValoreAttributoSelezionatoChanged(parameter, value))"
+                                       OnRemove="(IFilterLogicalComponent) => RemoveCondition(parameter)">
+            </FiltroCondizioneComponent>
+        }
+        else if (subComponent is FilterLogicalOperation subGroup)
+        {
+            <FiltroGruppoComponent @key="subGroup.GetHashCode()"
+                                   @ref="_filtroGruppoComponents[index]"
+                                   LogicalOperation="subGroup"
+                                   Level="Level + 1"
+                                   OperatoreLogicoOptions=@OperatoreLogicoOptions
+                                   ValoreConditionOptions=@ValoreConditionOptions
+                                   AttributiFiltroOptions=@AttributiFiltroOptions
+                                   RemoveGroup="() => RemoveCondition(subGroup)">
+            </FiltroGruppoComponent>
+        }
+    }
+</div>
+
+<style>
+
+    .firstline {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    /* Combobox */
+    .filtro-gruppo-combobox {
+        flex: 1 1 0; /* Cresce e si riduce, con base zero */
+        min-width: 2rem;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+        .filtro-gruppo-combobox .e-dropdownbase .e-popup {
+            width: 300px; /* Larghezza di default del popup */
+        }
+
+        /* Input field combobox */
+        .filtro-gruppo-combobox .e-input {
+            height: 100%;
+        }
+
+        .filtro-gruppo-combobox.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+        .e-outline.e-input-group.e-input-focus.e-control-wrapper:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+        .e-outline.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+        .e-outline.e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) {
+            border-color: none !important;
+            box-shadow: none !important;
+        }
+
+    /* Nascondi il testo breve per schermi grandi */
+    .short-text {
+        display: none;
+    }
+
+
+    /* Mostra il testo completo per schermi grandi */
+    .long-text {
+        display: inline;
+    }
+
+    .condition-button, .group-button, .remove-button {
+        flex: 0 0 auto; /* Dimensione fissa basata sul contenuto */
+        white-space: nowrap; /* Testo su una sola riga */
+        padding: 0 1rem; /* Regola il padding per l'altezza */
+        min-width: max-content; /* Larghezza minima basata sul contenuto */
+        box-sizing: border-box;
+        height: auto; /* Altezza automatica */
+    }
+
+    /* Modifica la larghezza del popup con le media query */
+    @@media (max-width: 768px) {
+        .filtro-gruppo-combobox .e-dropdownbase .e-popup {
+            width: 100%; /* Larghezza adattata su schermi più piccoli */
+        }
+    }
+
+    @@media (max-width: 500px) {
+        .filtro-gruppo-combobox .e-dropdownbase .e-popup {
+            width: 250px; /* Larghezza ridotta per container ancora più piccoli */
+        }
+    }
+
+    .e-btn-grey {
+        flex-shrink: 1; /* Permette ai pulsanti di ridursi */
+        white-space: nowrap; /* Evita la divisione del testo */
+    }
+
+    @@media (max-width: 600px) {
+        .filtro-gruppo-combobox {
+            min-width: 2rem; /* Modifica il minimo per schermi molto piccoli */
+        }
+    }
+
+    /* Media query basata sulla dimensione del container "firstline" */
+    @@media (max-width: 500px) {
+        .long-text {
+            display: none;
+        }
+
+        .short-text {
+            display: inline;
+        }
+    }
+
+    /* Quando la larghezza dello schermo è inferiore a 600px */
+    @@media only screen and (max-width: 600px) {
+        /* Mostra il testo breve */
+        .short-text {
+            display: inline;
+        }
+        /* Nascondi il testo lungo */
+        .long-text {
+            display: none;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public FilterLogicalOperation LogicalOperation { get; set; }
+    [Parameter] public int Level { get; set; }
+    [Parameter] public List<string> OperatoreLogicoOptions { get; set; }
+    [Parameter] public List<AttributoFiltroDto> AttributiFiltroOptions { get; set; }
+    [Parameter] public ObservableCollection<ValoreConditionObj> ValoreConditionOptions { get; set; }
+    [Parameter] public Action RemoveGroup { get; set; }
+
+    public string? ComboPopupWidthFloored { get; set; } = "80%";
+    public string? ComboPopupHeightFloored { get; set; } = "500px";
+
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public ObservableDictionary<int, FiltroCondizioneComponent> _filtroCondizioneComponents { get; set; } = new ObservableDictionary<int, FiltroCondizioneComponent>();
+    public ObservableDictionary<int, FiltroGruppoComponent> _filtroGruppoComponents { get; set; } = new ObservableDictionary<int, FiltroGruppoComponent>();
+
+    private bool IsFirstBlock => Level == 0;
+    private SfComboBox<string, string> _sfValoreComboBox = new();
+    private int componentKey = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // inizializzazione operatori logici e condizionali se non passati
+            if (OperatoreLogicoOptions == null || !OperatoreLogicoOptions.Any())
+            {
+                OperatoreLogicoOptions = Enum.GetNames(typeof(ValoreConditionsGroupOperator))
+                                     .Where(e => e != ValoreConditionsGroupOperator.Nothing.ToString())
+                                     .ToList();
+            }
+
+            if (ValoreConditionOptions == null || !ValoreConditionOptions.Any())
+            {
+                var valueCondition = new ValoreConditionObj();
+                valueCondition.ValoreCondition = ValoreConditionEnum.Equal;
+                ValoreConditionOptions = new();
+                ValoreConditionOptions.Add(valueCondition);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _listener.OnResized += WindowResized;
+                await SetContainerDim();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Errore di inizializzazione modulo filtro - condizione. Dettaglio eccezione: {ex.Message}");
+            }
+        }
+    }
+
+    private string LogicalOperationOperator
+    {
+        get
+        {
+            if (LogicalOperation is null)
+            {
+                LogicalOperation = new FilterLogicalOperation(ValoreConditionsGroupOperator.And);
+            }
+
+            return LogicalOperation.Operator.ToString();
+        }
+        set
+        {
+            if (Enum.TryParse(value, out ValoreConditionsGroupOperator newOperator))
+            {
+                LogicalOperation.Operator = newOperator;
+            }
+        }
+    }
+
+    private void AddCondition()
+    {
+        try
+        {
+            var newCondition = CreateNewFilterParameter();
+            LogicalOperation.AddComponent(newCondition);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void AddGroup()
+    {
+        try
+        {
+            var newGroup = new FilterLogicalOperation(ValoreConditionsGroupOperator.And);
+            LogicalOperation.AddComponent(newGroup);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private async void RemoveCondition(IFilterLogicalComponent component)
+    {
+        try
+        {
+            var componentToRemove = LogicalOperation.Parameters.FirstOrDefault(c => c.Id == component.Id);
+            if (componentToRemove != null)
+            {
+                LogicalOperation.RemoveComponent(componentToRemove);
+            }
+            // CallMethodOnAllChildren();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void CallMethodOnAllChildren()
+    {
+        foreach (KeyValuePair<int, FiltroCondizioneComponent> child in _filtroCondizioneComponents)
+        {
+            child.Value.RefreshComponent();
+        }
+
+        foreach (KeyValuePair<int, FiltroGruppoComponent> group in _filtroGruppoComponents)
+        {
+            group.Value.RefreshComponent();
+        }
+    }
+
+    public void RefreshComponent()
+    {
+        StateHasChanged();
+    }
+
+    private void OnCondizioneSelezionataChanged(FilterParameter<AttributoFiltroDto> parameter, ValoreConditionObj value)
+    {
+        parameter.Condition = value.ValoreCondition;
+        StateHasChanged();
+    }
+
+    private async Task SetContainerDim()
+    {
+        try
+        {
+            BrowserWindowSize dimensions = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getWindowDimensions");
+            var comboWidth = dimensions.Height > dimensions.Width ? 0.28 * dimensions.Width : 0.80 * dimensions.Width;
+            var comboHeight = dimensions.Height > dimensions.Width ? 0.50 * dimensions.Height : 0.70 * dimensions.Height;
+            ComboPopupWidthFloored = $"{Math.Floor(comboWidth)}px"; // Arrotonda il valore al numero intero più vicino
+            ComboPopupHeightFloored = $"{Math.Floor(comboHeight)}px"; // Arrotonda il valore al numero intero più vicino
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di impostazione dimensioni combobox modulo gruppo - condizione. Dettaglio eccezione: {ex.Message}");
+        }
+    }
+
+    private FilterParameter<AttributoFiltroDto> CreateNewFilterParameter()
+    {
+        FilterParameter<AttributoFiltroDto> newParameter = new(new AttributoFiltroDto());
+        try
+        {
+            // var tupleCorrispondente1 = GetConditionsForType("Reale", out var valoreConditionEnums1);
+            // var attributiFiltriOptions1 = valoreConditionEnums1?.Select((e, index) => new AttributiFiltroDto
+            //     {
+            //         Codice = "Codice attributo",
+            //         ValoreAttributo = $"Attributo di prova {index + 1}"
+            //     }).ToList();
+
+            // var attributiFiltriOptions2 = valoreConditionEnums1?.Select((e, index) => new List<string>
+            //     {
+            //         $"ValoreAttributo di prova {index + 1}"
+            //     }).ToList();
+
+            // attributiFiltriOptions1?.Select((x, index) =>
+            // {
+            //     x.ValoriUnivociOrdered = attributiFiltriOptions2![index];
+            //     return x;
+            // }).ToList();
+
+            newParameter = new FilterParameter<AttributoFiltroDto>(new AttributoFiltroDto())
+                {
+                    AttributiFiltriSelezionabili = AttributiFiltroOptions ?? new(),
+                    // AttributoFiltroSelezionato = AttributiFiltroOptions!.FirstOrDefault()!,
+                    // ValoreAttributoSelezionato = AttributiFiltroOptions!.FirstOrDefault()!.ValoriUnivoci!.FirstOrDefault()
+                };
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return newParameter;
+    }
+
+    private void OnAttributoFiltroSelezionatoChanged(FilterParameter<AttributoFiltroDto> parameter, AttributoFiltroDto value)
+    {
+        try
+        {
+            parameter.AttributoFiltroSelezionato = value;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private void OnValoreAttributoSelezionatoChanged(FilterParameter<AttributoFiltroDto> parameter, string value)
+    {
+        try
+        {
+            parameter.ValoreAttributoSelezionato = value;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await SetContainerDim();
+        _sfValoreComboBox?.HidePopupAsync();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _listener.OnResized -= WindowResized;
+    }
+}

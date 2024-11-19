@@ -1,0 +1,103 @@
+﻿<Window x:Class="MasterDetailWpf.FilterByEntityIdsWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterDetailWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        xmlns:masterDetailView="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        mc:Ignorable="d"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxre="http://schemas.devexpress.com/winfx/2008/xaml/richedit"
+        Title="{lex:Loc SelezionaVoci}"
+        Height="450" Width="800" MinHeight="200" MinWidth="200"
+        >
+    <Window.Resources>
+        <dxre:RtfToContentConverter x:Key="rtfToContentConverter" />
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{lex:Loc Trova}" Grid.Column="0" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding TextSearched, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="5">
+                <TextBox.InputBindings>
+                    <KeyBinding Command="{Binding SubmitEnterCommand}" Key="Enter"/>
+                </TextBox.InputBindings>
+            </TextBox>
+        </Grid>
+        <CheckBox Content="{Binding IsAllCheckedText}" IsChecked="{Binding IsAllChecked, Mode=TwoWay}"
+                              Background="{Binding IsAllCheckedBackground}" HorizontalAlignment="Stretch" Grid.Row="1" Margin="5"
+                              Visibility="{Binding AllowValoriUnivoci, Converter={StaticResource VisibilityConverter}}"/>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="200"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="300" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <syncfusion:TreeViewAdv Name="TreeViewAdv" Grid.Column="0" ItemsSource="{Binding ValoriFilter, Mode=TwoWay}"
+                                    ShowRootLines="False" AllowMultiSelect="False" SelectedTreeItem="{Binding SelectedItem}"
+                                    BorderThickness="0" Visibility="{Binding IsTreeViewVisible, Converter={StaticResource VisibilityConverter}}"
+                                    >
+                <syncfusion:TreeViewAdv.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SubItems}" >
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding IsChecked}" Background="{Binding Background}"/>
+                            <TextBlock>
+                                <Run Text="{Binding TextArray[0], Mode=OneWay}"/><Run Text="{Binding TextArray[1], Mode=OneWay}" FontWeight="Bold"/><Run Text="{Binding TextArray[2], Mode=OneWay}" /><Run Text="{Binding TextArray[3], Mode=OneWay}"  FontWeight="Bold"/><Run Text="{Binding TextArray[4], Mode=OneWay}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </syncfusion:TreeViewAdv.ItemTemplate>
+                <syncfusion:TreeViewAdv.ItemContainerStyle>
+                    <Style TargetType="{x:Type syncfusion:TreeViewItemAdv}">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded,UpdateSourceTrigger=PropertyChanged}"/>
+                        <Setter Property="IsSelected" Value="{Binding IsSelected,UpdateSourceTrigger=PropertyChanged}"/>
+                        <Setter Property="IsEditable" Value="False"/>
+                    </Style>
+                </syncfusion:TreeViewAdv.ItemContainerStyle>
+            </syncfusion:TreeViewAdv>
+            <TextBlock Text="{Binding TreeViewPlaceholderText}" Grid.Column="0"  Visibility="{Binding IsTreeViewVisible, Converter={StaticResource InverseVisibilityConverter}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray"/>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+            <Grid Grid.Column="2" Margin="5,0,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding EtichettaAttributo0}" Grid.Row="0"/>
+                <TextBlock Text="{Binding CurrentEntityAttributo0}" Grid.Row="1"/>
+                <TextBlock Text="{Binding EtichettaAttributo1}" Grid.Row="2" Margin="0,10,0,0"/>
+
+                <local:RichTextBoxCustom_devExpress x:Name="RichTextBox" CommandBarStyle="Empty" Grid.Row="3"
+                                                    Background="White" Foreground="Black" Margin="0" BorderThickness="0"
+                                                    ActiveViewType="Simple" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                                                    MinHeight="60" Height="{Binding Height}"
+                                                    Content="{Binding CurrentEntityAttributo1, Converter={StaticResource rtfToContentConverter}, Mode=OneWay, UpdateSourceTrigger=LostFocus}"
+                                                    Unit="Centimeter"
+                                                    ReadOnly="True"
+                                                    dx:ThemeManager.ThemeName="Win11Light"
+                                                    ShowBorder="False"
+                                                    />
+            </Grid>
+        </Grid>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="3">
+            <Button Name="Find" Content="{lex:Loc Ok}" Click="Find_Click" Width="100" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

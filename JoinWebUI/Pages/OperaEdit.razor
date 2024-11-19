@@ -1,0 +1,480 @@
+﻿@page "/opere/{OperaId:guid}/edit"
+@page "/opere/create"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Cards
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navMan
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Gestione opere</PageTitle>
+
+@if (_editMode)
+{
+    <PageHeader Title="Modifica opera"
+                ObjectType="Opera"
+                ObjectName="@_model.Nome"
+                Breadcrumbs="@_breadcrumbs"
+                RequestError="@_requestError"
+                RequestMessage="@_requestErrorMessage" />
+}
+else
+{
+    <PageHeader Title="Nuova opera"
+                Breadcrumbs="@_breadcrumbs"
+                RequestError="@_requestError"
+                RequestMessage="@_requestErrorMessage" />
+}
+
+
+@*<SfCard CssClass="e-card">
+    <CardHeader Title="Informazioni opera"></CardHeader>*@
+@*    <CardContent>*@
+<EditForm Model="_model" OnValidSubmit="Submit" Context="EditOperaEditFormContext">
+    <DataAnnotationsValidator />
+    @* <div class="card-header">
+    Modifica opera
+    </div>
+    <div class="card-body">*@
+    <ValidationSummary></ValidationSummary>
+    <div class="form-group row">
+        <label class="control-label col-md-12">Cliente</label>
+        <div class="col">
+            <SfDropDownList TValue="Guid?" TItem="ClienteModel" DataSource="_clienti" Value="SelectedClienteId" Placeholder="Scegli cliente..." Readonly="@_editMode">
+                <DropDownListFieldSettings Value=@nameof(ClienteModel.Id) Text=@nameof(ClienteModel.Nome) />
+                <DropDownListEvents TValue="Guid?" TItem="ClienteModel" OnValueSelect="OnClienteSelect" />
+            </SfDropDownList>
+            @*<SfTextBox CssClass="e-input" Readonly="true" Placeholder="Cliente" Value="@_clienteCodice" ValueExpression="@(() => _clienteCodice)"></SfTextBox>*@
+            <ValidationMessage For="@(() => SelectedClienteId)" />
+        </div>
+    </div>
+    <br>
+    <div class="form-group row">
+        <label class="control-label col-md-12">Settore</label>
+        <div class="col">
+            <SfDropDownList TValue="Guid?" TItem="SettoreModel" DataSource="_settori" @bind-Value="SelectedSettoreId" Placeholder="Scegli settore..." Readonly="@_editMode">
+                <DropDownListFieldSettings Value=@nameof(SettoreModel.Id) Text=@nameof(SettoreModel.Nome) />
+            </SfDropDownList>
+            @*<SfTextBox CssClass="e-input" Readonly="true" Placeholder="Cliente" Value="@_clienteCodice" ValueExpression="@(() => _clienteCodice)"></SfTextBox>*@
+            <ValidationMessage For="@(() => SelectedSettoreId)" />
+        </div>
+    </div>
+    <br>
+    <div class="form-group row">
+        <label class="control-label col-md-12">Nome opera</label>
+        <div class="col">
+            <SfTextBox CssClass="e-input" @bind-Value="@_model.Nome" />
+            <ValidationMessage For="@(() => _model.Nome)" />
+        </div>
+    </div>
+    <br>
+    <div class="form-group row">
+        <label class="control-label col-md-12">Descrizione</label>
+        <div class="col">
+            <SfTextBox CssClass="e-input" @bind-Value="@_model.Descrizione" />
+        </div>
+    </div>
+    <br>
+    <div class="form-group row">
+        <label class="control-label col-md-12">Tag</label>
+        <div class="col">
+            <SfListBox DataSource="_tags" style="min-height:100px; max-height:400px" TItem="TagModel" TValue="List<Guid>" @bind-Value="_selectedTags">
+                <ListBoxFieldSettings Text="Nome" Value="IdString" />
+                <ListBoxSelectionSettings ShowCheckbox="true" CheckboxPosition="CheckBoxPosition.Left" Mode="SelectionMode.Multiple" />
+                <ListBoxEvents TValue="List<Guid>" TItem="TagModel" />
+            </SfListBox>
+            <SfButton CssClass="e-btn-blue mt-2" IconCss="e-icons icon-tag-assegna" IconPosition="IconPosition.Left" OnClick="@NewTagHandler" Type="button">Aggiungi nuovo tag</SfButton>
+        </div>
+    </div>
+
+    <div class="form-group row mt-5">
+        <div class="col">
+            <SfButton IsPrimary=true CssClass="e-btn-yellow" IconCss="e-icons icon-salva-web" style="width:150px" IconPosition="IconPosition.Left" Type="submit">Salva</SfButton>
+            <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-annulla-azione" style="width:150px" IconPosition="IconPosition.Left" OnClick="@GoBack" Type="button">Annulla</SfButton>
+        </div>
+    </div>
+
+</EditForm>
+
+
+<StringInputPopup IsVisible=@_newTagPopupVisible
+                  OnSubmit=@SubmitNewTagHandlerAsync
+                  OnCancel=@CancelNewTagHandler
+                  PopupTitle="Nuovo tag" />
+
+
+@code {
+
+    [Parameter]
+    public Guid? OperaId { get; set; }
+
+    [Parameter]
+    public Guid? ClienteId { get; set; }
+
+    private Guid? SelectedSettoreId { get; set; }
+    //private string? _settoreIdString = null;
+
+
+    private Guid? SelectedClienteId { get; set; }
+
+    public const string CLIENTE_ID_PARAM_NAME = "clienteId";
+
+    private OperaModel _model = new OperaModel();
+
+    private bool _editMode;
+
+    private ObservableCollection<TagModel> _tags = new ObservableCollection<TagModel>();
+    private List<Guid> _selectedTags = new List<Guid>();
+
+    private ObservableCollection<ClienteModel> _clienti = new ObservableCollection<ClienteModel>();
+    private Dictionary<Guid, (ObservableCollection<SettoreModel> Settori, ObservableCollection<TagModel> Tags)> _clientiSettoriTags = new Dictionary<Guid, (ObservableCollection<SettoreModel>, ObservableCollection<TagModel>)>();
+
+    private ObservableCollection<SettoreModel> _settori = new ObservableCollection<SettoreModel>();
+
+    private bool _newTagPopupVisible = false;
+    private string _newTagPopupValue = string.Empty;
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private Dictionary<string, object> SaveAttr = new Dictionary<string, object>()
+    {
+        {"title", "Salva" },
+        {"type", "submit" },
+        {"style", "width:150px" }
+    };
+
+    private Dictionary<string, object> cancelAttr = new Dictionary<string, object>()
+    {
+        {"title", "Annulla" },
+        {"type", "button" },
+        {"style", "width:150px" }
+    };
+
+    private Dictionary<string, object> TagAttr = new Dictionary<string, object>()
+    {
+        {"title", "Tag" },
+        {"type", "button" }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        var qs = _navMan.ToAbsoluteUri(_navMan.Uri).Query;
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(qs);
+        if (query.TryGetValue(CLIENTE_ID_PARAM_NAME, out var id_str))
+        {
+            if (Guid.TryParse(id_str, out var id))
+            {
+                this.ClienteId = id;
+            }
+        }
+
+        if (OperaId.GetValueOrDefault() != Guid.Empty && ClienteId.GetValueOrDefault() == Guid.Empty)
+        {
+            _editMode = true;
+
+            var operaResult = await _apiClient.JsonGetAsync<OperaDto>("opere", OperaId.ToString());
+            if (!operaResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #1 - Opera";
+                return;
+            }
+            _model = _mapper.Map<OperaModel>(operaResult.ResponseContentData!);
+
+            var settoreResult = await _apiClient.JsonGetAsync<SettoreDto>("settori", operaResult.ResponseContentData!.SettoreId.ToString());
+            if (!settoreResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #2 - Settore";
+                return;
+            }
+            var settore = _mapper.Map<SettoreModel>(settoreResult.ResponseContentData!);
+
+            var clienteResult = await _apiClient.JsonGetAsync<ClienteDto>("clienti", settore.ClienteId.ToString());
+            if (!clienteResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #3 - cliente";
+                return;
+            }
+            var cliente = _mapper.Map<ClienteModel>(clienteResult.ResponseContentData!);
+
+            _clienti = new ObservableCollection<ClienteModel>() { cliente };
+            _clientiSettoriTags = new Dictionary<Guid, (ObservableCollection<SettoreModel>, ObservableCollection<TagModel>)>()
+                { { cliente.Id, (new ObservableCollection<SettoreModel>() { settore }, await GetTags(cliente.Id)) } };
+
+            SelectedSettoreId = settore.Id;
+            OnClienteSelect(cliente.Id);
+
+
+
+
+        }
+        else if (OperaId.GetValueOrDefault() == Guid.Empty && ClienteId.GetValueOrDefault() != Guid.Empty)
+        {
+            _editMode = false;
+
+            _clienti.Clear();
+            _clientiSettoriTags.Clear();
+
+            var clientiResult = await _apiClient.JsonGetAsync<IEnumerable<ClienteDto>>("clienti/get-by-teams");
+            if (!clientiResult.Success || !clientiResult.ResponseContentData!.Any(c => c.Id == ClienteId!.Value))
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #4 - Lista Clienti";
+                return;
+            }
+
+            var listClienti = _mapper.Map<List<ClienteModel>>(clientiResult.ResponseContentData!);
+            foreach(var c in listClienti)
+            {
+                _clienti.Add(c);
+
+                var settoriResult = await _apiClient.JsonGetAsync<IEnumerable<SettoreDto>>("settori/get-by-cliente", query: new Dictionary<string, string>() { { "clienteId", c.IdString } });
+                var listSettori = new ObservableCollection<SettoreModel>();
+                if (!settoriResult.Success)
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore #5 - Lista Settori";
+                }
+                else
+                {
+                    listSettori = _mapper.Map<ObservableCollection<SettoreModel>>(settoriResult.ResponseContentData!);
+                }
+
+                _clientiSettoriTags.Add(c.Id, (listSettori, await GetTags(c.Id)));
+
+            }
+
+            _model.TagIds = new List<Guid>();
+
+            SelectedSettoreId = null;
+            OnClienteSelect(ClienteId);
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri pagina";
+            return;
+        }
+
+        if (_editMode)
+        {
+            _breadcrumbs = new List<(string, string)>()
+            {
+                ("Opere", "/opere"),
+                (_model.Nome, "/opere/" + OperaId.ToString()),
+                ("Modifica", "/opere/" + OperaId.ToString() + "/edit")
+            };
+        }
+        else
+        {
+            _breadcrumbs = new List<(string, string)>()
+            {
+                ("Opere", "/opere"),
+                ("Nuova opera", "")
+            };
+        }
+
+    }
+
+    private void OnClienteSelect(SelectEventArgs<ClienteModel> args)
+    {
+        OnClienteSelect(args?.ItemData?.Id);
+    }
+
+    private void OnClienteSelect(Guid? selectedClienteId)
+    {
+        SelectedClienteId = selectedClienteId;
+
+        if (SelectedClienteId.GetValueOrDefault() == Guid.Empty)
+        {
+            _settori.Clear();
+            SelectedSettoreId = null;
+
+            _tags.Clear();
+        }
+        else
+        {
+            var _oldSelect = SelectedSettoreId;
+
+            _settori = _clientiSettoriTags[SelectedClienteId!.Value].Settori;
+            if (_settori.Count == 1)
+                SelectedSettoreId = _settori.First().Id;
+            else if (_settori.Where(s => s.Id == _oldSelect).Any())
+                SelectedSettoreId = _oldSelect;
+            else
+                SelectedSettoreId = null;
+
+            _tags = _clientiSettoriTags[SelectedClienteId!.Value].Tags;
+            _selectedTags = _tags.Select(t => t.Id).Where(t => _model.TagIds.Contains(t)).ToList();
+
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task Submit()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        JoinWebApiClient.RequestResult result;
+
+        _model.TagIds = _selectedTags;
+
+        if (_editMode)
+        {
+            var dto = _mapper.Map<OperaUpdateDto>(_model);
+            result = await _apiClient.JsonPutAsync("opere", _model.Id!.ToString(), dto);
+        }
+        else
+        {
+            //_model.SettoreId = new Guid(_settoreIdString);
+            //_settoreId = _model.SettoreId;
+            _model.SettoreId = SelectedSettoreId.GetValueOrDefault();
+            _model.Id = Guid.NewGuid();
+
+            var dto = _mapper.Map<OperaCreateDto>(_model);
+            result = await _apiClient.JsonPostAsync("opere", dto);
+        }
+
+        if (!result.Success)
+        {
+            _requestError = true;
+
+            if (result.ResponseStatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                try
+                {
+                    if (result.ResponseContentErrorData!["Reason"] == "DuplicateKey")
+                    {
+                        _requestErrorMessage = "Esiste già un'opera con il nome specificato";
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            _requestErrorMessage = "Operazione fallita";
+            return;
+        }
+
+        GoBack();
+    }
+
+
+    private void GoBack()
+    {
+        if (_editMode)
+        {
+            _navMan.NavigateTo("/opere/" + OperaId);
+        }
+        else
+        {
+            _navMan.NavigateTo("/opere");
+        }
+
+    }
+
+    private void NewTagHandler()
+    {
+        if (SelectedClienteId.GetValueOrDefault() != Guid.Empty)
+        {
+            _newTagPopupValue = string.Empty;
+            _newTagPopupVisible = true;    
+        }
+        
+    }
+
+    private void CancelNewTagHandler()
+    {
+        _newTagPopupVisible = false;
+    }
+
+    private async Task SubmitNewTagHandlerAsync(string value)
+    {
+        _newTagPopupVisible = false;
+
+        if (string.IsNullOrWhiteSpace(value)) return;
+
+        var dto = new TagDto()
+            {
+                Nome = value,
+                ClienteId = SelectedClienteId.GetValueOrDefault()
+            };
+
+        var result = await _apiClient.JsonPostAsync<TagDto>("tags", dto);
+
+        if (!result.Success)
+        {
+            _requestError = true;
+
+            if (result.ResponseStatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                try
+                {
+                    if (result.ResponseContentErrorData!["Reason"] == "DuplicateKey")
+                    {
+                        _requestErrorMessage = "Esiste già un tag con il nome inserito";
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            _requestErrorMessage = "Operazione fallita";
+            return;
+        }
+
+        var newTagListItem = _mapper.Map<TagModel>(result.ResponseContentData);
+
+        _tags.Add(newTagListItem);
+        _selectedTags.Add(newTagListItem.Id);
+
+        StateHasChanged();
+    }
+
+
+
+    private async Task<ObservableCollection<TagModel>> GetTags(Guid clienteId)
+    {
+        if (clienteId == Guid.Empty)
+        {
+            return new ObservableCollection<TagModel>(); ;
+        }
+
+        var tagsResult = await _apiClient.JsonGetAsync<IEnumerable<TagDto>>("tags", query: new Dictionary<string, string>() { { "clienteId", clienteId.ToString() } });
+        if (!tagsResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #6 - Tags";
+            return new ObservableCollection<TagModel>(); ;
+        }
+
+        var result = _mapper.Map<ObservableCollection<TagModel>>(tagsResult.ResponseContentData!.OrderBy(t => t.Nome));
+        return result;
+
+    }
+
+
+}

@@ -1,0 +1,97 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoinApi", "JoinApi\JoinApi.csproj", "{8688FF60-BE47-420F-AEB8-21628F052542}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelData", "ModelData\ModelData.csproj", "{49BAD20E-C40D-4810-B779-D72C4FA3399D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoinWebUI", "JoinWebUI\JoinWebUI.csproj", "{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D} = {49BAD20E-C40D-4810-B779-D72C4FA3399D}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		NoVariablesDefault|Any CPU = NoVariablesDefault|Any CPU
+		NoVariablesDefault|x64 = NoVariablesDefault|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Debug|x64.ActiveCfg = Debug|x64
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Debug|x64.Build.0 = Debug|x64
+		{8688FF60-BE47-420F-AEB8-21628F052542}.NoVariablesDefault|Any CPU.ActiveCfg = Release|Any CPU
+		{8688FF60-BE47-420F-AEB8-21628F052542}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
+		{8688FF60-BE47-420F-AEB8-21628F052542}.NoVariablesDefault|x64.ActiveCfg = Release|x64
+		{8688FF60-BE47-420F-AEB8-21628F052542}.NoVariablesDefault|x64.Build.0 = Release|x64
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Release|x64.ActiveCfg = Release|x64
+		{8688FF60-BE47-420F-AEB8-21628F052542}.Release|x64.Build.0 = Release|x64
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Debug|x64.Build.0 = Debug|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.NoVariablesDefault|Any CPU.ActiveCfg = Release|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.NoVariablesDefault|x64.ActiveCfg = Debug|x64
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.NoVariablesDefault|x64.Build.0 = Debug|x64
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Release|x64.ActiveCfg = Release|Any CPU
+		{49BAD20E-C40D-4810-B779-D72C4FA3399D}.Release|x64.Build.0 = Release|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.NoVariablesDefault|Any CPU.ActiveCfg = Release|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.NoVariablesDefault|x64.ActiveCfg = Debug|x64
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.NoVariablesDefault|x64.Build.0 = Debug|x64
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{FAA077A4-C123-4CFE-AE24-FAAFDBDB02DB}.Release|x64.Build.0 = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Debug|x64.Build.0 = Debug|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.NoVariablesDefault|Any CPU.ActiveCfg = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.NoVariablesDefault|x64.ActiveCfg = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.NoVariablesDefault|x64.Build.0 = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Release|x64.ActiveCfg = Release|Any CPU
+		{49FBD4BE-FBD2-4E48-B414-8B286DDA34AE}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6714B8F1-24E6-4C07-9BE1-1670A4FEC8A8}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://dev.azure.com/digicorpteam
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = JoinApi\\JoinApi.csproj
+		SccProjectName1 = JoinApi
+		SccLocalPath1 = JoinApi
+		SccProjectUniqueName2 = ModelData\\ModelData.csproj
+		SccProjectName2 = ModelData
+		SccLocalPath2 = ModelData
+		SccProjectUniqueName3 = JoinWebUI\\JoinWebUI.csproj
+		SccProjectName3 = JoinWebUI
+		SccLocalPath3 = JoinWebUI
+	EndGlobalSection
+EndGlobal

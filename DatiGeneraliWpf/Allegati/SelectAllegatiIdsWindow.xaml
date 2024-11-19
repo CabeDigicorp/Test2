@@ -1,0 +1,38 @@
+﻿<Window x:Class="DatiGeneraliWpf.SelectAllegatiIdsWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DatiGeneraliWpf"
+        xmlns:view="clr-namespace:DatiGeneraliWpf.View"
+              xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        Title="{lex:Loc Seleziona allegati}" Height="600" Width="900">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock Text="{lex:Loc Allegati}" Grid.Column="0" FontSize="20" VerticalAlignment="Center" Margin="5,0,0,0"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click" Width="100" Height="40" Margin="2,0,0,0" Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+        <local:AllegatiCtrl x:Name="AllegatiCtrl" Grid.Row="1" EntityViewMouseDoubleClick="AllegatiCtrl_EntityViewMouseDoubleClick">
+            <local:AllegatiCtrl.DataContext>
+                <view:AllegatiView/>
+            </local:AllegatiCtrl.DataContext>
+        </local:AllegatiCtrl>
+    </Grid>
+
+</Window>

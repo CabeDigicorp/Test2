@@ -1,0 +1,211 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using System.Collections.ObjectModel
+@using System.Collections.Specialized;
+
+<div class="col my-3" style="min-width:@(Width);max-width:@(Width);height:@Height;min-height:@MinHeight">
+    <SfCard CssClass="e-card">
+        <CardHeader Title="@Title">
+            <div>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiungi-plus" IconPosition="IconPosition.Left" hidden="@(!OnClickNew.HasDelegate)" Disabled="@IsNewDisabled" OnClick="ClickNew"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-edita" IconPosition="IconPosition.Left" hidden="@(!OnClickEdit.HasDelegate)" Disabled="@IsEditDisabled" OnClick="ClickEdit"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-elimina" IconPosition="IconPosition.Left" hidden="@(!OnClickDelete.HasDelegate)" Disabled="@IsDelDisabled" OnClick="ClickDelete"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-download-file" IconPosition="IconPosition.Left" hidden="@(!OnClickDownload.HasDelegate)" Disabled="@IsDownloadDisabled" OnClick="ClickDownload"></SfButton>
+                <SfButton CssClass="e-btn-blue" IconCss="e-icons icon-aggiorna" IconPosition="IconPosition.Left" hidden="@(!OnClickRefresh.HasDelegate)" OnClick="ClickRefresh"></SfButton>
+            </div>
+        </CardHeader>
+        <CardContent>
+            @if (ComplexDataSource != null)
+            {
+                <SfListBox TValue="string[]" TItem="IListBoxCardBaseModel"
+                           Height="100%"
+                           DataSource="@ComplexDataSource"
+                           @ref="_complexList">
+                    <ListBoxFieldSettings Value="IdString" Text="Nome" />
+                    <ListBoxSelectionSettings Mode="@_multiSelect" ShowCheckbox="@ShowCheckbox" />
+                    <ListBoxTemplates TItem="IListBoxCardBaseModel">
+                        <NoRecordsTemplate>@NoRecordsString</NoRecordsTemplate>
+                        <ItemTemplate>
+                            @if ((context as IListBoxCardBaseModel).MultiLine)
+                            {
+                                <div class="list-wrapper e-list-multi-line">
+                                    <span class="text">@((context as IListBoxCardBaseModel).TextLine1)</span><span class="description">@((context as IListBoxCardBaseModel).TextLine2)</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="list-wrapper">
+                                    <span class="text">@((context as IListBoxCardBaseModel).TextLine1)</span>
+                                </div>
+                            }
+                        </ItemTemplate>
+                    </ListBoxTemplates>
+                    <ListBoxEvents TValue="string[]" TItem="IListBoxCardBaseModel" ValueChange="ValueChanged" Created="RestoreSelection" />
+                </SfListBox>
+            }
+            else
+            {
+                <SfListBox TValue="string[]" TItem="string"
+                           Height="100%"
+                           DataSource="@StringDataSource"
+                           @ref="_stringList">
+                    <ListBoxSelectionSettings Mode="_multiSelect" ShowCheckbox="@ShowCheckbox" />
+                    <ListBoxTemplates TItem="string">
+                        <NoRecordsTemplate>@NoRecordsString</NoRecordsTemplate>
+                        <ItemTemplate>
+                            <div class="list-wrapper">
+                                 <span class="text">@(context as string)</span>
+                            </div>                            
+                        </ItemTemplate>
+                    </ListBoxTemplates>
+                    <ListBoxEvents TValue="string[]" TItem="string" ValueChange="ValueChanged" Created="RestoreSelection"  />
+                </SfListBox>
+            }
+        </CardContent>
+    </SfCard>
+</div>
+
+@code {
+    [Parameter] public ObservableCollection<IListBoxCardBaseModel>? ComplexDataSource { get; set; } = null;
+    //{
+    //    get => _complexDataSource;
+    //    set => _complexDataSource = value; // != null ? new ObservableCollection<IListBoxCardBaseModel>(value) : null;
+
+    //}
+
+    //private ObservableCollection<IListBoxCardBaseModel>? _complexDataSource = null;
+
+    [Parameter] public ObservableCollection<string>? StringDataSource { get; set; } = null;
+
+    [Parameter] public EventCallback OnClickNew { get; set; }
+    [Parameter] public bool DisableNew { get; set; } = false;
+    //private bool !OnClickNew.HasDelegate { get; set; } = false;
+    [Parameter] public EventCallback<string> OnClickEdit { get; set; }
+    [Parameter] public bool DisableEdit { get; set; } = false;
+    //private bool !OnClickEdit.HasDelegate; { get; set; } = false;
+    [Parameter] public EventCallback<string[]> OnClickDelete { get; set; }
+    [Parameter] public bool DisableDelete { get; set; } = false;
+    //private bool !OnClickDelete.HasDelegate { get; set; } = false;
+    [Parameter] public EventCallback<string[]> OnClickDownload { get; set; }
+    [Parameter] public bool DisableDownload { get; set; } = false;
+    //private bool !OnClickDownload.HasDelegate { get; set; } = true;
+    [Parameter] public EventCallback OnClickRefresh { get; set; }
+    [Parameter] public bool DisableRefresh { get; set; } = false;
+    //private bool HideRefresh { get; set; } = false;
+
+    [Parameter] public bool MultiSelect { get; set; } = false;
+    private SelectionMode _multiSelect
+    {
+        get
+        {
+            return MultiSelect ? SelectionMode.Multiple : SelectionMode.Single;
+        }
+    }
+    [Parameter] public bool ShowCheckbox { get; set; } = false;
+
+    [Parameter] public EventCallback<string[]> OnValueChanged { get; set; }
+
+    [Parameter] public string Title { get; set; } = "[Titolo]";
+    [Parameter] public string NoRecordsString { get; set; } = "[Nessun elemento trovato]";
+
+    [Parameter] public string Width { get; set; }
+    [Parameter] public string Height { get; set; }
+    [Parameter] public string MinHeight { get; set; }
+
+
+    private SfListBox<string[], IListBoxCardBaseModel>? _complexList;
+    private SfListBox<string[], string>? _stringList;
+    //private string[] _selectedValues;
+    [Parameter] public IEnumerable<IListBoxCardBaseModel> SelectedValues { get; set; }
+
+
+    private bool IsNewDisabled { get { return !OnClickNew.HasDelegate || DisableNew; } }
+    private bool IsEditDisabled { get { return !OnClickEdit.HasDelegate || DisableEdit || (((_complexList?.Value?.Count() ?? -1) != 1) && ((_stringList?.Value?.Count() ?? -1) != 1)); } }
+    private bool IsDownloadDisabled { get { return !OnClickDownload.HasDelegate || DisableDownload || (((_complexList?.Value?.Count() ?? -1) < 1) && ((_stringList?.Value?.Count() ?? -1) < 1)); } }
+    private bool IsDelDisabled { get { return !OnClickDelete.HasDelegate || DisableDelete || (((_complexList?.Value?.Count() ?? -1) < 1) && ((_stringList?.Value?.Count() ?? -1) < 1));  } }
+
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickNew()
+    {
+        if (OnClickNew.HasDelegate) await OnClickNew.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickEdit()
+    {
+        if (OnClickEdit.HasDelegate) await OnClickEdit.InvokeAsync((_complexList != null) ? _complexList?.Value?[0] : _stringList?.Value?[0]);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickDelete()
+    {
+        if (OnClickDelete.HasDelegate) await OnClickDelete.InvokeAsync((_complexList != null) ? _complexList?.Value : _stringList?.Value);
+        //_selectedValues = new string[] { };
+        if (_complexList != null)
+        {
+            await _complexList!.SelectAllAsync(false);
+        }
+        else if (_stringList != null)
+        {
+            await _stringList!.SelectAllAsync(false);
+        }
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task ClickDownload()
+    {
+        if (OnClickDownload.HasDelegate) await OnClickDownload.InvokeAsync((_complexList != null) ? _complexList?.Value : _stringList?.Value);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickRefresh()
+    {
+        if (OnClickRefresh.HasDelegate) await OnClickRefresh.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task ValueChanged()
+    {
+        if (OnValueChanged.HasDelegate) await OnValueChanged.InvokeAsync((_complexList != null) ? _complexList?.Value : _stringList?.Value);
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RestoreSelection()
+    {
+        if (_complexList != null)
+        {
+            if ((_complexList?.DataSource?.Count() ?? -1) > 0 && (_complexList!.Value?.Length ?? 0) == 0 && (SelectedValues?.Count() ?? -1) > 0)
+            {
+                //_selectedValues = SelectedValues!.Select(i => i.IdString).ToArray();
+                await _complexList.SelectItemsAsync(SelectedValues!.Select(i => i.IdString).ToArray(), true);
+            }
+        }
+        else if (_stringList != null)
+        {
+            if ((_stringList?.DataSource?.Count() ?? -1) > 0 && (_stringList!.Value?.Length ?? 0) == 0 && (SelectedValues?.Count() ?? -1) > 0)
+            {
+                //_selectedValues = SelectedValues!.Select(i => i.IdString).ToArray();
+                await _stringList.SelectItemsAsync(SelectedValues!.Select(i => i.IdString).ToArray(), true);
+            }
+        }
+    }
+
+}
+
+<style>
+    .e-card-content {
+        padding: 0px !important;
+    }
+
+</style>

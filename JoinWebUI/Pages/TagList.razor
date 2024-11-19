@@ -1,0 +1,273 @@
+﻿@page "/clienti/{ClienteId:guid}/tag"
+@using AutoMapper
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using ModelData.Dto
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+@inject NavigationManager _navigation
+@inject Syncfusion.Blazor.Popups.SfDialogService _dialogService
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Gestione Tag</PageTitle>
+
+<PageHeader Title="Tag"
+            ObjectType="Cliente"
+            ObjectName="@_cliente.Info"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+
+
+<div id="tags" class="control-section row" style="min-height:300px">
+    <ListBoxCard ComplexDataSource=@_tags
+                 OnClickNew=@OnClickAdd
+                 OnClickEdit=@OnClickEdit
+                 DisableDelete=@((_tags?.Count() ?? -1) < 1)
+                 OnClickDelete=@OnClickDelete
+                 OnClickRefresh=@OnClickRefresh
+                 MultiSelect=false
+                 OnValueChanged=@OnSelectedChanged
+                 Title="Tag associati al Cliente"
+                 NoRecordsString="Nessun tag trovato"
+                 Width="100%"
+                 Height="stretch"
+                 MinHeight="180px" />
+</div>
+
+<StringInputPopup IsVisible=@(_addDialogOpen || _editDialogOpen)
+                  OnSubmit=@(OnAddEditSubmit)
+                  OnCancel=@(OnAddEditCancel)
+                  PopupTitle=@(_addEditTitle)
+                  Value="@(_editDialogOpen ? _addEditValue : string.Empty)" />
+
+
+@code {
+
+    [Parameter]
+    public Guid? ClienteId { get; set; }
+
+    private ClienteModel _cliente = new ClienteModel();
+
+
+    private bool _editMode;
+
+    private ObservableCollection<IListBoxCardBaseModel> _tags = new ObservableCollection<IListBoxCardBaseModel>();
+    private IListBoxCardBaseModel? _selectedTag = null;
+
+    private bool _newTagPopupVisible = false;
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+
+    private bool _addDialogOpen = false, _editDialogOpen = false;
+    private string _addEditTitle = string.Empty;
+    private string _addEditValue = string.Empty;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            _editMode = true;
+
+            var clienteResult = await _apiClient.JsonGetAsync<ClienteDto>("clienti", ClienteId.ToString());
+            if (!clienteResult.Success)
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore #1 - Cliente";
+                return;
+            }
+            _cliente = _mapper.Map<ClienteModel>(clienteResult.ResponseContentData!);
+
+            _breadcrumbs = new List<(string, string)>()
+                        {
+                ("Amministrazione Clienti", "/clienti"),
+                (_cliente.Info, "/clienti/" + ClienteId.ToString()),
+                ("Tags", "/clienti/" + ClienteId.ToString() + "/tags")
+                        };
+
+            await GetTags();
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+        StateHasChanged();
+
+    }
+
+    protected async Task OnClickRefresh()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        if ((ClienteId != null && ClienteId != Guid.Empty))
+        {
+            await GetTags();
+
+        }
+        else
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Parametri cliente";
+            return;
+        }
+
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetTags()
+    {
+        var tagResult = await _apiClient.JsonGetAsync<IEnumerable<TagDto>>("tags", query: new Dictionary<string, string>() { { "clienteId", _cliente.IdString } }); ;
+        if (!tagResult.Success)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #1 - Tag";
+            return;
+        }
+
+        var converted = _mapper.Map<List<TagModel>>(tagResult.ResponseContentData!).OrderBy(t => t.Nome);
+        _tags.Clear();
+        foreach (var s in converted)
+        {
+            _tags.Add(s);
+        }
+    }
+
+
+    private void OnSelectedChanged(string[] selectedValues)
+    {
+        if ((selectedValues?.Count() ?? -1) == 1)
+        {
+            _selectedTag = _tags.Where(s => selectedValues![0] == s.IdString).First();
+        }
+        else
+        {
+            _selectedTag = null;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnClickAdd()
+    {
+        _addEditTitle = "Crea nuovo tag";
+        _addEditValue = string.Empty;
+        _addDialogOpen = true;
+    }
+
+    private async Task OnClickEdit()
+    {
+        if (_selectedTag != null)
+        {
+            _addEditTitle = "Rinomina tag";
+            _addEditValue = (_selectedTag as TagModel)!.Nome;
+            _editDialogOpen = true;
+        }
+    }
+
+    private async Task OnAddEditSubmit(string value)
+    {
+        if (!String.IsNullOrWhiteSpace(value))
+        {
+            if (_addDialogOpen)
+            {
+
+                TagDto dto = new TagDto();
+                dto.ClienteId = ClienteId ?? Guid.Empty;
+                dto.Nome = value;
+
+                var result = await _apiClient.JsonPostAsync<TagDto>("tags", dto);
+                if (result.Success)
+                {
+                    TagModel tag = _mapper.Map<TagModel>(result.ResponseContentData);
+                    _tags.Add(tag);
+                }
+                else
+                {
+                    _requestError = true;
+                    _requestErrorMessage = "Errore creazione nuovo tag";
+                    return;
+                }
+            }
+            else if (_editDialogOpen)
+            {
+                //AddEditValue = value;
+                var casted = _selectedTag as TagModel;
+                if (casted != null)
+                {
+                    casted.Nome = value;
+                    TagDto dto = _mapper.Map<TagDto>(casted);
+
+                    var result = await _apiClient.JsonPutAsync("tags", casted.IdString, dto);
+                    if (result.Success)
+                    {
+                        _selectedTag = casted;
+                    }
+                    else
+                    {
+                        _requestError = true;
+                        _requestErrorMessage = "Errore rinomina tag";
+                        return;
+                    }
+                }
+            }
+
+            StateHasChanged();
+        }
+
+        _addDialogOpen = _editDialogOpen = false;
+    }
+
+    private void OnAddEditCancel()
+    {
+        _addDialogOpen = _editDialogOpen = false;
+    }
+
+
+    private async Task OnClickDelete()
+    {
+        bool confirm = await _dialogService.ConfirmAsync("Eliminare il tag '" + _selectedTag!.TextLine1 + "'?\r\n ATTENZIONE: l'operazione non potrà essere annullata", "Conferma eliminazione", DialogOptions.ConfirmOptions);
+
+        if (confirm)
+        {
+            var result = await _apiClient.JsonDeleteAsync("tags", _selectedTag!.IdString);
+            if (result.Success)
+            {
+                _tags!.Remove(_selectedTag);
+                _selectedTag = null;
+            }
+            else
+            {
+                _requestError = true;
+                _requestErrorMessage = "Errore eliminazione tag";
+                return;
+            }
+
+            StateHasChanged();
+        }
+    }
+}

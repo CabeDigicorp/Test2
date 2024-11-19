@@ -1,0 +1,93 @@
+﻿<Window x:Class="FogliDiCalcoloWpf.FoglioDiCalcoloWBSGanttDataWnd"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+        xmlns:masterdetailview="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView" 
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF"
+        xmlns:local="clr-namespace:FogliDiCalcoloWpf" xmlns:interactivity="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterOwner"
+        Height="500" Width="700"
+        DataContext="{StaticResource FoglioDiCalcoloGanttDataView}"   
+        MinHeight="500" MinWidth="700">
+
+    <Window.Resources>
+        <!--<commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>-->
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyleReadOnly">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="DimGray"/>
+        </Style>
+        <Style TargetType="Button" x:Key="menuButtonStyle1" BasedOn="{StaticResource menuButtonStyle}">
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DetailDataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock x:Name="DataText" Text="{Binding DataTextCompleted}" Grid.Column="0" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}" Grid.ColumnSpan="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="3" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+        <TextBlock x:Name="TabellaText" Text="{Binding TabellaTextCompleted}" Grid.Row="1" Grid.Column="0" FontSize="12" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2"/>
+
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBox x:Name="TextBoxFilter" Text="{Binding TextSearched, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Margin="5">
+                <TextBox.InputBindings>
+                    <KeyBinding Command="{Binding SubmitEnterCommand}" Key="Enter"/>
+                </TextBox.InputBindings>
+            </TextBox>
+            <syncfusion:SfDataGrid x:Name="ValoriFiltro" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=ListaFiltrati}"
+                                               ColumnSizer="None" AllowResizingColumns="True" AllowEditing="True"
+                                               CurrentItem="{Binding CurrentAttributoSettings, Mode=TwoWay}"
+                                               AutoGenerateColumns="False"
+                                               AllowDraggingRows="False" AllowDrop="False" AllowSorting="False"
+                                               HideEmptyGridViewDefinition="True" SelectedItem="{Binding FiltratoSelezionato}" SelectionMode="Single">
+                <syncfusion:SfDataGrid.Columns>
+                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Nome attributo}" MappingName="Etichetta" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                    <syncfusion:GridTextColumn HeaderText="{lex:Loc Sezione riferita}" MappingName="SezioneRiferita" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                    <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc Valore}" MappingName="Amount" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                    <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc Valore prog}" MappingName="ProgressiveAmount" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                    <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc ProduttivitaH}" MappingName="ProductivityPerHour" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                </syncfusion:SfDataGrid.Columns>
+            </syncfusion:SfDataGrid>
+        </Grid>
+    </Grid>
+</Window>
+

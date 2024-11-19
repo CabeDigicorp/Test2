@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="FogliDiCalcoloWpf.FogliDiCalcoloCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FogliDiCalcoloWpf"
+              xmlns:dxsps="http://schemas.devexpress.com/winfx/2008/xaml/spreadsheet" 
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <local:CustomSpreadSheet x:Name="SpreadSheetCtrl" CommandBarStyle="Ribbon" ShowFormulaBar="True" ShowStatusBar="True" dx:ThemeManager.Theme="Office2019Colorful">
+            <dxsps:SpreadsheetControl.RibbonActions>
+                <dxb:UpdateAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonControl}" PropertyName="ToolbarShowMode" Value="Hide"/>
+                <dxb:UpdateAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonGroup_PageLayout_PageSetup}" Property="{x:Static dxr:RibbonPageGroup.ShowCaptionButtonProperty}" Value="False" />
+                <dxb:UpdateAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonControl}" PropertyName="RibbonTitleBarVisibility" Value="Collapsed"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_File_Common_New}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_File_Common_Open}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_File_Common_Save}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_File_Common_QuickPrint}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_File_Common_Print}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_File_Common_PrintPreview}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonGroup_File_Info}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_MarginsCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_OrientationCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonItem_PageLayout_PageSetup_SizeCommandGroup}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonGroup_PageLayout_Show}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxsps:DefaultBarItemNames.RibbonGroup_PageLayout_Print}"/>
+                <dxb:InsertAction Index="0" ContainerName="{x:Static dxsps:DefaultBarItemNames.RibbonCategory_Default}">
+                    <dxr:RibbonPage x:Name="JoinTab" Caption="{lex:Loc Join}" IsSelected="True">
+                        <dxr:RibbonPageGroup Caption="{lex:Loc Generale}">
+                            <dxb:BarButtonItem x:Name="AggiornaFogliDiCalcolo" Content="{lex:Loc Aggiorna}" ItemClick="AggiornaFogliDiCalcolo_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/FoglioAggiorna.svg'}"/>
+                            <dxb:BarButtonItem x:Name="EvidenziaInModel3dFogliDiCalcolo" Content="{lex:Loc EvidenziaInModel3d}" ItemClick="EvidenziaInModel3dFogliDiCalcolo_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/EvidenziaInModel3d.svg'}"/>
+                        </dxr:RibbonPageGroup>
+                        <dxr:RibbonPageGroup Caption="{lex:Loc Computo}">
+                            <dxb:BarButtonItem x:Name="ComputoData" Content="{lex:Loc Computo Data}" ItemClick="GeneraData_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/ComputoData.svg'}"/>
+                            <!--<dxb:BarButtonItem x:Name="ComputoUpdate"  Content="{lex:Loc Computo Aggiorna}" ItemClick="AggiornaData_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/ComputoAggiorna.svg'}"/>-->
+                        </dxr:RibbonPageGroup>
+                        <dxr:RibbonPageGroup Caption="{lex:Loc WBSGantt}">
+                            <dxb:BarButtonItem x:Name="WBSGanttData" Content="{lex:Loc ProduttivitaGantt}" ItemClick="GeneraWBSGanttData_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/WBSGanttData.svg'}"/>
+                            <dxb:BarButtonItem x:Name="SchedulazioneValoriPeriodo" Content="{lex:Loc ProgrammaLavori}" ItemClick="SchedulazioneValoriPeriodo_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/SchedulazioneValoriPeriodo.svg'}"/>
+                            <!--<dxb:BarButtonItem x:Name="WBSGanttUpdate"  Content="{lex:Loc WBSGantt Aggiorna}" ItemClick="AggiornaWBSGantt_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/WBSGanttDataAggiorna.svg'}"/>-->
+                        </dxr:RibbonPageGroup>
+                        <!--<dxr:RibbonPageGroup Caption="{lex:Loc Programmazione SAL}">
+                            --><!--<dxb:BarStaticItem Content="{Binding}">
+                                <dxb:BarStaticItem.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <Label Content="{lex:Loc Attributo SAL}" Margin="5"/>
+                                            <dxe:ComboBoxEdit x:Name="siteComboBox" MinWidth="120" ItemsSource="{Binding RibbonView.SALAttibutes, Mode=TwoWay}" SelectedItem="{Binding RibbonView.SALAttibute, Mode=TwoWay}" DisplayMember="Etichetta" ValueMember="Codice" Margin="5"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </dxb:BarStaticItem.ContentTemplate>
+                            </dxb:BarStaticItem>--><!--
+                            <dxb:BarButtonItem x:Name="WBSGanttSALUpdate"  Content="{lex:Loc ProgrammazioneSALData}" ItemClick="WBSGanttSALUpdate_ItemClick" LargeGlyph="{dx:SvgImageSource Uri='pack://application:,,,/DigiCorp.FogliDiCalcoloWpf;component/Resources/ProgrammazioneSALData.svg'}"/>
+                        </dxr:RibbonPageGroup>-->
+                        <!--<dxr:RibbonPageGroup Caption="{lex:Loc Schedulazione Valori Periodo}">
+                        </dxr:RibbonPageGroup>-->
+                    </dxr:RibbonPage>
+                </dxb:InsertAction>
+            </dxsps:SpreadsheetControl.RibbonActions>
+        </local:CustomSpreadSheet>
+    </Grid>
+</UserControl>

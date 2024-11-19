@@ -1,0 +1,113 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject IJSRuntime js
+@inject NavigationManager Navigation
+
+@*<nav class="navbar header-navbar p-0 d-flex justify-content-between">*@
+@*   <button class="navbar-toggler bg-primary d-block" @onclick="OnToggleClick">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div style="width: 58px"></div>
+    <!-- Auth0 -->*@
+@*<div class="ms-3 fw-bold title pe-4" style="width:20%">
+        <a href="/">
+            <img src="images/logo-join.webp" style="height:2rem" alt="Home"/>
+        </a>
+    </div>
+    <div style="width:60%" class="align-items-end float-end">*@
+@*<AccessControl />*@
+<DxMenu CloseMenuOnItemClick="false"
+        CollapseItemToIconMode="MenuCollapseItemToIconMode.Sequentially"
+        Title="Join Logo"
+        CollapseItemsToHamburgerMenu="true"
+        Orientation="Orientation.Horizontal"
+        DisplayMode="MenuDisplayMode.Auto"
+        HamburgerButtonPosition="MenuHamburgerButtonPosition.Right"
+        HamburgerIconCssClass="icon-dxhamburger">
+    <TitleTemplate>
+        <img src="../images/logo-join.webp" class="icon-logo" onclick="@GoHome" />
+    </TitleTemplate>
+    <Items>
+        <DxMenuItem Text="Opere" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Progetti" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Altro-0" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Altro-1" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Altro-2" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Altro-3" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Altro-4" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Altro-5" IconUrl="icons/buildings-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" AdaptivePriority="1" Position="ItemPosition.End" />
+        <DxMenuItem Text="Login" IconUrl="icons/sign-in-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" BeginGroup="true" Click="@BeginLogin" Visible="@IsNotLoggedIn" AdaptivePriority="0" Position="ItemPosition.End" />
+        <DxMenuItem Text="@UserName" IconUrl="icons/user-thin-svgrepo-com.svg" CssClass="menu-item" IconCssClass="menu-icon" BeginGroup="true" Visible="@IsLoggedIn" AdaptivePriority="0" Position="ItemPosition.End" >
+            <Items>
+                <DxMenuItem Text="Profilo" IconUrl="icons/identification-card-thin-svgrepo-com.svg" IconCssClass="menu-icon" />
+                <DxMenuItem Text="Logout" IconUrl="icons/sign-out-thin-svgrepo-com.svg" IconCssClass="menu-icon" Click="@BeginLogout" />
+            </Items>
+        </DxMenuItem>
+        @*<DxMenuItem Text="Navi" IconUrl="icons/list-thin-svgrepo-com.svg" IconCssClass="menu-icon" >
+        <Items>
+        <DxMenuItem Text="Home" IconUrl="icons/house-thin-svgrepo-com.svg" IconCssClass="menu-icon" NavigateUrl="/" />
+        <DxMenuItem Text="Opere" IconUrl="icons/buildings-thin-svgrepo-com.svg" IconCssClass="menu-icon" NavigateUrl="Opere" Visible="@IsLoggedIn" />
+        </Items>
+        </DxMenuItem>*@
+    </Items>
+</DxMenu>
+@*   </div>
+</nav>*@
+
+
+
+@code {
+
+    [Parameter] public string? StateCssClass { get; set; }
+
+    //[Parameter] public bool ToggleOn { get; set; }
+    //[Parameter] public EventCallback<bool> ToggleOnChanged { get; set; }
+
+    [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool IsLoggedIn { get; set; }
+    private bool IsNotLoggedIn { get { return !IsLoggedIn; } }
+    private string UserName { get; set; }
+
+    [Parameter] public EventCallback<bool> DxMenuClicked { get; set; }
+
+
+    //async Task OnToggleClick() => await Toggle();
+
+    //async Task Toggle(bool? value = null)
+    //{
+    //    var newValue = value ?? !ToggleOn;
+    //    if (ToggleOn != newValue)
+    //    {
+    //        ToggleOn = newValue;
+    //        await ToggleOnChanged.InvokeAsync(ToggleOn);
+    //    }
+    //}
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var authenticationState = await authenticationStateTask;
+        IsLoggedIn = authenticationState.User?.Identity.IsAuthenticated ?? false;
+        UserName = IsLoggedIn ? authenticationState.User.Identity.Name : string.Empty;
+    }
+
+    private async void BeginLogout(MenuItemClickEventArgs args)
+    {
+        await js.InvokeVoidAsync("sessionStorage.clear");
+        Navigation.NavigateToLogout("authentication/logout");
+
+    }
+
+    private void BeginLogin(MenuItemClickEventArgs args)
+    {
+        Navigation.NavigateToLogin("authentication/login");
+
+    }
+
+    private void GoHome(MouseEventArgs args)
+    {
+        Navigation.NavigateTo("/");
+
+    }
+
+}

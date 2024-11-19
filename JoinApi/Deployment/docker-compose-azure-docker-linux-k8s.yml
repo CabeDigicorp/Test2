@@ -1,0 +1,80 @@
+version: '3.4'
+
+services:
+  joinapi:
+    container_name: joinapi
+    image: digicorpregistry.azurecr.io/joinapi:k8s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=https://0.0.0.0:5100;http://0.0.0.0:5000
+      - MONGODB_URL=mongodb://joincloud-mongodb.digicorp.it:27017/?tls=true"
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=pierantonella
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/root/.dotnet/corefx/cryptography/x509stores/my/joinwebkestrel.pfx
+      - AuthServer__RequireHttpsMetadata=false
+      - DOCKER_TLS_VERIFY=0
+    ports:
+      - "5000:5000"
+      - "5100:5100"
+      - "5080:80"
+      - "58080:8080"
+    depends_on:
+      - mongodb
+    hostname: joinapi
+    volumes:
+      - joinlogs:/logs
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - node-network
+    restart: always
+    labels:
+      kompose.service.type: NodePort
+      kompose.service.expose: "joincloud.digicorp.it:5100"
+
+    # network_mode: "host"
+
+  joinwebui:
+    container_name: joinwebui
+    image: digicorpregistry.azurecr.io/joinwebui:k8s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - DOCKER_TLS_VERIFY=0
+    depends_on:
+      - joinapi
+    hostname: joinwebui
+    ports:
+      - "443:5101"
+      - "5001:5001"
+      - "80:80"
+    volumes:
+      - joinlogs:/logs
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    # network_mode: "host"
+    networks:
+      - node-network
+    restart: always
+    labels:
+      kompose.service.type: NodePort
+      kompose.service.expose: "joincloud.digicorp.it"
+
+  mongodb:
+    container_name: joincloud-mongodb.digicorp.it
+    image:  digicorpregistry.azurecr.io/mongodb:7.0.15 #mongo:latest
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+      - "28017:27017"
+    hostname: joincloud-mongodb.digicorp.it
+    # network_mode: "host"
+    networks:
+      - node-network
+    restart: always
+
+volumes:
+    mongodata:
+    joinlogs:
+
+networks:
+  node-network:
+    driver: bridge

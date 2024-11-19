@@ -1,0 +1,137 @@
+﻿<Window x:Class="AttivitaWpf.ProgrammazioneSALWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+        xmlns:ExtendedWPFToolkit="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:dxp="http://schemas.devexpress.com/winfx/2008/xaml/printing"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxpbars="http://schemas.devexpress.com/winfx/2008/xaml/printing/bars"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:syncfusion="http://schemas.syncfusion.com/wpf" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:cmd="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+        mc:Ignorable="d"
+        Height="700" Width="900"
+        Title="{lex:Loc Programmazione SAL}">
+
+    <Window.Resources>
+        <local:ColorConverterRow x:Key="converterRow"/>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <!--<Style TargetType="syncfusionGrid:VirtualizingCellsControl">
+            <Setter Property="Background" Value="{Binding Converter={StaticResource converterRow}}" />
+        </Style>-->
+        <DataTemplate x:Key="TheHeaderTemplate">
+            <Grid>
+                <TextBlock                      
+                        Text="{Binding}" 
+                        TextWrapping="Wrap" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="{Binding Title}" Grid.Row="0" Grid.Column="0" FontSize="30" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}" Grid.ColumnSpan="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+        <TabControl Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0" FontSize="20">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding TabSelectionChangedCommand}"
+                                    PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <TabItem Header="{lex:Loc Date e valori}" Style="{StaticResource tabItemStyle}" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button Command="{Binding AddSALCommand}" Style="{StaticResource menuButtonExtStyle}" Margin="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;"/>
+                                <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding RemoveSALCommand}" Style="{StaticResource menuButtonExtStyle}" Margin="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe03a;"/>
+                                <TextBlock Text="{lex:Loc Elimina}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!--Command="{Binding SelectAllCommand}"-->
+                        <Button Click="SelectAllButton_Click"  Style="{StaticResource menuButtonExtStyle}" Margin="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe09a;"/>
+                                <TextBlock Text="{lex:Loc Seleziona tutto}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <!--<CheckBox Content="{lex:Loc Periodi con uguale produttivita}" IsChecked="{Binding IsCheckedImportaPuntiNotevoli}" Grid.Row="1" FontSize="12" Margin="10"/>-->
+                    <commons:SfDataGridExt Name="ProgrammazioneSALGrid" Grid.Row="1" ItemsSource="{Binding ListaProgrammazioneSAL}"
+                                               ColumnSizer="None" AllowResizingColumns="True" 
+                                               SelectionMode="Extended"
+                                               SelectedItems="{Binding ProgrammazioneSALSelezionati, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                               AutoGenerateColumns="False"
+                                               AllowDraggingRows="False" AllowDrop="False" AllowSorting="False" Margin="10"
+                                               AllowEditing="False"
+                                               FrozenColumnCount="2" 
+                                               HeaderTemplate="{StaticResource TheHeaderTemplate}"
+                                               CurrentCellValueChanged="ProgrammazioneSALGrid_CurrentCellValueChanged">
+                        <!--SelectedItem="{Binding ProgrammazioneSALSelezionato}"
+                        CurrentCellValueChanged="ProgrammazioneSALGrid_CurrentCellValueChanged"
+                                               CurrentCellValidating="ProgrammazioneSALGrid_CurrentCellValidating"
+                                               CurrentCellEndEdit="ProgrammazioneSALGrid_CurrentCellEndEdit"
+                                               CurrentCellBeginEdit="ProgrammazioneSALGrid_CurrentCellBeginEdit"-->
+                    </commons:SfDataGridExt>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{lex:Loc Attributi}" Style="{StaticResource tabItemStyle}" >
+                <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="TextBoxFilter" Text="{Binding TextSearched, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Margin="5" FontSize="12">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding SubmitEnterCommand}" Key="Enter"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <syncfusion:SfDataGrid x:Name="ValoriFiltro" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=ListaFiltrati}" FontSize="12"
+                                               ColumnSizer="None" AllowResizingColumns="True" AllowEditing="True"
+                                               CurrentItem="{Binding CurrentAttributoSettings, Mode=TwoWay}"
+                                               AutoGenerateColumns="False"
+                                               AllowDraggingRows="False" AllowDrop="False" AllowSorting="False"
+                                               HideEmptyGridViewDefinition="True" SelectedItem="{Binding FiltratoSelezionato}" SelectionMode="Single">
+                        <syncfusion:SfDataGrid.Columns>
+                            <syncfusion:GridTextColumn HeaderText="{lex:Loc Nome attributo}" MappingName="Etichetta" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                            <syncfusion:GridTextColumn HeaderText="{lex:Loc Sezione riferita}" MappingName="SezioneRiferita" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                            <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc Valore}" MappingName="Amount" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                            <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc Valore prog}" MappingName="ProgressiveAmount" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                            <syncfusion:GridCheckBoxColumn HeaderText="{lex:Loc ProduttivitaH}" MappingName="ProductivityPerHour" CellStyle="{StaticResource DataGridCellStyle}" ColumnSizer="Star"/>
+                        </syncfusion:SfDataGrid.Columns>
+                    </syncfusion:SfDataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

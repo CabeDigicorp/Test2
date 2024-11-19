@@ -1,0 +1,619 @@
+﻿@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using JoinWebUI.Utilities
+@using System.Collections.Generic
+@using Syncfusion.Blazor.Inputs
+@using JoinWebUI.Extensions
+@using System.Collections.ObjectModel
+@using ModelData.Model
+@using JoinWebUI.Models.Filtri
+
+@inject IResizeListener _listener
+@inject Log Log
+@inject IJSRuntime _jsRuntime
+
+@implements IDisposable
+@implements IFilterLogicalComponent
+
+<div class="secondline">
+    <SfComboBox CssClass="filtro-cond-combobox"
+                EnablePersistence=true
+                ShowClearButton=true
+                TValue="AttributoFiltroDto"
+                FloatLabelType="FloatLabelType.Never"
+                TItem="AttributoFiltroDto"
+                SortOrder="@AttributiSortOrderType"
+                Enabled=true
+                @ref=@_sfAttributoComboBox
+                @bind-Index="@_indexAttributo"
+                Placeholder="Attributo"
+                AllowCustom="false"
+                TabIndex="1"
+                @bind-Value="_attributoFiltroSelezionatoLocal"
+                DataSource="@AttributiFiltriSelezionabili"
+                AllowFiltering=true
+                FilterType="Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                Autofill="true"
+                PopupWidth="@ComboPopupWidthFloored"
+                PopupHeight="@ComboPopupHeightFloored">
+
+        <ComboBoxEvents TItem="AttributoFiltroDto" TValue="AttributoFiltroDto" OnValueSelect="@(args => OnAttributoFiltroSelezionatoChanged(args.ItemData))" OnOpen="OnOpenHandler" Focus="@OnFocusHandler"></ComboBoxEvents>
+        <ComboBoxFieldSettings GroupBy="CodiceGruppo"
+                               Value="Codice"
+                               Text="Descrizione">
+        </ComboBoxFieldSettings>
+        <ComboBoxTemplates TItem="AttributoFiltroDto">
+            <GroupTemplate>
+                <span class="group">@(context.Text)</span>
+            </GroupTemplate>
+            <ItemTemplate>
+                <span><span class='name'>@((context as AttributoFiltroDto).Descrizione)</span><span class='details'>@($"{(context as AttributoFiltroDto).ValoriUnivoci?.Skip(2).DefaultIfEmpty((context as AttributoFiltroDto).ValoriUnivoci?.FirstOrDefault()).FirstOrDefault()}, {(context as AttributoFiltroDto).ValoriUnivoci?.Skip(3).DefaultIfEmpty((context as AttributoFiltroDto).ValoriUnivoci?.Skip(1).FirstOrDefault()).FirstOrDefault()}...")</span></span>
+            </ItemTemplate>
+            <FooterTemplate>
+                <span class='footer'>Numero attributi: @(AttributiFiltriSelezionabili?.Count() == null ? 0 : AttributiFiltriSelezionabili?.Count()) </span>
+            </FooterTemplate>
+            <NoRecordsTemplate>
+                <span class='norecord'>Nessun attributo disponibile</span>
+            </NoRecordsTemplate>
+            <ActionFailureTemplate>
+                <span class='norecord'>Errore nell'estrazione dei dati dal server' </span>
+            </ActionFailureTemplate>
+        </ComboBoxTemplates>
+    </SfComboBox>
+    <SfComboBox CssClass="filtro-cond-combobox"
+                EnablePersistence=true
+                ShowClearButton=true
+                FloatLabelType="FloatLabelType.Never"
+                TValue="ValoreConditionObj"
+                TItem="ValoreConditionObj"
+                Placeholder="Condizione"
+                DataSource="@_valoreConditionEnumsLocal"
+                Enabled=@(_indexAttributo != null)
+                AllowCustom="false"
+                @ref=@_sfCondizioneComboBox
+                @bind-Index="@_indexCondizione"
+                TabIndex="2"
+                FilterType="Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                AllowFiltering=true
+                Autofill="true" 
+                PopupWidth="@ComboPopupWidthFloored"
+                PopupHeight="@ComboPopupHeightFloored">
+
+        <ComboBoxEvents TItem="ValoreConditionObj" TValue="ValoreConditionObj" OnValueSelect="@(args => OnCondizioneSelezionataChanged(args.ItemData))" OnOpen="OnOpenHandler" Focus="@OnFocusHandler"></ComboBoxEvents>
+        <ComboBoxFieldSettings Value="ValoreCondition"
+                               Text="Nome">
+        </ComboBoxFieldSettings>
+        <ComboBoxTemplates TItem="ValoreConditionObj">
+            <FooterTemplate>
+                <span class='footer'>Numero operatori: @((_valoreConditionEnumsLocal?.Count() == null || _valoreConditionEnumsLocal?.Count() <= 1) ? 0 : _valoreConditionEnumsLocal?.Count()) </span>
+            </FooterTemplate>
+            <NoRecordsTemplate>
+                <span class='norecord'>Nessuna condizione disponibile</span>
+            </NoRecordsTemplate>
+            <ActionFailureTemplate>
+                <span class='norecord'>Errore nell'estrazione dei dati dal server' </span>
+            </ActionFailureTemplate>
+        </ComboBoxTemplates>
+    </SfComboBox>
+
+    <SfComboBox CssClass="filtro-cond-combobox dropdown-filtri"
+                EnablePersistence=true
+                ShowClearButton=true
+                FloatLabelType="FloatLabelType.Never"
+                SortOrder="@ValoriSortOrderType"
+                TValue="string"
+                TItem="AttributoFiltriValoriUnivoci"
+                Placeholder="Valore"
+                AllowCustom="false"
+                TabIndex="3"
+                Enabled=@(_indexCondizione != null)
+                @ref=@_sfValoreComboBox
+                DataSource="@GetFiltroData(_attributoFiltroSelezionatoLocal)"
+                @bind-Value="@_valoreAttributoSelezionatoLocal"
+                AllowFiltering=true
+                FilterType="Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                Autofill="true" 
+                PopupWidth="@ComboPopupWidthFloored"
+                PopupHeight="@ComboPopupHeightFloored">
+        <ComboBoxTemplates TItem="AttributoFiltriValoriUnivoci">
+            <GroupTemplate>
+                @{
+                    var valoreEtichetta = (context.Text == "null") ? "" : context.Text;
+                    var lines = valoreEtichetta?.Split('¦');
+                }
+                <div>
+                    @{
+                        var tab = 0;
+                    }
+                    @if (lines != null && lines.Length > 0 && !string.IsNullOrEmpty(valoreEtichetta))
+                    {
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case var expression when (expression == 0):
+                                    {
+                                        <div>@lines[i]</div>
+                                    }
+                                    break;
+                                case var expression when (expression > 0):
+                                    {
+                                        tab = (i * 20);
+                                        <div style="margin-left:@(tab)px;">@(lines[i])</div>
+                                    }
+                                    break;
+                                default:
+                                    {
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(valoreEtichetta))
+                    {
+                        <div>@valoreEtichetta</div>
+                    }
+                </div>
+            </GroupTemplate>
+            <ItemTemplate>
+                @{
+                    var etichetta = (context as AttributoFiltriValoriUnivoci)?.ValoreEtichetta;
+                    var valoreElementi = (context as AttributoFiltriValoriUnivoci)?.ValoreAttributo;
+                    var linesNodi = valoreElementi?.Split('¦');
+                }
+                @if (!string.IsNullOrEmpty(etichetta) && linesNodi != null && linesNodi?.Count() > 1)
+                {
+                    <div style="margin-left:@(20 * linesNodi?.Count() - 1)px;">@etichetta</div>
+                }
+                else if (!string.IsNullOrEmpty(etichetta))
+                {
+                    <div>@etichetta</div>
+                }
+            </ItemTemplate>
+            <FooterTemplate>
+                <span class='footer'>Numero valori: @(_attributoFiltroSelezionatoLocal?.ValoriUnivoci?.Count() == null ? 0 : _attributoFiltroSelezionatoLocal?.ValoriUnivoci?.Count()) </span>
+            </FooterTemplate>
+            <NoRecordsTemplate>
+                <span class='norecord'>Nessun valore disponibile</span>
+            </NoRecordsTemplate>
+            <ActionFailureTemplate>
+                <span class='norecord'>Errore nell'estrazione dei dati dal server' </span>
+            </ActionFailureTemplate>
+        </ComboBoxTemplates>
+
+        <ComboBoxFieldSettings GroupBy="Antenati"
+                               Text="ValoreEtichetta"
+                               Value="ValoreAttributo">
+        </ComboBoxFieldSettings>
+
+        <ComboBoxEvents TItem="AttributoFiltriValoriUnivoci" TValue="string" OnValueSelect="@(args => OnValoreAttributoSelezionatoChanged(args.ItemData.ValoreAttributo))" OnOpen="OnOpenHandler" Focus="@OnFocusHandler"></ComboBoxEvents>
+    </SfComboBox>
+
+    <SfButton CssClass="e-btn-grey"
+              OnClick="OnRemoveConditionClick"
+              IconCss="icon-elimina"
+              IconPosition="IconPosition.Left">
+    </SfButton>
+</div>
+
+<style>
+
+    .dropdown-filtri .e-list-group-item,
+    .dropdown-filtri .e-fixed-head {
+        border-color: #dee2e6;
+        color: darkblue;
+        font-size: 14px;
+        line-height: 15px;
+        min-height: 15px;
+        padding-left: 12px;
+        padding-right: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background-color: #fff;
+    }
+
+    .group {
+        color: red;
+    }
+
+    .details {
+        text-transform: uppercase;
+        max-width: 42%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        right: 5px;
+        position: absolute;
+    }
+
+    .footer {
+        text-indent: 1.2em;
+        display: block;
+        font-size: 12px;
+        line-height: 30px;
+        border-top: 1px solid var(--bs-join-grey-light);
+        text-align: center;
+    }
+
+    .name {
+        max-width: 50%;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        left: 15px;
+        position: absolute;
+    }
+
+    .filtro-cond-combobox {
+        min-width: 4rem;
+        width: auto;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        z-index: 9999;
+    }
+
+        .filtro-cond-combobox .e-input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .filtro-cond-combobox.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+        .e-outline.e-input-group.e-input-focus.e-control-wrapper:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+        .e-outline.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+        .e-outline.e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) {
+            border-color: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Stili per il popup di tutte le ComboBox */
+        .filtro-cond-combobox .e-dropdownbase .e-popup {
+            max-width: 100vw; /* Occupa la larghezza completa dello schermo */
+            width: 100%; /* Larghezza 100% del contenitore */
+            left: 0 !important; /* Allinea il popup al bordo sinistro */
+            right: 0 !important; /* Allinea il popup al bordo destro */
+            margin: 0 auto; /* Centra il popup */
+        }
+
+    /* Adattamento per schermi medi (tablet) */
+    @@media (max-width: 768px) {
+        .filtro-cond-combobox .e-dropdownbase .e-popup {
+            width: 95vw; /* Copre il 95% della larghezza dello schermo */
+            max-width: 95vw;
+        }
+    }
+
+    /* Adattamento per schermi piccoli (smartphone) */
+    @@media (max-width: 480px) {
+        .filtro-cond-combobox .e-dropdownbase .e-popup {
+            width: 90vw; /* Copre il 90% della larghezza dello schermo */
+            max-width: 90vw;
+        }
+    }
+
+    /* Stili per l'elemento selezionato */
+    .filtro-cond-combobox .e-popup .e-item.e-hover {
+        background-color: #f3f4f6; /* Colore di sfondo dell'elemento selezionato */
+    }
+
+    /* Stili per il footer nei popup */
+    .filtro-cond-combobox .e-popup .footer {
+        text-indent: 1.2em;
+        display: block;
+        font-size: 12px;
+        line-height: 30px;
+        border-top: 1px solid var(--bs-join-grey-light);
+        text-align: center;
+    }
+
+ 
+
+    
+
+    
+
+   
+
+</style>
+
+@code {
+    [Parameter] public IEnumerable<AttributoFiltroDto>? AttributiFiltriSelezionabili { get; set; }
+    [Parameter] public ObservableCollection<ValoreConditionObj> ValoreConditionEnums { get; set; }
+    [Parameter] public AttributoFiltroDto AttributoFiltroSelezionatoInput { get; set; }
+    [Parameter] public EventCallback<AttributoFiltroDto> AttributoFiltroSelezionatoChanged { get; set; }
+    [Parameter] public ValoreConditionObj CondizioneSelezionataInput { get; set; }
+    [Parameter] public EventCallback<ValoreConditionObj> CondizioneSelezionataChanged { get; set; }
+    [Parameter] public string ValoreAttributoSelezionatoInput { get; set; }
+    [Parameter] public EventCallback<string> ValoreAttributoSelezionatoChanged { get; set; }
+    [Parameter] public Action<IFilterLogicalComponent>? OnRemove { get; set; }
+
+    public string? ComboPopupWidthFloored { get; set; } = "300px";
+    public string? ComboPopupHeightFloored { get; set; } = "500px";
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
+    private AttributoFiltroDto _attributoFiltroSelezionatoLocal { get; set; } = new();
+    private ValoreConditionObj _condizioneSelezionataLocal { get; set; } = new();
+    private SfComboBox<AttributoFiltroDto, AttributoFiltroDto> _sfAttributoComboBox = new();
+    private SfComboBox<ValoreConditionObj, ValoreConditionObj> _sfCondizioneComboBox = new();
+    private SfComboBox<string, AttributoFiltriValoriUnivoci> _sfValoreComboBox = new();
+    private string _valoreAttributoSelezionatoLocal { get; set; } = string.Empty;
+    private int? _indexAttributo = null;
+    private int? _indexCondizione = null;
+    private string _localDefinizionAttributoCodice = "";
+    private ObservableCollection<ValoreConditionObj> _valoreConditionEnumsLocal = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _listener.OnResized += WindowResized;
+                await SetContainerDim();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Errore di inizializzazione modulo filtro - condizione. Dettaglio eccezione: {ex.Message}");
+            }
+        }
+        else
+        {
+            // await _sfAttributoComboBox.RefreshDataAsync();
+            // await _sfCondizioneComboBox .RefreshDataAsync();
+            // await _sfValoreComboBox.RefreshDataAsync();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // qui devo estrarre la lista delle enum di condizione in base al tipo di attributo selezionato
+            if (AttributoFiltroSelezionatoInput != null && AttributoFiltroSelezionatoInput.DefinizionAttributoCodice != null)
+            {
+                _valoreConditionEnumsLocal = new ObservableCollection<ValoreConditionObj>(AttributiConfig.GetConditionsForType(AttributoFiltroSelezionatoInput.DefinizionAttributoCodice ?? "") ?? new());
+            }
+            else
+            {
+                _valoreConditionEnumsLocal = new ObservableCollection<ValoreConditionObj>(ValoreConditionEnums);
+            }
+            _attributoFiltroSelezionatoLocal = (AttributoFiltroSelezionatoInput ?? new()).Clone();
+            _condizioneSelezionataLocal = CondizioneSelezionataInput.Clone();
+            _valoreAttributoSelezionatoLocal = ValoreAttributoSelezionatoInput;
+            _localDefinizionAttributoCodice = (_attributoFiltroSelezionatoLocal.DefinizionAttributoCodice ?? "");
+            _indexCondizione = AttributiConfig.GetEnumPositionForType(_localDefinizionAttributoCodice, _condizioneSelezionataLocal.ValoreCondition);
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di inizializzazione modulo filtro - condizione.Dettaglio eccezione: {ex.Message}");
+        }
+    }
+
+    public Syncfusion.Blazor.DropDowns.SortOrder AttributiSortOrderType
+    {
+        get
+        {
+            if (AttributiFiltriSelezionabili == null || AttributiFiltriSelezionabili.Count() == 0)
+            {
+                return Syncfusion.Blazor.DropDowns.SortOrder.None;
+            }
+            else
+            {
+                return Syncfusion.Blazor.DropDowns.SortOrder.Ascending;
+            }
+        }
+    }
+
+    public Syncfusion.Blazor.DropDowns.SortOrder ValoriSortOrderType
+    {
+        get
+        {
+            if (_attributoFiltroSelezionatoLocal?.ValoriUnivoci == null || _attributoFiltroSelezionatoLocal?.ValoriUnivoci.Count() == 0)
+            {
+                return Syncfusion.Blazor.DropDowns.SortOrder.None;
+            }
+            else
+            {
+                return Syncfusion.Blazor.DropDowns.SortOrder.Ascending;
+            }
+        }
+    }
+
+    public string Evaluate()
+    {
+        return this?.ToString() ?? string.Empty;
+    }
+
+    public IFilterLogicalComponent Clone()
+    {
+        return new FiltroCondizioneComponent
+            {
+                Id = this.Id,
+            };
+    }
+
+    private async Task OnAttributoFiltroSelezionatoChanged(AttributoFiltroDto newValue)
+    {
+        try
+        {
+            _localDefinizionAttributoCodice = newValue.DefinizionAttributoCodice ?? "";
+            _valoreConditionEnumsLocal = new ObservableCollection<ValoreConditionObj>(AttributiConfig.GetConditionsForType(newValue.DefinizionAttributoCodice ?? "") ?? new());
+            await OnCondizioneSelezionataChanged(_condizioneSelezionataLocal);
+
+            // pulizia combobox successive se è diverso
+            await OnValoreAttributoSelezionatoChanged(null);
+
+            // salvataggio
+            _attributoFiltroSelezionatoLocal = newValue;
+            await _sfCondizioneComboBox.FocusAsync();
+            await AttributoFiltroSelezionatoChanged.InvokeAsync(newValue);
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di salvataggio attributo selezionato modulo filtro - condizione. Dettaglio eccezione: {ex.Message}");
+        }
+    }
+
+    private Task OnCondizioneSelezionataChanged(ValoreConditionObj value)
+    {
+        try
+        {
+            _condizioneSelezionataLocal = value;
+            _indexCondizione = AttributiConfig.GetEnumPositionForType(_localDefinizionAttributoCodice, value.ValoreCondition);
+            _ = _sfValoreComboBox.FocusAsync();
+            return CondizioneSelezionataChanged.InvokeAsync(value);
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di salvataggio condizione selezionato modulo filtro - condizione. Dettaglio eccezione: {ex.Message}");
+            throw;
+        }
+    }
+
+    private Task OnValoreAttributoSelezionatoChanged(string? newValue)
+    {
+        try
+        {
+            // Verifica se il valore selezionato è diverso da quello attuale
+            if (_valoreAttributoSelezionatoLocal != newValue)
+            {
+                _valoreAttributoSelezionatoLocal = newValue ?? string.Empty;
+                return ValoreAttributoSelezionatoChanged.InvokeAsync(_valoreAttributoSelezionatoLocal);
+            }
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore nel salvataggio del valore selezionato: {ex.Message}");
+            throw;
+        }
+    }
+
+    private void OnRemoveConditionClick()
+    {
+        try
+        {
+            if (OnRemove != null)
+            {
+                OnRemove?.Invoke(this);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore nel processo di cancellazione di una condizione: {ex.Message}");
+            throw;
+        }
+    }
+
+    public void RefreshComponent()
+    {
+        StateHasChanged();
+    }
+
+    private async Task SetContainerDim()
+    {
+        try
+        {
+            BrowserWindowSize dimensions = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getWindowDimensions");
+            var comboPopupWidth = dimensions.Height > dimensions.Width ? 0.65 * dimensions.Width : 0.315 * dimensions.Width;
+            var comboPopupHeight = dimensions.Height > dimensions.Width ? 0.50 * dimensions.Height : 0.60 * dimensions.Height;
+            ComboPopupWidthFloored = $"{Math.Floor(comboPopupWidth)}px"; // Arrotonda il valore al numero intero più vicino
+            ComboPopupHeightFloored = $"{Math.Floor(comboPopupHeight)}px"; // Arrotonda il valore al numero intero più vicino
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Errore di impostazione dimensioni popup combobox modulo filtro - condizione. Dettaglio eccezione: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Trasformazione in un modello locale al fine di attuare una richiesta emersa in seguito, ossia le combobox ad albero.
+    /// Questa funzione è diversa da quella del componente "ModuloProgettoComputo" poichè qui non era previsto un oggetto contenitore che invece Syncfusion necessita attualmente per il datasource
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    private List<AttributoFiltriValoriUnivoci?>? GetFiltroData(AttributoFiltroDto items)
+    {
+        List<AttributoFiltriValoriUnivoci?>? lstValoriUnivociTemp = new();
+
+        try
+        {
+            if (items != null && items.ValoriUnivoci != null)
+            {
+                foreach (var item in items.ValoriUnivoci.Where(x => x != null))
+                {
+                    if (item != null && item.Contains('¦'))
+                    {
+                        var lines = item.Split('¦').Select(x => x.Trim()).ToList();
+
+                        var antenati = string.Join('¦', lines.Take(lines.Count - 1));
+
+                        var figlio = lines.Last();
+
+                        lstValoriUnivociTemp.Add(new AttributoFiltriValoriUnivoci
+                            {
+                                Antenati = antenati,
+                                AttributoId = items.AttributoId,
+                                Codice = items.Codice,
+                                CodiceGruppo = items.CodiceGruppo,
+                                ProgettoId = items.ProgettoId,
+                                ValoreAttributo = item,
+                                ValoreEtichetta = figlio,
+                            });
+                    }
+                    else if (item != null)
+                    {
+                        lstValoriUnivociTemp.Add(new AttributoFiltriValoriUnivoci
+                            {
+                                Antenati = "",
+                                AttributoId = items.AttributoId,
+                                Codice = items.Codice,
+                                CodiceGruppo = items.CodiceGruppo,
+                                ProgettoId = items.ProgettoId,
+                                ValoreAttributo = item,
+                                ValoreEtichetta = item,
+                            });
+                    }
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+
+        return lstValoriUnivociTemp;
+    }
+
+    private async void OnFocusHandler()
+    {
+        // await SetContainerDim();
+        // StateHasChanged();
+    }
+
+    private async void OnOpenHandler(BeforeOpenEventArgs args)
+    {
+        // await SetContainerDim();
+        // StateHasChanged();
+    }
+
+    private async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await SetContainerDim();
+        _sfAttributoComboBox?.HidePopupAsync();
+        _sfCondizioneComboBox?.HidePopupAsync();
+        _sfValoreComboBox?.HidePopupAsync();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _listener.OnResized -= WindowResized;
+    }
+}

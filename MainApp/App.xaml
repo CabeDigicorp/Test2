@@ -1,0 +1,99 @@
+﻿<Application x:Class="MainApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:MainApp"
+             xmlns:prezzariWpf="clr-namespace:PrezzariWpf;assembly=DigiCorp.PrezzariWpf"
+             xmlns:prezzariWpfView="clr-namespace:PrezzariWpf.View;assembly=DigiCorp.PrezzariWpf"
+             xmlns:computoWpf="clr-namespace:ComputoWpf;assembly=DigiCorp.ComputoWpf"
+             xmlns:divisioniWpf="clr-namespace:DivisioniWpf;assembly=DigiCorp.DivisioniWpf"
+             xmlns:elementiWpf="clr-namespace:ElementiWpf;assembly=DigiCorp.ElementiWpf"
+             xmlns:contattiWpf="clr-namespace:ContattiWpf;assembly=DigiCorp.ContattiWpf"
+             xmlns:contattiWpfView="clr-namespace:ContattiWpf.View;assembly=DigiCorp.ContattiWpf"
+             xmlns:stampeWpfView="clr-namespace:StampeWpf.View;assembly=DigiCorp.StampeWpf"
+             xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+             xmlns:datiGeneraliWpf="clr-namespace:DatiGeneraliWpf;assembly=DigiCorp.DatiGeneraliWpf"
+             xmlns:datiGeneraliWpfView="clr-namespace:DatiGeneraliWpf.View;assembly=DigiCorp.DatiGeneraliWpf"
+             xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources"
+             xmlns:masterdetailview="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+             xmlns:attivitaWpf="clr-namespace:AttivitaWpf;assembly=DigiCorp.AttivitaWpf"
+             xmlns:attivitaWpfView="clr-namespace:AttivitaWpf.View;assembly=DigiCorp.AttivitaWpf"
+             xmlns:fogliodicalcoloWpfView="clr-namespace:FogliDiCalcoloWpf;assembly=DigiCorp.FogliDiCalcoloWpf"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" xmlns:system="clr-namespace:System;assembly=netstandard"
+             StartupUri="MainWindow.xaml"
+             Startup="Application_Startup"
+             >
+    <!--StartupUri="MainWindow.xaml"-->
+    <!--StartupUri="EditRtfWindow1.xaml"-->
+    <Application.Resources>
+
+        <ResourceDictionary>
+            
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.CommonResources;component/Styles.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.CommonResources;component/ControlsStyle/HierarchyNavigatorStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.CommonResources;component/Icons.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.CommonResources;component/PopupStyles.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.MasterDetailWpf;component/AttributoSettingsCtrl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.MasterDetailWpf;component/ValoreTemplates.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.MasterDetailWpf;component/RightSplitTemplates.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DigiCorp.MasterDetailWpf;component/ValoreConditionTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!--Converters-->
+            <commons:GlyphConverter x:Key="expandCollapseVerticalGlyphConverter" Glyph1="&#xe088;" Glyph2="&#xe087;"/>
+            <commons:GlyphConverter x:Key="expandCollapseHorizontalGlyphConverter" Glyph1="&#xe08a;" Glyph2="&#xe089;"/>
+            <commons:ColorConverter x:Key="colorConverter"/>
+            <commons:GlyphConverter x:Key="padLockGlyphConverter" Glyph1="&#xe08e;" Glyph2="&#xe08f;"/>
+            <commons:InverseConverter x:Key="InverseConverter" />
+            <commons:VisibilityConverter x:Key="VisibilityConverter"/>
+            <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+            <commons:InverseVisibilityHiddenConverter x:Key="InverseVisibilityHiddenConverter"/>
+
+            <!--Views-->
+            <masterdetailview:NumericFormatView x:Key="NumericFormatViewKey"/>
+            <prezzariWpfView:ElencoPrezziView x:Key="ElencoPrezziViewKey"/>
+            <prezzariWpfView:PrezzarioView x:Key="PrezzarioViewKey"/>
+            <prezzariWpfView:CapitoliView x:Key="CapitoliViewKey"/>
+            <prezzariWpfView:SelectPrezzarioIdsView x:Key="SelectPrezzarioIdsViewKey"/>
+            <prezzariWpfView:SelectRemotePrezzariView x:Key="SelectRemotePrezzariViewKey"/>
+            <computoWpf:ComputoView x:Key="ComputoViewKey"/>
+            <elementiWpf:ElementiView x:Key="ElementiViewKey"/>
+            <divisioniWpf:DivisioniView x:Key="DivisioniViewKey"/>
+            <divisioniWpf:DivisioneView x:Key="DivisioneViewKey"/>
+            <contattiWpfView:ContattiView x:Key="ContattiViewKey"/>
+            <divisioniWpf:DivisioneAttributiSettingsView x:Key="DivisioneAttributiSettingsViewKey"/>
+            <computoWpf:ComputoAttributiSettingsView x:Key="ComputoAttributiSettingsViewKey"/>
+            <elementiWpf:ElementiAttributiSettingsView x:Key="ElementiAttributiSettingsViewKey"/>
+            <prezzariWpfView:PrezzarioAttributiSettingsView x:Key="PrezzarioAttributiSettingsViewKey"/>
+            <prezzariWpfView:CapitoliAttributiSettingsView x:Key="CapitoliAttributiSettingsViewKey"/>
+            <contattiWpfView:ContattiAttributiSettingsView x:Key="ContattiAttributiSettingsViewKey"/>
+            <datiGeneraliWpfView:InfoProgettoAttributiSettingsView x:Key="InfoProgettoAttributiSettingsViewKey"/>
+            <datiGeneraliWpfView:VariabiliAttributiSettingsView x:Key="VariabiliAttributiSettingsViewKey"/>
+            <datiGeneraliWpfView:DatiGeneraliView x:Key="DatiGeneraliViewKey"/>
+            <datiGeneraliWpfView:InfoProgettoView x:Key="InfoProgettoViewKey"/>
+            <datiGeneraliWpfView:StiliProgettoView x:Key="StiliProgettoViewKey" />
+            <datiGeneraliWpfView:UnitaMisuraView x:Key="UnitaMisuraViewKey" />
+            <datiGeneraliWpfView:VariabiliView x:Key="VariabiliViewKey" />
+            <datiGeneraliWpfView:AllegatiView x:Key="AllegatiViewKey" />
+            <datiGeneraliWpfView:TagView x:Key="TagViewKey" />
+            <datiGeneraliWpfView:AllegatiAttributiSettingsView x:Key="AllegatiAttributiSettingsViewKey"/>
+            <stampeWpfView:StampeView x:Key="StampeViewKey"/>
+            <stampeWpfView:DocumentiView x:Key="DocumentiViewKey"/>
+            <stampeWpfView:ReportView x:Key="ReportViewKey"/>
+            <attivitaWpfView:AttivitaView x:Key="AttivitaViewKey"/>
+            <attivitaWpfView:ElencoAttivitaView x:Key="ElencoAttivitaViewKey"/>
+            <attivitaWpfView:GanttView x:Key="GanttViewKey"/>
+            <attivitaWpfView:WBSView x:Key="WBSViewKey"/>
+            <attivitaWpfView:ElencoAttivitaAttributiSettingsView x:Key="ElencoAttivitaAttributiSettingsViewKey"/>
+            <attivitaWpfView:WBSAttributiSettingsView x:Key="WBSAttributiSettingsViewKey"/>
+            <attivitaWpfView:CalendariView x:Key="CalendariViewKey"/>
+            <attivitaWpfView:CalendariAttributiSettingsView x:Key="CalendariAttributiSettingsViewKey"/>
+            <fogliodicalcoloWpfView:FogliDiCalcoloView x:Key="FoglioDiCalcoloViewKey"/>
+            <fogliodicalcoloWpfView:FoglioDiCalcoloDataView x:Key="FoglioDiCalcoloDataView"/>
+            <fogliodicalcoloWpfView:FoglioDiCalcoloGanttDataView x:Key="FoglioDiCalcoloGanttDataView"/>
+            <fogliodicalcoloWpfView:FoglioDiCalcoloWBSGanttSchedDataView x:Key="FoglioDiCalcoloWBSGanttSchedDataView"/>
+            <commons:DeveloperVariables x:Key="developerVariables"/>
+        </ResourceDictionary>
+        
+    </Application.Resources>
+</Application>

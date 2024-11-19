@@ -1,0 +1,87 @@
+﻿@page "/clienti"
+@using AutoMapper
+@using JoinWebUI.Components
+@using JoinWebUI.Shared
+@using ModelData.Dto
+@using ModelData.Utilities
+
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+@attribute [Authorize(Roles = RuoliAuth0.REGISTERED)]
+
+<PageTitle>JoinWeb - Amministrazione clienti</PageTitle>
+
+<PageHeader Title="Amministrazione Clienti"
+            Breadcrumbs="@_breadcrumbs"
+            RequestError="@_requestError"
+            RequestMessage="@_requestErrorMessage" />
+
+
+    <NavigationButtonGroup NavigationButtons="@_navButtons"
+                      ButtonHeight="180px" />
+
+@*</div>*@
+
+
+@code {
+    private List<ClienteModel> _clienti = new List<ClienteModel>();
+
+    private bool _requestError = false;
+    private string _requestErrorMessage = "";
+
+    private IEnumerable<(string, string)> _breadcrumbs = new List<(string, string)>();
+
+
+    public delegate void NavigateToDelegate(string url);
+
+    private List<NavigationComponentInfo> _navButtons
+    {
+        get
+        {
+            var res = new List<NavigationComponentInfo>();
+
+            foreach (ClienteModel c in _clienti)
+            {
+                //string url = "/clienti/" + c.IdString;
+                //var cb = new EventCallback(null, (Action)(async () => { NavigateTo(url); }));
+
+                res.Add(new NavigationComponentInfo(title: c.Nome,
+                                                    description: "Codice cliente " + c.CodiceCliente,
+                                                    //image: "icons/57429-impostazioni.svg",
+                                                    linkUrl: "/clienti/" + c.IdString));
+                //onClickCallback: cb));
+            }                                       
+
+            return res;
+
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _requestError = false;
+        _requestErrorMessage = "";
+
+        var result = await _apiClient.JsonGetAsync<List<ClienteDto>>("clienti/get-by-utente-admin");
+        if (!result.Success || (result.ResponseContentData?.Count ?? 0) == 0)
+        {
+            _requestError = true;
+            _requestErrorMessage = "Errore #0 - Lista clienti";
+        }
+        else
+        {
+            _clienti = _mapper.Map<List<ClienteModel>>(result.ResponseContentData);
+            _clienti.Sort((a, b) => a.CodiceCliente.CompareTo(b.CodiceCliente));
+        }
+
+        _breadcrumbs = new List<(string, string)>()
+            {
+                ("Amministrazione clienti", "/clienti"),
+            };
+
+
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,325 @@
+﻿<Window x:Class="AttivitaWpf.ScalaCronologicaWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        mc:Ignorable="d"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        xmlns:schedule="clr-namespace:Syncfusion.Windows.Controls.Gantt;assembly=Syncfusion.Gantt.Wpf" 
+        xmlns:dxgn="http://schemas.devexpress.com/winfx/2008/xaml/gantt"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+        Title="{lex:Loc Gestione scala cronologica}" 
+        Height="450" Width="700"
+        MinHeight="450" MinWidth="700">
+
+    <Window.Resources>
+
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type syncfusion:ComboBoxAdv}" x:Key="ComboBoxAdvStyle">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#ABADB3"/>
+        </Style>
+        
+        <Style TargetType="{x:Type TabItem}" x:Key="tabItemStyleLocal">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid x:Name="Panel">
+                            <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Grid x:Name="headerGrid" Height="40">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock x:Name="textBlock" Grid.Row="0" Text="{TemplateBinding Content}" Width="Auto" FontSize="20"/>
+                                    <Line Grid.Row="1" Width="{Binding ActualWidth, ElementName=headerGrid}" Stretch="Uniform" StrokeThickness="3" Stroke="SteelBlue" X1="0" Y1="0" X2="1" Y2="0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="False">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Grid Height="40">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{TemplateBinding Content}" Width="Auto" FontSize="20" />
+                                </Grid>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="{Binding Title}" Grid.Column="0" FontSize="30" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}" Grid.ColumnSpan="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="3" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="20,10,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <!--<RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>-->
+                <RowDefinition />
+                <RowDefinition />
+                <!--<RowDefinition Height="30"/>-->
+                <RowDefinition />
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{lex:Loc Mostra}" Grid.Column="0"/>
+            <syncfusion:ComboBoxAdv ItemsSource="{Binding LayoutLivelli}" DisplayMemberPath="Value" SelectedItem="{Binding LayoutLivello}" Grid.Column="1" Style="{StaticResource ComboBoxAdvStyle}" Margin="5,-3,0,0" SelectionChanged="ComboBoxAdv_SelectionChanged" Width="280" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" />
+            <!--<TextBlock Text="{lex:Loc Dimensione}" Grid.Column="2" />
+            <TextBox Text="{Binding ZoomFactor}" Grid.Column="3" Width="40" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="5,-3,0,0" BorderBrush="#ABADB3" Height="20" VerticalAlignment="Top" />-->
+            <!--<CheckBox IsChecked="{Binding IsSeparatoreHoriz}" Grid.Column="0" Grid.Row="1" BorderBrush="#ABADB3"/>
+            <TextBlock Text="{lex:Loc Separatore Orizzontale}" Grid.Column="1" Grid.Row="1" Margin="5,0,0,0"/>
+            <CheckBox IsChecked="{Binding IsSeparatoreVert}" Grid.Column="0" Grid.Row="2" BorderBrush="#ABADB3" />
+            <TextBlock Text="{lex:Loc Separatore verticale}" Grid.Column="1" Grid.Row="2" Margin="5,0,0,0"/>-->
+            <!--<TextBlock Text="{lex:Loc Allinea}" Grid.Column="0" Grid.Row="3" />
+            <syncfusion:ComboBoxAdv ItemsSource="{Binding Allineamento}" DisplayMemberPath="Value" SelectedItem="{Binding SelectedAllineamento}" Grid.Column="1" Grid.Row="3" Style="{StaticResource ComboBoxAdvStyle}" Margin="5,-3,0,0" SelectionChanged="ComboBoxAdv_SelectionChanged" Width="280" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" />-->
+            <TextBlock Text="{lex:Loc Stile cotenuto}" Grid.Column="0" Grid.Row="4" />
+            <syncfusion:ComboBoxAdv 
+                      Foreground="Black" Margin="5,-10,0,0" Style="{StaticResource ComboBoxAdvStyle}" Width="280"
+                      ItemTemplate="{DynamicResource FontTemplate}"
+                      ItemsSource="{Binding ListStiliConPropieta}" Grid.Row="4" Grid.Column="1" SelectedItem="{Binding StileConPropieta}" SelectionChanged="ComboBoxAdvStile_SelectionChanged" >
+                <syncfusion:ComboBoxAdv.Resources>
+                    <Style x:Key="FontStyle">
+                        <!--<Setter Property="Control.FontFamily" Value="{Binding FontFamily}" />
+                        <Setter Property="Control.FontSize" Value="{Binding Size}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Grassetto}" Value="True">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>-->
+                    </Style>
+                    <DataTemplate x:Key="FontTemplate">
+                        <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
+                            <TextBlock Text="{Binding NomeECodice}" Foreground="{Binding ColorCharacther}" >
+                                <!--Background="{Binding ColorBackground}"-->
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Control.FontFamily" Value="{Binding FontFamily}" />
+                                        <Setter Property="Control.FontSize" Value="{Binding Size}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Grassetto}" Value="True">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Corsivo}" Value="True">
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                            </DataTrigger>
+                                            <!--<DataTrigger Binding="{Binding Sottolineato}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Barrato}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>-->
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.Resources>
+            </syncfusion:ComboBoxAdv>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0">
+            <TabControl BorderThickness="0" SelectedIndex="{Binding TabSelectedIndex}">
+                <TabItem Header="{lex:Loc Livello superiore}" Style="{StaticResource tabItemStyleLocal}" IsEnabled="{Binding IsEnabledSup}">
+                    <Grid Grid.Row="1" Grid.ColumnSpan="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc Unita}" Grid.Column="0" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <syncfusion:ComboBoxAdv ItemsSource="{Binding TabItemViewCorrente.UnitaTempo}" DisplayMemberPath="Value" Grid.Column="1" Grid.Row="0" Style="{StaticResource ComboBoxAdvStyle}" SelectedItem="{Binding TabItemViewCorrente.SelectedUnita}" Height="20" SelectionChanged="ComboBoxAdv_SelectionChangedDetail" />
+                        <TextBlock Text="{lex:Loc Formato}" Grid.Column="0" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <!--<TextBox Text="{Binding TabItemViewCorrente.Formato}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" BorderBrush="#ABADB3" Height="20" TextChanged="TextBox_TextChanged"/>-->
+                        <Grid Grid.Column="1" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="175"/>
+                                <ColumnDefinition Width="25"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding TabItemViewCorrente.Formato}" Grid.Column="0" VerticalAlignment="Center" BorderBrush="#ABADB3" Height="20" TextChanged="TextBox_TextChanged" />
+                            <Button Content="X" Grid.Column="1" Style="{StaticResource TransparentStyle}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{StaticResource TitleColor}" ToolTip="{lex:Loc Ripristina formato}" Click="ButtonRipristinaFormato_Click"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="{lex:Loc Livello intermedio}" Style="{StaticResource tabItemStyleLocal}" IsEnabled="{Binding IsEnabledInt}">
+                    <Grid Grid.Row="1" Grid.ColumnSpan="3" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc Unita}" Grid.Column="0" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <syncfusion:ComboBoxAdv ItemsSource="{Binding TabItemViewCorrente.UnitaTempo}" DisplayMemberPath="Value" Grid.Column="1" Grid.Row="0" Style="{StaticResource ComboBoxAdvStyle}" SelectedItem="{Binding TabItemViewCorrente.SelectedUnita}" Height="20" SelectionChanged="ComboBoxAdv_SelectionChangedDetail" />
+                        <TextBlock Text="{lex:Loc Formato}" Grid.Column="0" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <!--<TextBox Text="{Binding TabItemViewCorrente.Formato}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" BorderBrush="#ABADB3" Height="20"  TextChanged="TextBox_TextChanged"/>-->
+                        <Grid Grid.Column="1" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="175"/>
+                                <ColumnDefinition Width="25"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding TabItemViewCorrente.Formato}" Grid.Column="0" VerticalAlignment="Center" BorderBrush="#ABADB3" Height="20" TextChanged="TextBox_TextChanged" />
+                            <Button Content="X" Grid.Column="1" Style="{StaticResource TransparentStyle}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{StaticResource TitleColor}" ToolTip="{lex:Loc Ripristina formato}" Click="ButtonRipristinaFormato_Click"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="{lex:Loc Livello inferiore}" Style="{StaticResource tabItemStyleLocal}" IsEnabled="{Binding IsEnabledInf}">
+                    <Grid Grid.Row="1" Grid.ColumnSpan="3" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc Unita}" Grid.Column="0" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <syncfusion:ComboBoxAdv ItemsSource="{Binding TabItemViewCorrente.UnitaTempo}" DisplayMemberPath="Value" Grid.Column="1" Grid.Row="0" Style="{StaticResource ComboBoxAdvStyle}" SelectedItem="{Binding TabItemViewCorrente.SelectedUnita}" Height="20" SelectionChanged="ComboBoxAdv_SelectionChangedDetail" />
+                        <TextBlock Text="{lex:Loc Formato}" Grid.Column="0" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <Grid Grid.Column="1" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="175"/>
+                                <ColumnDefinition Width="25"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding TabItemViewCorrente.Formato}" Grid.Column="0" VerticalAlignment="Center" BorderBrush="#ABADB3" Height="20" TextChanged="TextBox_TextChanged" />
+                            <Button Content="X" Grid.Column="1" Style="{StaticResource TransparentStyle}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{StaticResource TitleColor}" ToolTip="{lex:Loc Ripristina formato}" Click="ButtonRipristinaFormato_Click"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <TextBlock Text="{lex:Loc Anteprima}" Grid.Row="3" Grid.ColumnSpan="3" Margin="20,0,0,0" FontSize="20" VerticalAlignment="Center" Foreground="{StaticResource TitleColor}" />
+
+        <dxgn:GanttControl x:Name="Gantt" dx:ThemeManager.Theme="Office2019Colorful" Grid.Row="4" Grid.ColumnSpan="3" Margin="20,0,20,0" Height="100" ItemsSource="{Binding Tasks}">
+            <dxgn:GanttControl.View>
+                <dxgn:GanttView TreeListWidth="0" RequestTimescaleRulers="GanttView_RequestTimescaleRulers" TimescaleRulerCount="{Binding TimescaleRulerCount}" WorkdayRulesSource="{Binding WorkdayRulesSource}">
+                </dxgn:GanttView>
+            </dxgn:GanttControl.View>
+            <dxgn:GanttControl.Resources>
+                <Style TargetType="Thumb">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                </Style>
+                <Style TargetType="{x:Type dxgn:TimescaleControl}">
+                    <Setter Property="FontSize" Value="{Binding Path=DataContext.FontSize, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>
+                    <!--<Setter Property="Background" Value="{Binding Path=DataContext.ColorBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                    <Setter Property="Foreground" Value="{Binding Path=DataContext.ColorCharacther, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>
+                    <Setter Property="FontWeight" Value="{Binding Path=DataContext.FontWeight, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>
+                    <Setter Property="FontStyle" Value="{Binding Path=DataContext.FontStyle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>
+                    <Setter Property="FontFamily" Value="{Binding Path=DataContext.FontFamily, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>
+                    <!--<Setter Property="HorizontalAlignment" Value="{Binding Path=DataContext.AllineamentoTrigger, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                    <!--<Setter Property="BorderThickness" Value="{Binding Path=DataContext.BordiCelle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>-->
+                </Style>
+                <Style TargetType="{x:Type dxgn:MarkedTimeControl}">
+                    <Setter Property="Background" Value="{Binding Path=DataContext.NonWorkingHoursBackground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"/>
+                </Style>
+            </dxgn:GanttControl.Resources>
+        </dxgn:GanttControl>
+        <!--WorkdayRulesSource="{Binding WorkdayRulesSource}"-->
+        <!--<syncfusion:GanttControl x:Name="Gantt" Grid.Row="3" Grid.ColumnSpan="3" Margin="20" GridWidth="0" 
+                                                    VisualStyle="Metro" UseAutoUpdateHierarchy ="False"
+                                                    ScheduleType="CustomDateTime" 
+                                                    CustomScheduleSource="{Binding CustomSchedule}"
+                                                    ScheduleCellCreated="Gantt_ScheduleCellCreated"
+                                                    ScheduleRangePadding="25"
+                                                    ShowWeekends ="{Binding ShowWeekends}"
+                                                    StartTime="{Binding StartTimeGantt}"
+                                                    EndTime="{Binding EndTimeGantt}">
+
+            <syncfusion:GanttControl.Resources>
+                <Style TargetType="syncfusion:GanttControl">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="ScheduleBackground" Value="Gainsboro" />
+                    <Setter Property="GridHeaderBackground" Value="Gainsboro" />
+                </Style>
+                <Style TargetType="{x:Type schedule:GanttScheduleCell}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type schedule:GanttScheduleCell}">
+                                <Border BorderThickness="{Binding Path=DataContext.BordiCelle, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}"
+                            BorderBrush="Black" >
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip Content="{TemplateBinding CellToolTip}"/>
+                                    </ToolTipService.ToolTip>
+                                    <ContentPresenter  Margin="1,0,1,0" SnapsToDevicePixels="True" VerticalAlignment="Center" HorizontalAlignment="{Binding Path=DataContext.AllineamentoTrigger, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}}">
+                                    </ContentPresenter>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </syncfusion:GanttControl.Resources>
+        </syncfusion:GanttControl>-->
+
+
+    </Grid>
+</Window>

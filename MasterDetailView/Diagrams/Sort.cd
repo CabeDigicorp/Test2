@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.SortView">
+    <Position X="3" Y="2.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQQkACBAACACQiAIAAAAAAgABCAARAACAAQAAAQAAA=</HashCode>
+      <FileName>ViewModel\SortView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Data" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailView.AttributoSortView">
+    <Position X="8.5" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAIACCEACAAAgAAAAAAAAAABAIAAAgIAEAAAA=</HashCode>
+      <FileName>ViewModel\SortView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Data" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.SortData">
+    <Position X="8.5" Y="6.25" Width="2.5" />
+    <TypeIdentifier />
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.AttributoSortData">
+    <Position X="13" Y="4.75" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

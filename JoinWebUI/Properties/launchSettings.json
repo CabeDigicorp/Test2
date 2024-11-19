@@ -1,0 +1,82 @@
+{
+  "profiles": {
+    "JoinWebUI": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "https://localhost:5101",
+      "nativeDebugging": true
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:44301",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development-IISExpress"
+      },
+      "use64Bit": true,
+      "applicationUrl": "http://localhost:5001;http://0.0.0.0:5001;https://localhost:44301;https://0.0.0.0:44301",
+      "nativeDebugging": false
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:5101",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:5101"
+      },
+      "distributionName": ""
+    },
+    "IIS Locale": {
+      "commandName": "IIS",
+      "workingDirectory": "C:\\inetpub\\JoinWeb\\JoinWebUI",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:5101",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": true
+    },
+    "JoinWebUIDockerStaging": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      },
+      "dotnetRunMessages": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "https://joinweb.digicorp.it",
+      "nativeDebugging": false,
+      "useSSL": true
+    },
+    "JoinWebUIDockerProduction": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "https://joinweb.digicorp.it",
+      "nativeDebugging": false,
+      "useSSL": true
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "https://localhost:5001",
+      "sslPort": 5101
+    },
+    "iisExpress": {
+      "applicationUrl": "http://localhost:5001",
+      "sslPort": 44301
+    }
+  }
+}

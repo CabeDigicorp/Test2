@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailWpf.MasterDetailList">
+    <Position X="2" Y="1" Width="2.5" />
+    <AssociationLine Name="DetailListView" Type="System.Windows.Controls.ListView">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.12" Y="-0.201" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>lAAgAAgkAAQiBMAkCAAAEIpkEAGRAAQFAAKUAESAQEA=</HashCode>
+      <FileName>MasterDetailList.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MasterDetailView" />
+      <Property Name="DetailListView" />
+      <Property Name="MasterDetailListCtrl" />
+      <Property Name="MasterListView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailViewBase">
+    <Position X="10.5" Y="2" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="System.Windows.Controls.ListView" Collapsed="true">
+    <Position X="6.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="System.Windows.Controls.UserControl" Collapsed="true">
+    <Position X="6.25" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailListView">
+    <Position X="6.25" Y="7.75" Width="1.75" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="ItemsView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeView">
+    <Position X="13" Y="7.75" Width="1.75" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="ItemsView" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailTreeViewVirtualized">
+    <Position X="15.75" Y="8.5" Width="2.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailView.MasterDetailListViewVirtualized">
+    <Position X="9.25" Y="8.75" Width="2.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,21 @@
+﻿@page "/upload"
+@using Microsoft.AspNetCore.Http
+@using ModelData.Dto
+@inject JoinWebApiClient _apiClient
+
+<h3>Upload</h3>
+
+<InputFile OnChange="OnChange" />
+
+@code {
+	private async Task OnChange(InputFileChangeEventArgs inputFileChangeEventArgs)
+	{
+		var file = inputFileChangeEventArgs.GetMultipleFiles().First();
+
+		var fileinfo = new FileInfo(file.Name)
+		{
+
+		};
+
+	}
+}

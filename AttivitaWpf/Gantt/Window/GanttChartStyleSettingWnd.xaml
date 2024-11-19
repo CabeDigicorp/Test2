@@ -1,0 +1,195 @@
+﻿<Window x:Class="AttivitaWpf.GanttChartStyleSettingWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        mc:Ignorable="d"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        Title="{lex:Loc Impostazioni Gantt}" Height="350" Width="600">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="{lex:Loc Impostazioni Gantt}" Grid.Column="0" FontSize="30" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}" Grid.ColumnSpan="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="3" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="{lex:Loc Barre}" Grid.Row="0" Grid.Column="0" Margin="10,0,0,0"/>
+            <TextBlock Text="{lex:Loc Barre di riepilogo}" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"/>
+            <TextBlock Text="{lex:Loc Connettori}" Grid.Row="4" Grid.Column="0" Margin="10,0,0,0"/>
+            <TextBlock Text="{lex:Loc Giorni non lavorativi}" Grid.Row="6" Grid.Column="0" Margin="10,0,0,0"/>
+            <TextBlock Text="{lex:Loc Percorso critico}" Grid.Row="8" Grid.Column="0" Margin="10,0,0,0"/>
+            <TextBlock Text="{lex:Loc Stile note}" Grid.Row="10" Grid.Column="0" Margin="10,0,0,0"/>
+
+            <syncfusion:ComboBoxAdv Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsTaskNode}" SelectedItem="{Binding ColorTaskNode}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="100" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>
+            <syncfusion:ComboBoxAdv Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsHeaderTaskNode}" SelectedItem="{Binding ColorHeaderTaskNode}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="100" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>
+            <syncfusion:ComboBoxAdv Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsConnectorStroke}" SelectedItem="{Binding ColorConnectorStroke}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="100" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>
+            <syncfusion:ComboBoxAdv Grid.Row="6" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsNonWorkingHours}" SelectedItem="{Binding ColorNonWorkingHours}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="100" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>
+            <syncfusion:ComboBoxAdv Grid.Row="8" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsCriticalPath}" SelectedItem="{Binding ColorCriticalPath}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="100" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>
+            <syncfusion:ComboBoxAdv 
+                      Foreground="Black" Margin="10,0,0,0" MinHeight="25"
+                      ItemTemplate="{DynamicResource FontTemplate}"
+                      ItemsSource="{Binding ListStiliConPropieta}" Grid.Row="10" Grid.Column="1" SelectedItem="{Binding StileConPropieta}" >
+                <syncfusion:ComboBoxAdv.Resources>
+                    <DataTemplate x:Key="FontTemplate">
+                        <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
+                            <TextBlock Text="{Binding NomeECodice}" Foreground="{Binding ColorCharacther}" Background="{Binding ColorBackground}" >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Control.FontFamily" Value="{Binding FontFamily}" />
+                                        <Setter Property="Control.FontSize" Value="{Binding Size}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Grassetto}" Value="True">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Corsivo}" Value="True">
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Sottolineato}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Barrato}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.Resources>
+            </syncfusion:ComboBoxAdv>
+
+            <!--<Grid Grid.Row="12" Grid.Column="0" Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox IsChecked="{Binding IsCheckedHorizontal}" Grid.Column="0"/>
+                <TextBlock Text="{lex:Loc Linee orizzontali}" Grid.Column="1" />
+            </Grid>
+
+            <syncfusion:ComboBoxAdv Grid.Row="12" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsHorizontal}" SelectedItem="{Binding ColorHorizontal}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="80" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>
+
+            <Grid Grid.Row="14" Grid.Column="0" Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox IsChecked="{Binding IsCheckedVertical}" Grid.Column="0"/>
+                <TextBlock Text="{lex:Loc Linee veticali}" Grid.Column="1" />
+            </Grid>
+
+            <syncfusion:ComboBoxAdv Grid.Row="14" Grid.Column="1" Margin="10,0,0,0" ItemsSource="{Binding ColorsVertical}" SelectedItem="{Binding ColorVertical}" >
+                <syncfusion:ComboBoxAdv.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                            <Rectangle Width="30" Fill="{Binding SampleBrush}"/>
+                            <TextBlock Width="80" Text="{Binding Name}"/>
+                            <TextBlock Width="70" Text="{Binding HexValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </syncfusion:ComboBoxAdv.ItemTemplate>
+            </syncfusion:ComboBoxAdv>-->
+
+        </Grid>
+
+    </Grid>
+</Window>

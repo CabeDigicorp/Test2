@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="AttivitaWpf.AttivitaCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:syncfusion="http://schemas.syncfusion.com/wpf" 
+             xmlns:local="clr-namespace:AttivitaWpf"
+             xmlns:localView ="clr-namespace:AttivitaWpf.View"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             DataContext="{StaticResource AttivitaViewKey}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="AttivitaTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:AttivitaTemplateSelector x:Key="AttivitaTemplateSelector" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <!--<syncfusion:HierarchyNavigatorDropDownItem syncfusionskin:SfSkinManager.VisualStyle="Metro"/>-->
+            <syncfusion:HierarchyNavigator Name="AttivitaNavigator" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                       BorderThickness="0" IsEnableHistory="False" ShowRefreshButton="Collapsed" ShowDropDownButton="Collapsed" Height="40"
+                                       Style="{StaticResource MetroHierarchyNavigatorStylenew}"
+                                                         
+            >
+                <syncfusion:HierarchyNavigator.ItemsSource>
+                    <localView:AttivitaHierarchicalItemsSource/>
+                </syncfusion:HierarchyNavigator.ItemsSource>
+                <syncfusion:HierarchyNavigator.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SectionItems}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Icon}" Margin="2,0" Style="{StaticResource smallTextBlockStyle}" FontSize="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding HierarchyText}" Margin="2,0" FontSize="20"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </syncfusion:HierarchyNavigator.ItemTemplate>
+            </syncfusion:HierarchyNavigator>
+            <ListView ItemsSource="{Binding SiblingSectionItems}" MaxWidth="260" Margin="3"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ItemContainerStyle="{StaticResource sectionButtonsStyle}"
+                      BorderThickness="0">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Name="SectionButton" BorderThickness="0" Padding="0" Margin="0" Click="SectionButton_Click">
+                            <Grid Background="Gainsboro" Height="19" Width="120">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Icon}" Style="{StaticResource smallTextBlockStyle}" FontSize="12"
+                                       VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Title, Mode=TwoWay}" Grid.Column="1" Foreground="SteelBlue" FontSize="12" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <ContentControl Content="{Binding CurrentTemplateView, Mode=TwoWay}"
+                        ContentTemplateSelector="{StaticResource AttivitaTemplateSelector}" 
+                        Grid.Row="1"
+                        />
+        <!--Istanzio subito i controlli per avere pronta la View (questi controlli non sono mai visibili)-->
+    <local:WBSCtrl x:Name="WBSCtrl" Visibility="Collapsed" DataContext="{StaticResource WBSViewKey}"/>
+    <!--<local:GanttCtrl x:Name="GanttCtrl" Visibility="Collapsed" DataContext="{StaticResource GanttViewKey}"/>-->
+    <local:ElencoAttivitaCtrl x:Name="ElencoAttivitaCtrl" Visibility="Collapsed" DataContext="{StaticResource ElencoAttivitaViewKey}"/>
+    <local:CalendariCtrl x:Name="CalendariCtrl" Visibility="Collapsed" DataContext="{StaticResource CalendariViewKey}"/>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,96 @@
+﻿<Window x:Class="AttivitaWpf.GenerazioneSALWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+        xmlns:ExtendedWPFToolkit="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:dxp="http://schemas.devexpress.com/winfx/2008/xaml/printing"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxpbars="http://schemas.devexpress.com/winfx/2008/xaml/printing/bars"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:syncfusion="http://schemas.syncfusion.com/wpf" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        xmlns:syncfusionGrid="clr-namespace:Syncfusion.UI.Xaml.Grid;assembly=Syncfusion.SfGrid.WPF" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:cmd="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        mc:Ignorable="d"
+        Title="{lex:Loc Programmazione SAL}" Height="450" Width="800">
+
+    <Window.Resources>
+        <Style TargetType="syncfusionGrid:GridCell" x:Key="DataGridCellStyle">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="{lex:Loc Impostazioni date e valori SAL}" Grid.Column="0" FontSize="30" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}" Grid.ColumnSpan="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="3" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{lex:Loc Programmazione SAL a}" Grid.Row="0" Grid.Column="0" FontSize="12" Margin="10"/>
+            <ComboBox ItemsSource="{Binding ListaTipologiaProgrammazione}" SelectedItem="{Binding TipologiaProgrammazione}" SelectedValuePath="Key" DisplayMemberPath="Value" Grid.Row="0" Grid.Column="1" FontSize="12" Margin="10"/>
+            <TextBlock Text="{lex:Loc attributo}" Grid.Row="0" Grid.Column="2" Visibility="{Binding IsAttributoSALVisible}" FontSize="12" Margin="10"/>
+            <ComboBox ItemsSource="{Binding ListaAttributo}" SelectedItem="{Binding Attributo}" DisplayMemberPath="Etichetta" Grid.Row="0" Grid.Column="3" Visibility="{Binding IsAttributoSALVisible}" FontSize="12" Margin="10"/>
+            <Grid Grid.Row="1" Grid.Column="0" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{lex:Loc Ripeti ogni}" Grid.Column="0" Visibility="{Binding IsRipetiOgniVisible}" FontSize="12"/>
+                <TextBox Text="{Binding  NumberValueFrequency}" Grid.Column="1" Visibility="{Binding IsNumberValueFrequencyVisible, UpdateSourceTrigger=PropertyChanged}" FontSize="12"/>
+            </Grid>
+            <ComboBox ItemsSource="{Binding ListTimeInterval}" SelectedItem="{Binding TimeInterval}" DisplayMemberPath="Value" SelectedValuePath="Key"  Grid.Row="1" Grid.Column="1" Visibility="{Binding IsDataSALVisible}" FontSize="12" Margin="10"/>
+            <TextBox Text="{Binding  AmountValueFrequency}" Grid.Row="1" Grid.Column="1" Visibility="{Binding IsAttributoAmountSALVisible}" FontSize="12" Margin="10"/>
+            <syncfusion:SfDataGrid ItemsSource="{Binding ListPercent}" Margin="10"
+                                           Grid.Row="1" Grid.Column="1" Visibility="{Binding IsAttributoAmountPercSALVisible}"
+                                           ColumnSizer="None" AllowResizingColumns="True" AllowEditing="True"
+                                           AddNewRowPosition="Top" AutoGenerateColumns="False"
+                                           LiveDataUpdateMode="AllowDataShaping"
+                                           AllowDraggingRows="False" AllowDrop="True" AllowSorting="False"
+                                           HideEmptyGridViewDefinition="True" SelectionMode="Extended" AllowDeleting="True">
+                <syncfusion:SfDataGrid.Columns>
+                    <syncfusion:GridPercentColumn HeaderText="{lex:Loc Percentuali avanzamento}" MappingName="Value" CellStyle="{StaticResource DataGridCellStyle}" PercentDecimalDigits="2" ColumnSizer="Star"/>
+                </syncfusion:SfDataGrid.Columns>
+                <syncfusion:SfDataGrid.SortColumnDescriptions>
+                    <syncfusion:SortColumnDescription ColumnName="Value" SortDirection="Ascending" />
+                </syncfusion:SfDataGrid.SortColumnDescriptions>
+            </syncfusion:SfDataGrid>
+            <TextBlock Text="{lex:Loc a partire da}"  Grid.Row="1" Grid.Column="2" Visibility="{Binding IsDataSALVisible}" FontSize="12" VerticalAlignment="Center"/>
+            <CheckBox Content="{lex:Loc Solo una volta}" IsChecked ="{Binding IsCheckedOnlyOneTime}" Grid.Row="1" Grid.Column="2" Visibility="{Binding IsAttributoAmountSALVisible}" FontSize="12" VerticalAlignment="Center"/>
+            <dxe:DateEdit DateTime="{Binding Data, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{lex:Loc Seleziona data}"
+                                               Background="Transparent" FontSize="12" DisplayFormatString="dd/MM/yyyy" Mask="d"
+                                               BorderThickness="0" HorizontalAlignment="Center" ShowClearButton="False"
+                                               BorderBrush="Transparent" dx:ThemeManager.Theme="Office2019Colorful" VerticalAlignment="Center" 
+                                               Visibility="{Binding IsDataSALVisible}" Grid.Row="1" Grid.Column="3">
+                <!--<dxe:DateEdit.StyleSettings>
+                    <dxe:DateEditNavigatorWithTimePickerStyleSettings GlyphKind="Arrow" />
+                </dxe:DateEdit.StyleSettings>-->
+                </dxe:DateEdit>
+            <CheckBox Content="{lex:Loc Non considerare i calendari delle attivita}" IsChecked ="{Binding DoNotuseCalendar}" Grid.Row="2" Grid.ColumnSpan="5" FontSize="12" Margin="10" Visibility="{Binding IsDoNotuseCalendarVisible}"/>
+        </Grid>
+    </Grid>
+</Window>

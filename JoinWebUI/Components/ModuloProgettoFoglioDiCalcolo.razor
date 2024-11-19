@@ -1,0 +1,134 @@
+﻿@using Blazored.LocalStorage
+@using BracketPipe
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using System.Collections.ObjectModel
+@using RtfPipe
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Popups
+@using System.Text
+@using Syncfusion.Blazor.Spinner
+@using System.Collections.Specialized
+
+@inject JoinWebApiClient _apiClient
+@inject NavigationManager _navigation
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject ILocalStorageService LocalStorage
+@inject Log Log
+
+<div class="@(_isDataLoading ? "spinnercontainer" : "d-none")">
+    <SfSpinner Size="30"
+               Type="SpinnerType.Material"
+               @bind-Visible="@_isDataLoading"
+               Label="Attendere il caricamento dei dati..." />
+</div>
+
+<div class="@((_isNoDataLoaded & !_isDataLoading) ? "spinnercontainer" : "d-none")">
+    <SfSpinner Size="30"
+               Type="SpinnerType.Material"
+               @bind-Visible="@_computoLoadingStopSpinner"
+               Label="Nessun dato da visualizzare per le informazioni di questo progetto." />
+</div>
+<div class="@((_isDataLoading || _isNoDataLoaded) ? "modulo-completo-vuoto" : "modulo-completo")">
+    @if (!_isDataLoading)
+    {
+        
+    }
+</div>
+
+<style>
+
+</style>
+
+@code {
+    [Parameter]
+    public Guid ProgettoId { get; set; }
+
+    [CascadingParameter(Name = "OnInteractWithProjectDetails")]
+    public List<Func<bool, Task<bool>>> OnInteractWithProjectDetails { get; set; }
+
+    public byte[]? FoglioDiCalcoloBase { get; set; }
+
+    private bool _isDataLoading = true;
+    private bool _isNoDataLoaded = false;
+    private bool _computoLoadingStopSpinner = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (!OnInteractWithProjectDetails.Contains(AggiornaFoglioDiCalcolo))
+            {
+                OnInteractWithProjectDetails.Add(AggiornaFoglioDiCalcolo);
+            }
+            await GetFoglioDiCalcolo();
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (!firstRender)
+            {
+                
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+    }
+
+    private async Task GetFoglioDiCalcolo()
+    {
+        try
+        {
+            var foglioDiCalcoloResult = await _apiClient.JsonGetAsync<FoglioDiCalcoloDto>($"fogliodicalcolo/get-foglio-di-calcolo-progetto/{ProgettoId}");
+            if (!foglioDiCalcoloResult.Success)
+            {
+                _isDataLoading = false;
+                _isNoDataLoaded = true;
+            }
+            else
+            {
+                _isNoDataLoaded = false;
+                var foglioDiCalcoloData = foglioDiCalcoloResult.ResponseContentData ?? new FoglioDiCalcoloDto();
+                FoglioDiCalcoloBase = foglioDiCalcoloData.FoglioDiCalcoloBase ?? new byte[1];
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        finally
+        {
+        }
+    }
+
+    private async Task<bool> AggiornaFoglioDiCalcolo(bool data)
+    {
+        try
+        {
+            Log.Information("Aggiorna Foglio di Calcolo clicked");
+            // var isProgettoUpdated = await _apiClient.JsonGetAsync<bool>($"infoprogetto/get-info-clear/{ProgettoId}");
+            // if (isProgettoUpdated.Success && isProgettoUpdated.ResponseContentData)
+            // {
+            //     await GetInfoProgetto();
+            //     //StateHasChanged();
+            // }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+        }
+        return true;
+    }
+}

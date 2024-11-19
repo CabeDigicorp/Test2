@@ -1,0 +1,126 @@
+﻿<Window x:Class="MainApp.SetAttributoFilterWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MainApp.Windows"
+        xmlns:masterdetailview="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        xmlns:local1="clr-namespace:MasterDetailWpf;assembly=DigiCorp.MasterDetailWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        Title="{lex:Loc Imposta filtro}"
+        WindowStartupLocation="CenterOwner"
+        Height="400" Width="700"
+        MinHeight="400" MinWidth="700"
+        >
+    <Window.DataContext>
+        <masterdetailview:SetAttributoFilterView/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock Text="{lex:Loc Filtro2}" Grid.Column="0" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource TitleColor}"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="AcceptButton_Click"
+                    Width="100" Height="40" Margin="2,0,0,0"
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+        <Grid Grid.Row="2" Grid.Column="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{lex:Loc Sezione}" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" ItemsSource="{Binding EntityTypesItem}" SelectedItem="{Binding CurrentEntityTypeItem}"/>
+            </Grid>
+            <Grid Grid.Row="1" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{lex:Loc Attributo1}" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" ItemsSource="{Binding AttributiItem}" SelectedItem="{Binding CurrentAttributoItem}" DisplayMemberPath="Name">
+                </ComboBox>
+            </Grid>
+            <Grid Grid.Row="2" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{lex:Loc Tipo filtro}" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" ItemsSource="{Binding FilterTypes}" DisplayMemberPath="Name"
+                                  SelectedItem="{Binding CurrentFilterType}">
+                </ComboBox>
+            </Grid>
+            <Grid Grid.Row="3" Margin="5" Visibility="{Binding IsConditionsFilterType, Converter={StaticResource InverseVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{lex:Loc Valore}" VerticalAlignment="Top"/>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{lex:Loc Trova}" Grid.Row="0" Foreground="Gray" Visibility="{Binding IsPlaceholderVisible, Converter={StaticResource InverseVisibilityConverter}}" Margin="2,0,0,0"/>
+                    <TextBox Text="{Binding TextSearched, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="0" Background="Transparent">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding SubmitEnterCommand}" Key="Enter"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <CheckBox Content="{lex:Loc Seleziona tutti}" IsThreeState="False" IsChecked="{Binding IsAllChecked, Mode=TwoWay}" IsEnabled="{Binding IsAllCheckedEnabled}"
+                              Background="{Binding IsAllCheckedBackground}" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Margin="0,5,0,0"
+                              Visibility="{Binding AllowValoriUnivoci, Converter={StaticResource VisibilityConverter}}"/>
+
+                    <syncfusion:TreeViewAdv x:Name="ValoriFiltro" ItemsSource="{Binding ValoriItem}" Grid.Row="2" Margin="0,5,0,0"
+                              Visibility="{Binding IsValoriUnivociVisible, Converter={StaticResource VisibilityConverter}}">
+                        <syncfusion:TreeViewAdv.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding SubItems}" >
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsChecked}" Background="{Binding Background}"/>
+                                    <TextBlock>
+                                        <Run Text="{Binding TextArray[0], Mode=OneWay}"/><Run Text="{Binding TextArray[1], Mode=OneWay}" FontWeight="Bold"/><Run Text="{Binding TextArray[2], Mode=OneWay}" /><Run Text="{Binding TextArray[3], Mode=OneWay}"  FontWeight="Bold"/><Run Text="{Binding TextArray[4], Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </syncfusion:TreeViewAdv.ItemTemplate>
+                        <syncfusion:TreeViewAdv.ItemContainerStyle>
+                            <Style TargetType="{x:Type syncfusion:TreeViewItemAdv}">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded,UpdateSourceTrigger=PropertyChanged}"/>
+                                <Setter Property="IsSelected" Value="{Binding IsSelected,UpdateSourceTrigger=PropertyChanged}"/>
+                                <Setter Property="IsEditable" Value="False"/>
+                            </Style>
+                        </syncfusion:TreeViewAdv.ItemContainerStyle>
+                    </syncfusion:TreeViewAdv>
+                    <TextBlock Text="{Binding ListViewPlaceholderText}" Grid.Row="2"  Visibility="{Binding IsValoriUnivociLoading, Converter={StaticResource VisibilityConverter}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray"/>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="3" Visibility="{Binding IsConditionsFilterType, Converter={StaticResource VisibilityConverter}}">
+                <local1:ValoreConditionsGroupCtrl x:Name="RootConditionsCtrl" Margin="5"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

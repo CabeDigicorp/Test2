@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailModel.DefinizioneAttributo" Collapsed="true">
+    <Position X="7" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAoBAEACAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Model\Attributo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.Attributo">
+    <Position X="2.75" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQQIAhhgUFCAAAAAACECBQAIBAQgAgACAEIAAABE=</HashCode>
+      <FileName>Model\Attributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Definizione" />
+      <Property Name="EntityType" />
+      <Property Name="ValoreDefault" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.AttributoRiferimento">
+    <Position X="2.5" Y="9.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAACAAQAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Model\Attributo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.EntityType" Collapsed="true">
+    <Position X="7" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAABBADAAAAAAACBAQACAQRCAAAAABAAIAAQNA=</HashCode>
+      <FileName>Model\EntityType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.TreeEntityType" Collapsed="true">
+    <Position X="7.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\TreeEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="MasterDetailModel.Valore" Collapsed="true">
+    <Position X="7" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAAAAAAAAAAgAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

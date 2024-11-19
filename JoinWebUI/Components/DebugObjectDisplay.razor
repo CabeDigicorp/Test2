@@ -1,0 +1,30 @@
+﻿<div class="alert alert-dark" role="alert">
+	<h4 class="fst-italic">
+		@TitleToDisplay
+	</h4>
+	<div class="font-monospace">
+		@((MarkupString)Serialized)
+	</div>
+</div>
+
+
+@code {
+	[Parameter] public object ObjectToDisplay { get; set; }
+	[Parameter] public string? TitleToDisplay { get; set; }
+
+	private string Serialized
+	{
+		get
+		{
+			return JsonConvert.SerializeObject(ObjectToDisplay, Formatting.Indented)
+				.Replace("\n", "<br/>")
+				.Replace(" ", "&nbsp;")
+				.Replace("\t", "&nbsp;&nbsp;");
+		}
+	}
+
+	protected override void OnInitialized()
+	{
+	}
+
+}

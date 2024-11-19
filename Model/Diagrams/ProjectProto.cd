@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Model.Project">
+    <Position X="1.25" Y="1" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAACABAAAEAAAAABAAAAAAAIAAEAAQFgAAAAgMAAAAQ=</HashCode>
+      <FileName>Project.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Model3dFilesInfo" />
+      <Property Name="Model3dFiltersData" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="DefinizioniAttributo" />
+      <Property Name="EntityTypes" />
+      <Property Name="PrezzarioItems" />
+      <Property Name="ComputoItems" />
+      <Property Name="ElementiItems" />
+      <Property Name="ContattiItems" />
+      <Property Name="CapitoliItems" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.Entity">
+    <Position X="6" Y="1" Width="2.25" />
+    <Members>
+      <Property Name="EntityType" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <ShowAsCollectionAssociation>
+      <Property Name="Attributi" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.EntityAttributo">
+    <Position X="9.75" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="Attributo" Hidden="true" />
+      <Property Name="Entity" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Valore" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.EntityType">
+    <Position X="6" Y="8" Width="2.25" />
+    <Members>
+      <Property Name="DependencyEnum" Hidden="true" />
+      <Property Name="DependentTypesEnum" Hidden="true" />
+      <Property Name="EtichetteMap" Hidden="true" />
+      <Property Name="IsTreeMaster" Hidden="true" />
+      <Property Name="MasterType" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <ShowAsCollectionAssociation>
+      <Property Name="Attributi" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.TreeEntityType">
+    <Position X="6" Y="10.75" Width="2.25" />
+    <Members>
+      <Property Name="AssociedType" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.TreeEntity">
+    <Position X="6" Y="4.25" Width="2.25" />
+    <Members>
+      <Field Name="Children" Hidden="true" />
+      <Property Name="HierarchySeparator" Hidden="true" />
+      <Field Name="Parent" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.Attributo">
+    <Position X="9.75" Y="8" Width="2.5" />
+    <Members>
+      <Property Name="IsExpandable" Hidden="true" />
+      <Property Name="IsExpanded" Hidden="true" />
+      <Property Name="IsPreviewable" Hidden="true" />
+      <Property Name="IsPreviewMode" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.AttributoRiferimento">
+    <Position X="9.75" Y="14.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.DefinizioneAttributo">
+    <Position X="6" Y="13" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Model.Model3dFiltersData">
+    <Position X="6" Y="17.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model3dFilterData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Model.Model3dFilterData">
+    <Position X="9.75" Y="17.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAQAAAAAAAAAAAAAAEABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model3dFilterData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="FilterConditions" />
+      <Property Name="RulesComputo" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Model.Model3dFilterCondition">
+    <Position X="14.25" Y="17.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAACABACAAIAAAAAACIAAAACIIAEAIAAAAAAABAAAAg=</HashCode>
+      <FileName>Model3dFilterData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.Model3dRuleComputo">
+    <Position X="14.25" Y="22" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ABACAAAAABAAAAIAAAAAAAAAEAAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Model3dFilterData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model.Model3dFilesInfo">
+    <Position X="6" Y="19.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model3dFileInfo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Model.Model3dFileInfo">
+    <Position X="9.75" Y="19.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAEAAAA=</HashCode>
+      <FileName>Model3dFileInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTesto" BaseTypeListCollapsed="true">
+    <Position X="31" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreData" BaseTypeListCollapsed="true">
+    <Position X="29.25" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreCollection">
+    <Position X="21.75" Y="3" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTestoCollection" Collapsed="true">
+    <Position X="20.5" Y="5" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreGuidCollection" Collapsed="true">
+    <Position X="22.75" Y="5" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreTestoRtf" BaseTypeListCollapsed="true">
+    <Position X="22.25" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="BriefPlainText" Hidden="true" />
+      <Property Name="BriefRtf" Hidden="true" />
+      <Property Name="PlainText" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreReale" BaseTypeListCollapsed="true">
+    <Position X="27.5" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+      <Property Name="RealResult" Hidden="true" />
+      <Property Name="ResultDescription" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreContabilita" BaseTypeListCollapsed="true">
+    <Position X="25.75" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+      <Property Name="RealResult" Hidden="true" />
+      <Property Name="ResultDescription" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreGuid" BaseTypeListCollapsed="true">
+    <Position X="24" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.ValoreBooleano" BaseTypeListCollapsed="true">
+    <Position X="20.5" Y="1" Width="1.5" />
+    <Members>
+      <Property Name="PlainText" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="MasterDetailModel.Valore" Collapsed="true">
+    <Position X="18.5" Y="1" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="MasterDetailModel.ValoreSingle" Collapsed="true">
+    <Position X="18.5" Y="2" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

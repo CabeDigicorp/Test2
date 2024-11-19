@@ -1,0 +1,39 @@
+﻿<Window x:Class="AttivitaWpf.FilterByWBSIdsWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AttivitaWpf"
+        xmlns:view="clr-namespace:AttivitaWpf.View"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.OutputMissingKeys="True"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        mc:Ignorable="d"
+        Title="{lex:Loc SelezionaWBS}" Height="900" Width="900"
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock Text="WBS" Grid.Column="0" FontSize="20" VerticalAlignment="Center" Margin="5,0,0,0"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton" IsDefault="True" Click="FindButton_Click" Width="100" Height="40" 
+                    Style="{StaticResource acceptButtonStyle}" Content="&#xe086;"/>
+        </StackPanel >
+        <local:WBSCtrl x:Name="WBSCtrl" Grid.Row="1">
+            <local:WBSCtrl.DataContext>
+                <view:WBSView/>
+            </local:WBSCtrl.DataContext>
+        </local:WBSCtrl>
+    </Grid>
+</Window>
+

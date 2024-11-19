@@ -1,0 +1,747 @@
+﻿@using Blazored.LocalStorage
+@using BracketPipe
+@using JoinWebUI.Extensions
+@using JoinWebUI.Utilities
+@using System.Collections.ObjectModel
+@using RtfPipe
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Popups
+@using System.Text
+@using Syncfusion.Blazor.Spinner
+@using System.Collections.Specialized
+@using Syncfusion.Blazor.Grids
+@using System.ComponentModel;
+@using ModelData.Model;
+@using Syncfusion.Blazor.Notifications
+
+@inject JoinWebApiClient _apiClient
+@inject NavigationManager _navigation
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorage
+@inject ILocalStorageService LocalStorage
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+@inject Log Log
+
+<div class="@(_isComputoLoading ? "spinnercontainer" : "d-none")">
+    <SfSpinner Size="30"
+               Type="SpinnerType.Material"
+               @bind-Visible="@_isComputoLoading"
+               Label="Attendere il caricamento dei dati..." />
+</div>
+
+<div class="@((_isNoDataLoaded & !_isComputoLoading)? "spinnercontainer" : "d-none")">
+    <SfSpinner Size="30"
+               Type="SpinnerType.Material"
+               @bind-Visible="@_computoLoadingStopSpinner"
+               Label="Nessun dato da visualizzare per il computo di questo progetto." />
+</div>
+<div class="@((_isComputoLoading || _isNoDataLoaded) ? "modulo-completo-vuoto" : "modulo-completo")">
+    <SfCard CssClass=@((CounterFiltriAttivi > 0 || CounterAggregatiAttivi > 0) ? "computo-card-selected" : "computo-card")
+            hidden="@IsSubPageHidden(PageComputoNames.Computo)">
+        @if (!_isComputoLoading)
+        {
+            <div class="selectorcontainer">
+                @foreach ((var combo, int index) in (ValoriValidiComboBox.Select((item, index) => (item, index))))
+                {
+                    <div class="rigagruppi">
+                        <div class="testogruppo">@combo.NomeGruppo</div>
+                        <div class="combogruppi">
+                            <SfComboBox @key="combo.GetHashCode()"
+                                        CssClass="combo-computo dropdown-computo"
+                                        EnablePersistence=true
+                                        TValue="AttributoRaggruppatoreDto"
+                                        @bind-Index="ComboIndexes[index]"
+                                        @ref="ComboBoxRefs[index]"
+                                        Enabled=@(index == 0 ? true : true)
+                                        TItem="AttributoRaggruppatoreDto"
+                                        Placeholder="@AllValori"
+                                        DataSource="@GetRaggruppatoData(combo.SottoGruppo ?? new())"
+                                        AllowFiltering=true
+                                        Autofill="true"
+                                        AllowCustom="false"
+                                        ShowClearButton="true"
+                                        FilterType="Syncfusion.Blazor.DropDowns.FilterType.Contains">
+                                <ComboBoxTemplates TItem="AttributoRaggruppatoreDto">
+                                    <GroupTemplate>
+                                        @{
+                                            var valoreEtichetta = (context.Text == "null") ? "" : context.Text;
+                                            var lines = valoreEtichetta?.Split('¦');
+                                        }
+                                        <div>
+                                            @{
+                                                var tab = 0;
+                                            }
+                                            @if (lines != null && lines.Length > 0 && !string.IsNullOrEmpty(valoreEtichetta))
+                                            {
+                                                for (int i = 0; i < lines.Length; i++)
+                                                {
+                                                    switch (i)
+                                                    {
+                                                        case var expression when (expression == 0):
+                                                            {
+                                                                <div>@lines[i]</div>
+                                                            }
+                                                            break;
+                                                        case var expression when (expression > 0):
+                                                            {
+                                                                tab = (i * 20);
+                                                                <div style="margin-left:@(tab)px;">@(lines[i])</div>
+                                                            }
+                                                            break;
+                                                        default:
+                                                            {
+                                                            }
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                            else if (!string.IsNullOrEmpty(valoreEtichetta))
+                                            {
+                                                <div>@valoreEtichetta</div>
+                                            }
+                                        </div>
+                                    </GroupTemplate>
+                                    <ItemTemplate>
+                                        @{
+                                            var etichetta = (context as AttributoRaggruppatoreDto)?.ValoreEtichetta;
+                                            var valoreElementi = (context as AttributoRaggruppatoreDto)?.ValoreAttributo;
+                                            var linesNodi = valoreElementi?.Split('¦');
+                                        }
+                                        @if (!string.IsNullOrEmpty(etichetta) && linesNodi != null && linesNodi.Any() && linesNodi?.Count() > 1)
+                                        {
+                                            <div style="margin-left:@(20 * linesNodi!.Count() - 1)px;">@etichetta</div>
+                                        }
+                                        else
+                                        {
+                                            <div>@etichetta</div>
+                                        }
+                                    </ItemTemplate>
+                                    <NoRecordsTemplate>
+                                        <span class='norecord'>Nessun valore disponibile</span>
+                                    </NoRecordsTemplate>
+                                    <ActionFailureTemplate>
+                                        <span class='norecord'>Errore di estrazione dei dati dal server</span>
+                                    </ActionFailureTemplate>
+                                </ComboBoxTemplates>
+
+                                <ComboBoxFieldSettings GroupBy="Antenati" Text="ValoreEtichetta" Value="ValoreAttributo"></ComboBoxFieldSettings>
+
+                                <ComboBoxEvents TItem="AttributoRaggruppatoreDto"
+                                                TValue="AttributoRaggruppatoreDto"
+                                                OnValueSelect="@OnComboBoxValueSelected"
+                                                ValueChange="@OnComboBoxValueChanged">
+                                </ComboBoxEvents>
+                            </SfComboBox>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="computocontainer">
+                <SfAccordion ID="computoAccordion"
+                             Height="100%"
+                             Width="100%"
+                             hidden=@(!_isAccordionVisible)
+                             class="e-main-computo-accordion"
+                             ExpandedIndices=AccordionExpandedIndexes
+                             ExpandMode="ExpandMode.Multiple"
+                             EnablePersistence=false
+                             ExpandedIndicesChanged="OnAccordionExpandedCollapsed"
+                             LoadOnDemand=false>
+                    <AccordionItems>
+                        @foreach (var gruppo in (InfoComputo ?? Enumerable.Empty<ComputoDto>()).GroupBy(item => item.NomeGruppo))
+                        {
+                            <AccordionItem Visible=@gruppo.Any(item => item.IsVisible)>
+                                <HeaderTemplate>
+                                    <div>@(gruppo.Key)</div>
+                                </HeaderTemplate>
+                                <ContentTemplate>
+                                    @foreach (var elemento in gruppo.Where(x => (x.Codice != null) && (!x.IsMultiValore))) // escludo i multivalore
+                                    {
+                                        if (!elemento.IsVisible) { continue; }
+                                        <div class="e-custom-button-accordion" @onclick="() => DialogHandleClick(elemento.Codice, elemento.DefinizioneAttributoCodice)">
+                                            @switch (elemento.DefinizioneAttributoCodice)
+                                            {
+                                                case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                                                    {
+                                                        <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                               Data=@elemento.ValoreAttributo
+                                                                               FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.SimplePreview"
+                                                                               @key="elemento.GetHashCode()">
+                                                        </DataToMarkupComponent>
+                                                    }
+                                                    break;
+                                                case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Booleano:
+                                                    {
+                                                        <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                               Data=@elemento.Descrizione
+                                                                               FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.WingdingsBoolean"
+                                                                               @key="elemento.GetHashCode()">
+                                                        </DataToMarkupComponent>
+                                                    }
+                                                    break;
+                                                case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection) && (elemento.GuidReferenceEntityTypeKey == ModelData.Model.BuiltInCodes.EntityType.Allegati):
+                                                    {
+                                                        <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                               Data=@elemento.Descrizione
+                                                                               FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.Attachments"
+                                                                               @key="elemento.GetHashCode()">
+                                                        </DataToMarkupComponent>
+                                                    }
+                                                    break;
+                                                case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection):
+                                                    {
+                                                        <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                               Data=@elemento.Descrizione
+                                                                               FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.ElementSequence"
+                                                                               @key="elemento.GetHashCode()">
+                                                        </DataToMarkupComponent>
+                                                    }
+                                                    break;
+                                                case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoCollection):
+                                                    {
+                                                        <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                               Data=@elemento.Descrizione
+                                                                               FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.ElementSequence"
+                                                                               @key="elemento.GetHashCode()">
+                                                        </DataToMarkupComponent>
+                                                    }
+                                                    break;
+                                                default:
+                                                    {
+                                                        <DataToMarkupComponent Label=@elemento.Etichetta
+                                                                               Data=@elemento.Descrizione
+                                                                               FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                                               @key="elemento.GetHashCode()">
+                                                        </DataToMarkupComponent>
+                                                    }
+                                                    break;
+                                            }
+                                        </div>
+                                    }
+                                </ContentTemplate>
+                            </AccordionItem>
+                        }
+                    </AccordionItems>
+                </SfAccordion>
+            </div>
+            <SfDialog EnableResize="true"
+                      Target="e-custommodal"
+                      EnablePersistence="true"
+                      Height="90%"
+                      Width="80%"
+                      ShowCloseIcon="true"
+                      CssClass="e-customModal"
+                      IsModal="true"
+                      CloseOnEscape="true"
+                      AllowDragging="true"
+                      AllowPrerender="true"
+                      FooterTemplate="@($"Computo del progetto: {ProgettoId}, type: {ContentType}.")"
+                      ResizeHandles="@DialogResizeDirections"
+                      @bind-Visible="@IsDialogVisible"
+                      @key="DialogHeather?.GetHashCode()">
+                <DialogTemplates>
+                    <Header><b>Dettagli di "@DialogHeather"</b></Header>
+                    <Content>
+                        <div class="dialogcontainer">
+                        @switch (ContentType)
+                        {
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoRTF:
+                                {
+                                    @((RenderFragment)((builder) => builder.AddMarkupContent(0, (string?)_contentDialog ?? "")))
+                                    @*  <SfRichTextEditor ID="idRichText" Readonly=true AutoSaveOnIdle="false" EditorMode=EditorMode.HTML Value="@Content">
+                    </SfRichTextEditor> *@
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Testo:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Riferimento:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.BoldColonNewLineTextList"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.TestoCollection) || (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.GuidCollection):
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.BoldColonNewLineTextList"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Booleano:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.WingdingsBoolean"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            case var expression when (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Reale) || (expression == ModelData.Model.BuiltInCodes.DefinizioneAttributo.Contabilita):
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.RealValue"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                            default:
+                                {
+                                    <DataToMarkupComponent Data="_contentDialog"
+                                                           FormattingType="Components.DataToMarkupComponent<string?>.FormattingTypes.None"
+                                                           @key="_contentDialog?.GetHashCode()">
+                                    </DataToMarkupComponent>
+                                }
+                                break;
+                        }
+                        </div>
+                    </Content>
+                </DialogTemplates>
+                <DialogAnimationSettings Effect="@AnimationEffect"
+                                         Duration=300 />
+                <DialogEvents OnOverlayModalClick="OverlayClick">
+                </DialogEvents>
+            </SfDialog>
+        }
+        <div class="cardcomputobarcontainer">
+            <SfToolbar CssClass="e-customtoolbar"
+                       Width="100%"
+                       EnableCollision=false
+                       OverflowMode="OverflowMode.Scrollable"
+                       Height="100%">
+                <ToolbarItems>
+                    <ToolbarItem Type="ItemType.Button"
+                                 TabIndex=0
+                                 Align="ItemAlign.Left"
+                                 SuffixIcon="e-icons icon-raggruppa"
+                                 Width="2.5rem"
+                                 Visible="true"
+                                 Disabled="false"
+                                 CssClass=@(ShowButtonBarByState(ButtonComputoNames.Raggruppatori))
+                                 OnClick="HandleGrouperButtonClick"
+                                 TooltipText="Raggruppa">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Separator">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Button"
+                                 TabIndex=0
+                                 Align="ItemAlign.Left"
+                                 SuffixIcon="e-icons icon-filtri"
+                                 Width="2.5rem"
+                                 Visible="true"
+                                 Disabled="false"
+                                 CssClass=@(ShowButtonBarByState(ButtonComputoNames.Filtri))
+                                 OnClick="HandleFilterButtonClick"
+                                 TooltipText="Filtro">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Separator">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Button"
+                                 TabIndex=0
+                                 Align="ItemAlign.Left"
+                                 Width="2.5rem"
+                                 Visible="true"
+                                 Disabled="false"
+                                 CssClass=@(ShowButtonBarByState(ButtonComputoNames.Aggregati))
+                                 OnClick="HandleClearAggregatiButtonClick"
+                                 TooltipText="Elimina filtro elementi">
+                        <Template>
+                            <SfButton IconCss="e-icons icon-elimina-filtro-elementi iconbar" CssClass=@(ShowButtonIconByState(ButtonComputoNames.Aggregati))>@CounterAggregatiAttivi</SfButton>
+                        </Template>
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Separator">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Button"
+                                 TabIndex=0
+                                 Align="ItemAlign.Left"
+                                 SuffixIcon="e-icons icon-evidenzia-su-modello-IFC"
+                                 Width="2.5rem"
+                                 Visible="true"
+                                 Disabled="false"
+                                 CssClass=@(ShowButtonBarByState(ButtonComputoNames.Ifc))
+                                 OnClick="HandleShowOnIfcButtonClick"
+                                 TooltipText="Evidenzia su modello IFC">
+                    </ToolbarItem>
+                    <ToolbarItem Text=@ContentBarVoicesNumber
+                                 Visible=true
+                                 Align="ItemAlign.Right"
+                                 CssClass="e-customtoolbar-notactive-button"
+                                 TooltipText="Numero voci">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Button"
+                                 TabIndex=0
+                                 Align="ItemAlign.Right"
+                                 Disabled=@(ValoriValidiComboBox.Count == 0)
+                                 CssClass="e-customtoolbar-notactive-button"
+                                 SuffixIcon="e-icons icon-precedente"
+                                 OnClick="HandlePageBackClick"
+                                 Visible=@(ValoriValidiComboBox.Count > 0)
+                                 TooltipText="Pagina precedente">
+                    </ToolbarItem>
+                    <ToolbarItem Text=@ContentBarPagesNumber
+                                 Align="ItemAlign.Right"
+                                 Disabled=@(ValoriValidiComboBox.Count == 0)
+                                 Visible=@(ValoriValidiComboBox.Count > 0)
+                                 CssClass="e-customtoolbar-notactive-button"
+                                 TooltipText="Pagina selezionata su totale">
+                    </ToolbarItem>
+                    <ToolbarItem Type="ItemType.Button"
+                                 TabIndex=0
+                                 Align="ItemAlign.Right"
+                                 Disabled=@(ValoriValidiComboBox.Count == 0)
+                                 CssClass="e-customtoolbar-notactive-button"
+                                 SuffixIcon="e-icons icon-successivo"
+                                 Visible=@(ValoriValidiComboBox.Count > 0)
+                                 OnClick="HandlePageNextClick"
+                                 TooltipText="Pagina successiva">
+                    </ToolbarItem>
+                </ToolbarItems>
+            </SfToolbar>
+        </div>
+        <SfToast @ref="sfToastObj"
+                 Timeout="@sfToastMsTimeout"
+                 ShowProgressBar="true"
+                 Title="@sfToastTitle"
+                 Height="@sfToastHeight"
+                 Width="@sfToastWidth"
+                 ShowCloseButton="true"
+                 ProgressDirection="ProgressDirection.LTR"
+                 NewestOnTop="true"
+                 Icon="@sfToastIcon"
+                 Content="@sfToastContent">
+            <ToastPosition X="@sfToastPositionX" Y="@sfToastPositionY"></ToastPosition>
+            <ToastEvents OnClose="OnToastClose"></ToastEvents>
+            <ToastAnimationSettings>
+                <ToastShowAnimationSettings Effect="@sfToastShowAnimation"></ToastShowAnimationSettings>
+                <ToastHideAnimationSettings Effect="@sfToastHideAnimation"></ToastHideAnimationSettings>
+            </ToastAnimationSettings>
+        </SfToast>
+    </SfCard>
+    <SfCard id="cardGrouper" hidden=@IsSubPageHidden(PageComputoNames.Raggruppatori)>
+        <ModuloProgettoRaggruppatoriAttributi ProgettoId="@ProgettoId"
+                                              OnInteractWithPaginaComputo=@OnGrouperShow
+                                              inputComputoData="@AttributiGrouperAvailable"
+                                              RefreshData="@_allowRefreshGrouperData">
+        </ModuloProgettoRaggruppatoriAttributi>
+    </SfCard>
+    <SfCard id="cardFilter" hidden=@IsSubPageHidden(PageComputoNames.Filtri)>
+        <ModuloProgettoFiltriAttributi ProgettoId="@ProgettoId"
+                                       OnInteractWithPaginaComputo=@OnFilerShow
+                                       RefreshData="@_allowRefreshFilterData">
+        </ModuloProgettoFiltriAttributi>
+    </SfCard>
+</div>
+
+<style>
+
+    .dropdown-computo .e-list-group-item,
+    .dropdown-computo .e-fixed-head {
+        border-color: #dee2e6;
+        color: darkblue;
+        font-size: 14px;
+        line-height: 15px;
+        min-height: 15px;
+        padding-left: 12px;
+        padding-right: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background-color: #fff;
+    }
+
+        .dropdown-computo .e-list-group-item:first-of-type,
+        .dropdown-computo .e-fixed-head:first-of-type {
+            display: none;
+        }
+
+    .combogroup {
+        color: red;
+    }
+
+    .badgered {
+        position: relative;
+        background-color: red;
+        color: slategray;
+        font-size: 10px;
+        margin-right: -0.4em;
+    }
+
+    .badgegray {
+        position: relative;
+        background-color: grey;
+        color: slategray;
+        font-size: 10px;
+    }
+
+        .badgegray .badgegray:hover, .badgegray:focus, .badgegray:active {
+            background-color: var(--bs-secondary) !important;
+            background: var(--bs-secondary) !important;
+            color: white !important;
+        }
+
+        .badgegray .e-icons {
+            color: slategray;
+        }
+
+        .badgegray:hover .e-icons,
+        .badgegray:focus .e-icons,
+        .badgegray:active .e-icons {
+            color: white !important;
+        }
+
+    .e-customtoolbar .e-tbar-btn:hover {
+        background: var(--bs-secondary) !important;
+        border: 1px solid var(--bs-gray-500);
+    }
+
+    .e-customtoolbar .badgegray {
+        background-color: inherit !important;
+        color: slategray !important;
+    }
+
+        .e-customtoolbar .badgegray:hover,
+        .e-customtoolbar .badgegray:focus,
+        .e-customtoolbar .badgegray:active {
+            background-color: var(--bs-secondary) !important;
+            color: white !important;
+        }
+
+    .iconbar {
+        flex-shrink: 0;
+        min-width: 1rem;
+        width: 2.5rem;
+        font-size: 18px !important;
+        margin-top: 0px !important;
+        cursor: pointer;
+        border-radius: 50%;
+        font-size: 18px;
+        line-height: 1;
+        z-index: 9999;
+        transition: color 0.2s ease-in-out;
+        margin-right: -0.4em !important;
+    }
+
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-left,
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-center,
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-right {
+        height: 100%;
+        top: 0;
+        z-index: 9999;
+    }
+
+    .e-toolbar .e-toolbar-item.e-separator {
+        margin: 0px;
+        min-height: 24px;
+        min-width: 1px;
+        height: 24px;
+    }
+
+    .e-toolbar {
+        z-index: 9999;
+    }
+
+    .e-main-computo-accordion {
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+    }
+
+    #cardGrouper {
+        width: 100%;
+        margin-bottom: 4.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    #cardFilter {
+        width: 100%;
+        margin-bottom: 4.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    .computo-card {
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        border-radius: 1px;
+    }
+
+    .computo-card-selected {
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        border-width: 3px;
+        border-color: var(--bs-secondary) !important;
+    }
+
+    .computo-card:empty {
+        display: none;
+        z-index: 20;
+    }
+
+    .modulo-completo-vuoto {
+        display: none;
+    }
+
+    .modulo-completo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        border-radius: 1px;
+    }
+
+    .spinnercontainer {
+        width: 25rem;
+        height: 10rem;
+        z-index: 20;
+        border-radius: 1px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .computocontainer {
+        position: relative;
+        z-index: 20;
+        width: 100%;
+    }
+
+    .cardcomputobarcontainer {
+        position: fixed;
+        bottom: 2.00rem;
+        width: 100%;
+        left: 0;
+        right: 0;
+        padding: 0;
+        border-top: 1px solid var(--bs-join-grey-medium);
+        border-bottom: 1px solid var(--bs-join-grey-medium);
+        border-radius: 0px;
+        height: 3rem;
+        z-index: 9999;
+        pointer-events: auto;
+        background: var(--bs-gray-100) !important;
+        background-color: var(--bs-gray-100) !important;
+    }
+
+        .cardcomputobarcontainer * {
+            pointer-events: auto;
+        }
+
+    .selectorcontainer {
+        padding-bottom: 15px;
+        padding-top: 15px;
+        padding-left: 15px;
+        padding-right: 12px;
+        background-color: var(--bs-gray-100);
+    }
+
+        .selectorcontainer:empty {
+            display: none;
+            background-color: var(--bs-gray-100);
+        }
+
+    .e-customtoolbar-active-button {
+        background-color: var(--bs-secondary) !important;
+        background: var(--bs-secondary) !important;
+        height: 100% !important;
+        align-items: normal !important;
+    }
+
+    .e-customtoolbar-notactive-button {
+        background: var(--bs-gray-100) !important;
+        background-color: var(--bs-gray-100) !important;
+        height: 100% !important;
+        border-color: none;
+        align-items: normal !important;
+    }
+
+        .e-customtoolbar-active-button button,
+        .e-customtoolbar-notactive-button button {
+            background-color: inherit !important;
+            border: none;
+        }
+
+            .e-customtoolbar-active-button button:hover,
+            .e-customtoolbar-notactive-button button:hover {
+                background-color: inherit !important;
+            }
+
+    .rigagruppi {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .testogruppo {
+        width: 25%;
+        margin-top: 5px;
+        font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        text-overflow: ellipsis;
+    }
+
+    .combo-computo.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+    .e-outline.e-input-group.e-input-focus.e-control-wrapper:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+    .e-outline.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled),
+    .e-outline.e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) {
+        border-color: none !important;
+        box-shadow: none !important;
+    }
+
+    .e-accordion .e-acrdn-item .e-acrdn-panel {
+        font-size: 14px;
+        margin-bottom: -12px;
+        margin-right: -2px;
+    }
+
+    .combogruppi {
+        flex-grow: 1;
+    }
+
+    .e-toast-container .e-toast .e-toast-message .e-toast-title {
+        color: black;
+        font-size: 14px;
+        font-weight: bold;
+        background-color: var(--bs-secondary);
+    }
+
+    .e-toast-container .e-toast .e-toast-message .e-toast-content {
+        color: black;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+    .e-toast-container .e-toast {
+    }
+
+    #toast_default .e-meeting::before {
+        content: "\e705";
+    }
+
+    .bootstrap4 #toast_default .e-meeting::before {
+        content: "\e763";
+    }    
+    
+    .dialogcontainer {
+        width: 100%;
+        height: 100%;
+        overflow: auto; 
+    }
+
+</style>

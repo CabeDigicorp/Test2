@@ -1,0 +1,94 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using System.Collections.ObjectModel
+@using JoinWebUI.Utilities
+
+@* <div id="object" style="height:stretch"> *@
+<SfGrid @ref=_grid DataSource=@DataSource TValue=PropertyItem
+        AllowSelection=true
+        AllowGrouping=false
+        AllowFiltering=true
+        AllowReordering=false
+        AllowResizing=true
+        AllowSorting=false
+        AllowMultiSorting=false>
+    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"
+                           EnableSimpleMultiRowSelection="false"
+                           CheckboxOnly="false"
+                           Mode="Syncfusion.Blazor.Grids.SelectionMode.Both" />
+    <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" ShowDeleteConfirmDialog="true" Mode="EditMode.Batch" AllowEditOnDblClick="false" />
+    <GridFilterSettings Type=FilterType.Excel />
+    <GridColumns>
+        <GridColumn Field="@nameof(QuantityItem.Name)"
+                    Type="ColumnType.String"
+                    AllowEditing="false"
+                    Width="25%"></GridColumn>
+        @* <GridColumn Field="@nameof(QuantityItem.Description)" HeaderText="Descrizione" Type="ColumnType.String" AllowEditing="false" Width="30%"></GridColumn> *@
+        @* <GridColumn Field="@nameof(QuantityItem.Unit)" HeaderText="Unità" Type="ColumnType.String" AllowEditing="false" Width="20%"></GridColumn> *@
+        @* <GridColumn Field="@nameof(QuantityItem.Value)" HeaderText="Valore" Type="ColumnType.String" AllowEditing="false" Width="30%"></GridColumn> *@
+        <GridColumn Field="@nameof(QuantityItem.ValueAndUnit)"
+                    Type="ColumnType.String"
+                    AllowEditing="false"
+                    Width="75%"></GridColumn>
+        <GridColumn Field="@nameof(QuantityItem.Value)"
+                    Type="ColumnType.String"
+                    AllowEditing="false"
+                    Visible="false"
+                    Width="0%"></GridColumn>
+    </GridColumns>
+</SfGrid>
+@* </div> *@
+
+<style>
+    .e-grid .e-gridcontent .e-rowcell {
+        font-size: 12px !important;
+        height: auto !important;
+    }
+
+    .e-grid .e-gridheader .e-columnheader {
+        display: none;
+
+    }
+</style>
+
+
+@code {
+
+    [Parameter]
+    public ObservableCollection<PropertyItem> DataSource { get; set; } = new ObservableCollection<PropertyItem>();
+
+    [Parameter]
+    public bool ShowNull { get; set; } = true;
+    private bool _showNull = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        _showNull = ShowNull;
+        if (_grid.TotalItemCount > 0)
+        {
+            if (_showNull)
+            {
+                await _grid.ClearFilteringAsync(nameof(QuantityItem.Value));
+            }
+            else
+            {
+                var col = nameof(QuantityItem.Value);
+                var op = (Enum.GetName<Syncfusion.Blazor.Operator>(Syncfusion.Blazor.Operator.NotEqual) ?? string.Empty).ToLower();
+                var val = FragmentsHelper.NullPlaceHolder;
+                await _grid.FilterByColumnAsync(col, op, val);
+            }
+            _grid.ForceUpdate = true;
+            StateHasChanged();
+        }
+
+    }
+
+    private SfGrid<PropertyItem> _grid { get; set; } = new SfGrid<PropertyItem>();
+
+    public void ForceUpdate()
+    {
+        _grid.ForceUpdate = true;
+    }
+}

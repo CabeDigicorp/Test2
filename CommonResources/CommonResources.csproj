@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DigiCorp.CommonResources</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Configurations>Debug;Release;Release NoObfuscator</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\Output\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\Output\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release NoObfuscator|AnyCPU'">
+    <OutputPath>..\Output\Release NoObfuscator\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <BaseOutputPath>..\Output\</BaseOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release NoObfuscation|AnyCPU'">
+    <OutputPath>bin\Release NoObfuscation\</OutputPath>
+    <Optimize>true</Optimize>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_ale|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Output\Debug_ale\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ASYNC_GROUP</DefineConstants>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Resources\digicorp.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Wpf.Core" Version="24.1.3" />
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Syncfusion.Gantt.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfGrid.WPF" Version="27.1.55" />
+    <PackageReference Include="Syncfusion.SfShared.WPF" Version="18.2.0.56" />
+    <PackageReference Include="Syncfusion.Tools.WPF" Version="27.1.55" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="ToggleSwitch" Version="1.2.0" />
+    <PackageReference Include="WPFLocalizeExtension" Version="3.9.4" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
+  </ItemGroup>
+</Project>

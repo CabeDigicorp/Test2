@@ -1,0 +1,117 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using System.Collections.ObjectModel
+@using JoinWebUI.Utilities
+
+<SfGrid @ref=_grid DataSource=@DataSource TValue=PropertyItem
+        AllowSelection=true
+        AllowGrouping=false
+        AllowFiltering=true
+        AllowReordering=false
+        AllowResizing=false
+        AllowSorting=false
+        AllowMultiSorting=false
+        RowHeight="24">
+    @*     @attributes="GridRuoliAttributes"> *@
+    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"
+                           EnableSimpleMultiRowSelection="false"
+                           CheckboxOnly="false"
+                           Mode="Syncfusion.Blazor.Grids.SelectionMode.Both" />
+    <GridEditSettings AllowAdding="false" AllowDeleting="false" AllowEditing="false" ShowDeleteConfirmDialog="true" Mode="EditMode.Batch" AllowEditOnDblClick="false" />
+    <GridFilterSettings Type=FilterType.Excel />
+    @* <GridEvents CellSelected="@OnRuoliCellSelected" TValue="RuoloListItem"></GridEvents> *@
+    <GridColumns>
+        <GridColumn Field="@nameof(PropertyItem.Name)"
+                    Type="ColumnType.String"
+                    AllowEditing="false"
+                    Width="40%"/>
+        <GridColumn Field="@nameof(PropertyItem.Value)"
+                    Type="ColumnType.String"
+                    AllowEditing="false"
+                    Width="60%"/>
+        @if (HasLink)
+        {
+            <GridColumn Field="@nameof(PropertyItem.LinkKey)"
+                        Type="ColumnType.Long"
+                        AllowEditing="false" Width="20%">
+                <Template>
+                    @{
+                        long? linkKey = (context as PropertyItem)!.LinkKey;
+                        if (linkKey.HasValue)
+                        {
+                            <a href="javascript:void(null);" @onclick=@(() => OnLinkClick(linkKey.Value)) >#@linkKey</a>
+                        }
+                    }
+                </Template>
+
+            </GridColumn>
+        }
+    </GridColumns>
+</SfGrid>
+
+<style>
+    .e-grid .e-gridcontent .e-rowcell {
+        font-size: 13px !important;
+    }
+
+    .e-grid .e-gridheader .e-columnheader {
+        display: none;
+    }
+
+</style>
+
+@code {
+
+    [Parameter]
+    public string IfcModelKey { get; set; } = string.Empty;
+
+    [Parameter]
+    public ObservableCollection<PropertyItem> DataSource { get; set; } = new ObservableCollection<PropertyItem>();
+
+    [Parameter]
+    public FragmentsHelper? Helper { get; set; } = null;
+
+    [Parameter]
+    public bool ShowNull { get; set; } = true;
+    private bool _showNull = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        _showNull = ShowNull;
+        if (_grid.TotalItemCount > 0)
+        {
+            if (_showNull)
+            {
+                await _grid.ClearFilteringAsync(nameof(PropertyItem.Value));
+            }
+            else
+            {
+                var col = nameof(PropertyItem.Value);
+                var op = (Enum.GetName<Syncfusion.Blazor.Operator>(Syncfusion.Blazor.Operator.NotEqual) ?? string.Empty).ToLower();
+                var val = FragmentsHelper.NullPlaceHolder;
+                await _grid.FilterByColumnAsync(col, op, val);
+            }
+            _grid.ForceUpdate = true;
+            StateHasChanged();
+        }        
+
+    }
+
+    private bool HasLink
+    {
+        get => DataSource.Any(item => item.LinkKey != null);
+    }
+    private SfGrid<PropertyItem> _grid { get; set; } = new SfGrid<PropertyItem>();
+
+    public void ForceUpdate()
+    {
+        _grid.ForceUpdate = true;
+    }
+
+    private void OnLinkClick(long linkKey)
+    {
+        Helper?.LoadProperties(new ObjectKey(IfcModelKey, linkKey), true);
+    }
+}

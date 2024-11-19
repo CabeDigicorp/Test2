@@ -1,0 +1,174 @@
+﻿<Window x:Class="StampeWpf.ReportWizardSettingFogliDiCalcoloWnd"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StampeWpf"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com" 
+        xmlns:ExtendedWPFToolkit="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:dxp="http://schemas.devexpress.com/winfx/2008/xaml/printing"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxpbars="http://schemas.devexpress.com/winfx/2008/xaml/printing/bars"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
+        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
+        xmlns:mvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:themes="http://schemas.devexpress.com/winfx/2008/xaml/printing/themekeys" 
+        mc:Ignorable="d"
+        Height="768" Width="1280"
+        Title="{lex:Loc Fogli di calcolo}">
+
+
+    <Window.Resources>
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="mymenuButtonStyle">
+            <Setter Property="TextElement.FontFamily" Value="CommonResource/Resources/#digicorp" />
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Width" Value="125"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="mynothingCheckedToggleButtonStyle">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="{x:Type TextBlock}" x:Key="myTextObejectStyle">
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="{x:Type Control}" x:Key="baseStyle">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBlock Text="{lex:Loc Sezione}" Style="{StaticResource myTextObejectStyle}"  />
+            <TextBlock Text=" : "  Style="{StaticResource myTextObejectStyle}"/>
+            <TextBlock Text="{lex:Loc Fogli di calcolo}" Style="{StaticResource myTextObejectStyle}"/>
+        </StackPanel>
+
+        <Button Click="AcceptButton_Click" Style="{StaticResource menuButtonStyle}" Grid.Column="2" Width="100" Height="40" HorizontalAlignment="Right" Background="LightGreen" >
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe086;"/>
+            </StackPanel>
+        </Button>
+
+
+        <Grid x:Name="MainGrid" Margin="5,5,5,5" Grid.Row="1" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Background="WhiteSmoke" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button ToolTip="{lex:Loc Navigazione}" Click="NavigationButton_Click" Grid.Column="0" Style="{StaticResource menuButtonStyle}" Content="&#xe117;" />
+                <Label Content="{lex:Loc Stampa fogli}" Margin="0,0,0,0" Background="WhiteSmoke" FontSize="16" Grid.Column="1" VerticalAlignment="Center"  />
+                <dxe:ComboBoxEdit ItemsSource="{Binding Sheets}" Grid.Column="2" dx:ThemeManager.Theme="Office2019Colorful" Height="20" EditValue="{Binding Path=SelectedSheets}" NullText="{lex:Loc Seleziona foglio}" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,1">
+                    <dxe:ComboBoxEdit.StyleSettings>
+                        <dxe:CheckedTokenComboBoxStyleSettings NewTokenPosition ="None"/>
+                    </dxe:ComboBoxEdit.StyleSettings>
+                </dxe:ComboBoxEdit>
+                <dxe:ComboBoxEdit ItemsSource="{Binding ModalitaAdattamentoFoglio}" DisplayMember="Value" ValueMember="Key" Grid.Column="4" dx:ThemeManager.Theme="Office2019Colorful" Height="20" EditValueChanged="ComboBoxEdit_EditValueChanged" EditValue="{Binding Path=SelectedAdattamentoFoglio}" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,1">
+                    <dxe:ComboBoxEdit.StyleSettings>
+                        <dxe:ComboBoxStyleSettings />
+                    </dxe:ComboBoxEdit.StyleSettings>
+                </dxe:ComboBoxEdit>
+            </Grid>
+        </Grid>
+        
+        <dxp:DocumentPreviewControl x:Name="DocumentPreviewControl" dx:ThemeManager.Theme="Office2019Colorful" DocumentSource="{Binding PreviewResult}" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" >
+            <dxp:DocumentPreviewControl.NavigationPaneSettings>
+                <dxp:NavigationPaneSettings ShowDocumentMapTab="False" ActiveTab="Pages" />
+            </dxp:DocumentPreviewControl.NavigationPaneSettings>
+            <dxp:DocumentPreviewControl.Resources>
+                <DataTemplate x:Key="{themes:NewDocumentViewerThemeKey ResourceKey=RibbonTemplate, IsThemeIndependent=True}">
+                    <Grid>
+                        <mvvm:Interaction.Behaviors>
+                            <dxb:ControllerBehavior Actions="{Binding Path=(dxp:DocumentPreviewControl.ActualViewer).ActualCommandProvider.RibbonActions, RelativeSource={RelativeSource TemplatedParent}}" ExecutionMode="OnEvent">
+                                <dxb:ControllerBehavior.Triggers>
+                                    <dxb:ActionTrigger EventName="Loaded" ExecuteOnce="True"/>
+                                </dxb:ControllerBehavior.Triggers>
+                            </dxb:ControllerBehavior>
+                        </mvvm:Interaction.Behaviors>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <ContentControl UseLayoutRounding="True" Focusable="False" Grid.Row="0" ContentTemplate="{DynamicResource {themes:NewDocumentViewerThemeKey ResourceKey=PresenterTemplate}}" />
+                        <dxr:RibbonStatusBarControl dxp:DocumentPreviewControl.BarItemName="{x:Static dxpbars:DefaultPreviewBarItemNames.StatusBar}" Focusable="False" Grid.Row="1" >
+                            <dxr:RibbonStatusBarControl.LeftItems>
+                                <dxpbars:PageNumberEditItem dxp:DocumentPreviewControl.BarItemName="{x:Static dxpbars:DefaultPreviewBarItemNames.PageNumber}"
+                                         SettingsSource="{Binding Path=(dxp:DocumentPreviewControl.ActualViewer), RelativeSource={RelativeSource TemplatedParent}}" />
+                                <dxpbars:ProgressEditItem dxp:DocumentPreviewControl.BarItemName="{x:Static dxpbars:DefaultPreviewBarItemNames.Progress}" ProgressSettings="{Binding Path=(dxp:DocumentPreviewControl.ActualViewer).Document, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"/>
+                                <dxpbars:StopPageBuildItem dxp:DocumentPreviewControl.BarItemName="{x:Static dxpbars:DefaultPreviewBarItemNames.StopBuilding}" Command="{Binding  Path=(dxp:DocumentPreviewControl.ActualViewer).ActualCommandProvider.StopPageBuildingCommand, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            </dxr:RibbonStatusBarControl.LeftItems>
+                            <dxr:RibbonStatusBarControl.RightItems>
+                                <dxpbars:ZoomFactorEditItem dxp:DocumentPreviewControl.BarItemName="{x:Static dxpbars:DefaultPreviewBarItemNames.ZoomFactor}" SettingsSource="{Binding Path=(dxp:DocumentPreviewControl.ActualViewer), RelativeSource={RelativeSource TemplatedParent}}" />
+                            </dxr:RibbonStatusBarControl.RightItems>
+                        </dxr:RibbonStatusBarControl>
+                    </Grid>
+                </DataTemplate>
+            </dxp:DocumentPreviewControl.Resources>
+        </dxp:DocumentPreviewControl>
+
+    </Grid>
+
+</Window>

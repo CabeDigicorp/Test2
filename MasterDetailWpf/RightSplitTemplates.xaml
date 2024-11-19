@@ -1,0 +1,263 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MasterDetailWpf"
+                    xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+                    xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:lex="http://wpflocalizeextension.codeplex.com" xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources">
+
+    <commons:VisibilityConverter x:Key="VisibilityConverter"/>
+    <commons:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+    <commons:InverseVisibilityHiddenConverter x:Key="InverseVisibilityHiddenConverter"/>
+    <commons:InverseConverter x:Key="InverseConverter"/>
+    <commons:MediaStateConverter x:Key="MediaStateConverter"/>
+    
+    <!--FILTRO-->
+    <DataTemplate x:Key="templateFilter">
+        <Grid Style="{StaticResource templateFilterStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!--Header part-->
+            <Grid Height="50" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{lex:Loc Filtra}" x:Name="PaneHeader" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
+                <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="0" Margin="0">
+                    <Button Command="{Binding Path=ClearAllFiltroCommand}"  Background="Transparent" Visibility="{Binding AnyFilter, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource smallButtonStyle}" Content="&#xe03A;"/>
+                    <ToggleButton Name="Filter" IsChecked="{Binding IsFiltroAttivato, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource smallToggleButtonStyle}" Content="&#xe033;" Focusable="False" Visibility="{Binding AnyFilter, Converter={StaticResource VisibilityConverter}}"/>
+                    <ToggleButton Name="Find" IsChecked="{Binding IsFiltroAttivato, Converter={StaticResource InverseConverter},  Mode=TwoWay}" Grid.Column="1" Style="{StaticResource smallToggleButtonStyle}" Content="&#xe067;" Focusable="False" Visibility="{Binding AnyFilter, Converter={StaticResource VisibilityConverter}}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                    <Button x:Name="SearchNext" Command="{Binding Path=SearchNextCommand}" ToolTipService.ToolTip="{lex:Loc Trova successivo}" Visibility="{Binding IsSearchIteratorEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource menuButtonStyle}" Content="&#xe082;" Margin="5,0,0,0" FontSize="14"/>
+                    <TextBlock Name="SearchResult" Text="{Binding SearchResult}" Visibility="{Binding IsSearchIteratorEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Center" Margin="5,0,5,0"  FontSize="14"/>
+                    <Button x:Name="SearchPrevious" Command="{Binding Path=SearchPreviousCommand}" ToolTipService.ToolTip="{lex:Loc Trova precedente}" Visibility="{Binding IsSearchIteratorEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource menuButtonStyle}" Content="&#xe081;"  FontSize="14"/>
+                </StackPanel>
+            </Grid>
+            <StackPanel  Grid.Row="1">
+                <ListView x:Name="ListaFiltri" ItemsSource="{Binding Items}" SelectedItem="{Binding CurrentAttributo, Mode=TwoWay}" Margin="0,0,0,5" Background="Transparent"
+                          BorderThickness="0,1,0,0" BorderBrush="Gray">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Height" Value="75"/>
+                            <Setter Property="Width" Value="146"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <!--<Setter Property="BorderBrush" Value="SteelBlue"/>
+                            <Setter Property="BorderThickness" Value="1"/>-->
+                            <Setter Property="Margin" Value="1"/>
+                            <!--<EventSetter Event="MouseDoubleClick" Handler="ListaFiltri_HandleDoubleClick" />-->
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <!--<DataTemplate x:DataType="local:AttributoFilterView">-->
+                        <DataTemplate>
+                            <Border BorderBrush="SteelBlue" BorderThickness="1">
+                                <StackPanel Style="{StaticResource listaFilterItemStyle}" Focusable="False" Margin="1"
+                                    ToolTip="{Binding SelectedValuesAsStringTooltip}"
+                                    >
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseLeftButtonUp">
+                                            <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <!--Always visible part-->
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                            <RowDefinition Height="20"/>
+                                            <RowDefinition Height="20"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <!--<ColumnDefinition Width="20"/>
+                                                <ColumnDefinition Width="20"/>-->
+                                                <ColumnDefinition Width="20"/>
+                                            </Grid.ColumnDefinitions>
+                                            <!--<ToggleButton Name="Find" IsChecked="{Binding IsFiltroAttivato, Converter={StaticResource InverseConverter},  Mode=TwoWay}" Grid.Column="1" Style="{StaticResource smallToggleButtonStyle}" Content="&#xe067;" Focusable="False"/>
+                                            <ToggleButton Name="Filter" IsChecked="{Binding IsFiltroAttivato, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource smallToggleButtonStyle}" Content="&#xe033;" Focusable="False"/>-->
+                                            <Button Name="Clear" Command="{Binding Path=ClearFiltroCommand}" Grid.Column="3" Style="{StaticResource smallButtonStyle}" Content="&#xe03A;"/>
+                                        </Grid>
+                                        <TextBlock Name="FilterName" Text="{Binding Nome}" Grid.Row="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Nome}"/>
+                                        <TextBlock Name="FilterValue" Text="{Binding SelectedValuesAsString}" Grid.Row="2" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding SelectedValuesAsString}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <TextBlock Text="{lex:Loc Trascina qui lattributo da cercare o filtrare}" Foreground="Gray" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                <Button Name="HelpBtn" Content="&#xe057;" Command="{Binding ViewPopupsCommand}" Width="Auto" HorizontalAlignment="Center" Style="{StaticResource menuButtonStyle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding LostFocusCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers> 
+
+                </Button>
+                <dxe:FlyoutControl IsOpen="{Binding IsHelpPopupOpen, Mode=TwoWay}" 
+										   PlacementTarget="{Binding ElementName=HelpBtn}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                    <dxe:FlyoutControl.Settings>
+                        <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                        </dxe:FlyoutSettings>
+                    </dxe:FlyoutControl.Settings>
+                    <commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                    LoadedBehavior="{Binding IsHelpPopupOpen, Converter={StaticResource MediaStateConverter}}"
+                                                    MaxWidth="200" MaxHeight="200"/>
+                </dxe:FlyoutControl>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <!--ORDINAMENTO-->
+    <DataTemplate x:Key="templateSort">
+        <Grid Style="{StaticResource templateSortStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Height="50" Grid.Row="0">
+                <TextBlock Text="{lex:Loc Ordina}" x:Name="PaneHeader" HorizontalAlignment="Left" FontSize="20" VerticalAlignment="Center" Margin="5,0,0,0" Grid.Row="0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                    <Button Command="{Binding Path=ClearAllSortCommand}" Visibility="{Binding IsClearAllSortVisible, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource menuButtonStyle}" Content="&#xe03A;"/>
+                </StackPanel>
+            </Grid>
+            <StackPanel Grid.Row="1">
+                <ListView x:Name="ListaSort" ItemsSource="{Binding Items}" SelectedItem="{Binding CurrentAttributo, Mode=TwoWay}" Margin="0,0,0,5" Background="Transparent"
+                          BorderThickness="0,1,0,0" BorderBrush="Gray">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Height" Value="50"/>
+                            <Setter Property="Width" Value="146"/>
+                            <!--<Setter Property="BorderBrush" Value="SteelBlue"/>
+                            <Setter Property="BorderThickness" Value="1"/>-->
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Focusable" Value="false"/>
+                            <Setter Property="Margin" Value="1"/>
+
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="SteelBlue" BorderThickness="1">
+                                <StackPanel Style="{StaticResource listaSortItemStyle}" Focusable="False" Margin="1">
+                                    <Grid>
+                                        <!--Margin="5,5,5,10"-->
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Name="SortStackPanel" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                                            <Button Command="{Binding Path=ClearSortCommand}" Style="{StaticResource smallButtonStyle}" Content="&#xe03A;"/>
+                                            <toggleswitch:HorizontalToggleSwitch IsChecked="{Binding IsOrdinamentoInverso, Mode=TwoWay}" CheckedContent="Z-A" UncheckedContent="A-Z" Padding="0" Margin="5,0,5,0" Height="20" Width="70" VerticalAlignment="Center" Focusable="False"
+                                                                             CheckedBackground="White" UncheckedBackground="White" CheckedForeground="Black" UncheckedForeground="Black" FontSize="10" FontWeight="Light"/>
+                                        </StackPanel>
+                                        <TextBlock Name="SortName" Text="{Binding Nome}" Grid.Row="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Nome}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <TextBlock Text="{lex:Loc Trascina qui lattributo da ordinare}" Foreground="Gray" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                <Button Name="HelpBtn"  Content="&#xe057;" Command="{Binding ViewPopupsCommand}" Width="Auto" HorizontalAlignment="Center" Style="{StaticResource menuButtonStyle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding LostFocusCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <dxe:FlyoutControl IsOpen="{Binding IsHelpPopupOpen, Mode=TwoWay}" 
+										   PlacementTarget="{Binding ElementName=HelpBtn}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                    <dxe:FlyoutControl.Settings>
+                        <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                        </dxe:FlyoutSettings>
+                    </dxe:FlyoutControl.Settings>
+                    <commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                    LoadedBehavior="{Binding IsHelpPopupOpen, Converter={StaticResource MediaStateConverter}}"
+                                                    MaxWidth="200" MaxHeight="200"/>
+                </dxe:FlyoutControl>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <!--RAGGRUPPAMENTO-->
+    <DataTemplate x:Key="templateGroup">
+        <Grid Style="{StaticResource templateGroupStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Height="50" Grid.Row="0">
+                <TextBlock Text="{lex:Loc Raggruppa}" x:Name="PaneHeader" HorizontalAlignment="Left" FontSize="20" VerticalAlignment="Center" Margin="5,0,0,0" Grid.Row="0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                    <Button Command="{Binding Path=ClearAllGroupCommand}" Visibility="{Binding IsClearAllGroupVisible, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource menuButtonStyle}" Content="&#xe03A;"/>
+                </StackPanel>
+            </Grid>
+            <StackPanel Grid.Row="1">
+                <ListView x:Name="ListaGroup" ItemsSource="{Binding Items}" SelectedItem="{Binding CurrentAttributo, Mode=TwoWay}" Margin="0,0,0,5" Background="Transparent"
+                              BorderThickness="0,1,0,0" BorderBrush="Gray"
+                          >
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Height" Value="50"/>
+                            <Setter Property="Width" Value="146"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Focusable" Value="false"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="SteelBlue" BorderThickness="1">
+                                <StackPanel Style="{StaticResource listaGroupItemStyle}" Focusable="False" Margin="1">
+                                    <Grid ><!--Margin="5,5,5,10"-->
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Name="GroupStackPanel" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                                            <Button Command="{Binding Path=ClearGroupCommand}" Style="{StaticResource smallButtonStyle}" Content="&#xe03A;"/>
+                                        </StackPanel>
+                                        <TextBlock Name="GroupName" Text="{Binding Nome}" Grid.Row="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Nome}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <TextBlock Text="{lex:Loc Trascina qui lattributo da raggruppare}" Foreground="Gray" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                <Button Name="HelpBtn" Content="&#xe057;" Command="{Binding ViewPopupsCommand}" Width="Auto" HorizontalAlignment="Center" Style="{StaticResource menuButtonStyle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding LostFocusCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <dxe:FlyoutControl IsOpen="{Binding IsHelpPopupOpen, Mode=TwoWay}" 
+										   PlacementTarget="{Binding ElementName=HelpBtn}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                    <dxe:FlyoutControl.Settings>
+                        <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                        </dxe:FlyoutSettings>
+                    </dxe:FlyoutControl.Settings>
+                    <commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                    LoadedBehavior="{Binding IsHelpPopupOpen, Converter={StaticResource MediaStateConverter}}"
+                                                    MaxWidth="200" MaxHeight="200"/>
+                </dxe:FlyoutControl>
+            </StackPanel>
+                
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

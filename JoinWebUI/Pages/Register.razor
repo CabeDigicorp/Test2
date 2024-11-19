@@ -1,0 +1,181 @@
+﻿@page "/authentication/registering"
+
+@using ModelData.Dto
+@using AutoMapper
+@using System.Security.Claims
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inject NavigationManager _navigationManager
+@inject IAuthSyncService _authSync
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+<PageTitle>JoinWeb - Registrazione utente</PageTitle>
+
+<div class="card">
+	<div class="card-header text-center py-3">
+		<h4>Completa la registrazione a JoinWeb</h4>
+	</div>
+	<div class="card-body">
+		@if (_submitSuccess)
+		{
+			<div class="alert alert-success" role="alert">
+				Registrazione completata
+			</div>
+		}
+		else
+		{
+			<EditForm Model="_model" OnValidSubmit="OnValidSubmitAsync" Context="RegisterFormContext">
+				<DataAnnotationsValidator/>
+				<ValidationSummary/>
+				<SfTextBox @bind-Value="_model.Nome" Placeholder="Nome" ValidateOnInput="true" FloatLabelType="FloatLabelType.Always"  />
+				<div class="text-danger">
+					<ValidationMessage For="@(() => _model.Nome)" />
+				</div>
+				<br>
+				<SfTextBox @bind-Value="_model.Cognome" Placeholder="Cognome" ValidateOnInput="true" FloatLabelType="FloatLabelType.Always" />
+				<div class="text-danger">
+					<ValidationMessage For="@(() => _model.Cognome)" />
+				</div>
+				<br>
+				<SfTextBox @bind-Value="_model.Email" Placeholder="E-mail" ValidateOnInput="true" FloatLabelType="FloatLabelType.Always" />
+				<div class="text-danger">
+					<ValidationMessage For="@(() => _model.Email)" />
+				</div>
+				<br>
+				<SfCheckBox @bind-Checked="_model.PrivacyConsent" @onchange="OnPrivacyCheckedChanged" Label="Privacy bla bla bla..." LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.After" />
+
+				<br>
+				<br>
+				<br>
+
+				<div>
+				<SfButton Content="Registra" CssClass="e-btn-yellow" HtmlAttributes="@registerAttr" Disabled="@(!_model.PrivacyConsent)">
+
+				</SfButton>
+				<SfButton Content="Annulla" CssClass="e-btn-blue" HtmlAttributes="@cancelAttr">
+
+				</SfButton>
+				</div>
+				@if (_responseError)
+				{
+					<div class="alert alert-danger" role="alert">
+						@_responseErrorMessage
+					</div>
+				}
+
+			</EditForm>
+		}
+	</div>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	public Task<AuthenticationState> AuthState { get; set; }
+
+	private UtenteModel _model { get; set; } = new UtenteModel();
+
+	//private bool PrivacyUnChecked { get { return !_model.PrivacyConsent; } }
+
+	private bool _responseError = false;
+	private string _responseErrorMessage = "";
+
+	private bool _responseSuccess = false;
+	private string _responseSuccessMessage = "";
+
+	private bool _submitSuccess = false;
+
+	private Dictionary<string, object> registerAttr = new Dictionary<string, object>()
+    {
+		{"title","Conferma registrazione" },
+		{"type","submit" }
+	};
+
+	private Dictionary<string, object> cancelAttr = new Dictionary<string, object>()
+    {
+		{"title","Annulla registrazione" },
+		{"type","button" }
+	};
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		var auth0User = (await AuthState).User;
+
+		var joinUser = await _apiClient.JsonGetAsync<UtenteInfoDto>("utenti/get-utente-attuale");
+
+		if (auth0User.IsInRole(RuoliAuth0.REGISTERING))
+		{
+			_navigationManager.NavigateTo("/");
+			return;
+		}
+		else if (joinUser.Success && joinUser.ResponseContentData != null)
+		{
+			if (!joinUser.ResponseContentData.Disabled && (string.IsNullOrWhiteSpace(joinUser.ResponseContentData.Email) || !joinUser.ResponseContentData.PrivacyConsent))
+			{
+				_model = _mapper.Map<UtenteModel>(joinUser.ResponseContentData);
+			}
+			else
+			{
+				_navigationManager.NavigateTo("/");
+				return;
+			}
+		}
+		else
+		{
+			Claim email = auth0User.Claims.Where(c => c.Type == "email").FirstOrDefault();
+			_model.Email = email?.Value;
+			Claim name = auth0User.Claims.Where(c => c.Type == "given_name").FirstOrDefault();
+			if (name != null) _model.Nome = name.Value;
+			Claim surname = auth0User.Claims.Where(c => c.Type == "family_name").FirstOrDefault();
+			if (surname != null) _model.Cognome = surname.Value;
+			_model.PrivacyConsent = false;
+
+			await SaveToDB(false);
+
+
+		}
+
+
+
+		//await Task.CompletedTask;
+	}
+
+	private void OnPrivacyCheckedChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+	{
+		StateHasChanged();
+	}
+
+	private async Task OnValidSubmitAsync()
+	{
+		await SaveToDB(_model?.Id != null && _model.Id != Guid.Empty);
+		_submitSuccess = _responseSuccess;	
+	}
+
+	private async Task SaveToDB(bool editing)
+	{
+		_responseSuccess = false;
+		_responseError = false;
+
+		var result = await _authSync.RegisterUserAsync(_model, editing);
+
+		if (result.Success)
+		{
+			_responseSuccess = true;
+			_responseError = false;
+			_responseErrorMessage = string.Empty;
+
+			if (!editing) _model = _mapper.Map<UtenteModel>(result.ResponseContentData);
+		}
+		else
+		{
+			_responseSuccess = false;
+			_responseError = true;
+			_responseErrorMessage = result.ResponseStatusCode + " - " + result.ResponseContentErrorData;
+		}
+	}
+
+
+}

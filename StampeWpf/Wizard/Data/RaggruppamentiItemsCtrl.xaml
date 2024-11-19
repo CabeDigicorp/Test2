@@ -1,0 +1,157 @@
+﻿<UserControl x:Class="StampeWpf.RaggruppamentiItemsCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StampeWpf"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Grid Background="LightSteelBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="AddButton" Command="{Binding AddGroupCommand}" Content="&#xe02d;" Style="{StaticResource menuButtonStyle}" Grid.Column="0" FontSize="20" ToolTip="{lex:Loc Aggiungi raggruppamento}"/>
+            <Button x:Name="DeleteButton" Command="{Binding DeleteGroupCommand}" Content="&#xe03a;" Style="{StaticResource menuButtonStyle}" Grid.Column="1" Visibility="{Binding IsVisibleDeleteButton}" ToolTip="{lex:Loc Elimina raggruppamento}" />
+            <Button x:Name="UpButton" Command="{Binding UpGroupCommand}" Content="&#xe08c;" Style="{StaticResource menuButtonStyle}" Foreground="Black" Grid.Column="2" Visibility="{Binding IsVisibleButtonForOperation}" ToolTip="{lex:Loc Sposta sopra}" />
+            <Button x:Name="DownButton" Command="{Binding DownGroupCommand}" Content="&#xe08d;" Style="{StaticResource menuButtonStyle}" Grid.Column="3" Visibility="{Binding IsVisibleButtonForOperation}" ToolTip="{lex:Loc Sposta sotto}" />
+            <Label Content="{lex:Loc Raggruppamenti}" Background="LightSteelBlue" FontSize="16" Grid.Column="5" VerticalAlignment="Center" Margin="110,0,0,0"/>
+            <!--LightGray-->
+        </Grid>
+        
+        <ListView   Name="LstViewRaggruppamenti" ItemsSource="{Binding ItemsRaggruppamenti}" SelectedItem="{Binding SelectedItemInGroup}">
+            <ListView.Resources>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                <Border x:Name="Bd"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        Padding="{TemplateBinding Padding}"
+                        SnapsToDevicePixels="true">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                            <Condition Property="IsSelected" Value="True" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter Property="Background" Value="#cbe8f6"/>
+                                    </MultiTrigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="Selector.IsSelectionActive" Value="True" />
+                                            <Condition Property="IsSelected" Value="True" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter Property="Background" Value="#cbe8f6"/>
+                                    </MultiTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.Resources>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="85"/>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Label Width="{Binding IndentazioneUi}"/>
+                        <local:TextBoxItemCtrl DataContext="{Binding TextBoxItemView}" Grid.Column="1" />
+                        <Button x:Name="GroupSettingButton" Command="{Binding GroupSettingButtonCommand}" Content="&#xe055;" Style="{StaticResource smallButtonStyle}" Foreground="Black" Grid.Column="2" Visibility="{Binding IsVisibleButtonForOperation}" FontSize="20" Width="25"  />
+                        <!--<Label Content="{lex:Loc Ordina}" Grid.Column="3" />-->
+                        <ToggleButton x:Name="AZButtonCresc" Content="&#xe0d2;" IsChecked="{Binding IsOrdineCrescente}" Grid.Column="3" ToolTip="{lex:Loc Utilizza ordinamento crescente}" Visibility="{Binding IsVisibleButtonForOperation}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource menuToggleButtonStyle}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="FontSize" Value="21" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="SteelBlue"/>
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="BorderBrush" Value="Transparent" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                        <ToggleButton x:Name="AZButtonDecres" Content="&#xe0d4;" IsChecked="{Binding IsOrdineDecrescente}" Grid.Column="4" ToolTip="{lex:Loc Utilizza ordinamento decrescente}" Visibility="{Binding IsVisibleButtonForOperation}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource menuToggleButtonStyle}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="FontSize" Value="21" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="SteelBlue"/>
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="BorderBrush" Value="Transparent" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                        <local:TextBoxItemCtrl DataContext="{Binding TextBoxItemViewOrdinamento}" Grid.Column="5" IsEnabled="{Binding IsTextBoxItemViewOrdinamentoEnable}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{lex:Loc Aggiungi}" Command="{Binding AddGroupCommand}" CommandParameter="{Binding ElementName=Raggruppamenti,Path=SelectedItem}"/>
+                    <MenuItem Header="{lex:Loc Rimuovi}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding ElementName=Raggruppamenti,Path=SelectedItem}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+        </ListView>
+    </StackPanel>
+
+</UserControl>

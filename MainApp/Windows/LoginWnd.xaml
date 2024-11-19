@@ -1,0 +1,76 @@
+﻿<Window x:Class="MainApp.LoginWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MainApp"
+        mc:Ignorable="d"
+        Title=""
+        Height="500" Width="800"
+        MaxHeight="500" MaxWidth="800"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"    
+        ResizeMode="NoResize"
+        >
+    <Window.Background>
+        <ImageBrush>
+            <ImageBrush.ImageSource>
+                <BitmapImage UriSource="/Resources/JoinLoginSfondo.png" />
+            </ImageBrush.ImageSource>
+        </ImageBrush>
+    </Window.Background>
+    <Window.Resources>
+        
+    </Window.Resources>
+    <Grid Margin="200,20,70,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Name="Welcome" Grid.Row="0" Margin="0,0,0,30">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Name="BenvenutoInJoinText" Text="{lex:Loc BenvenutoInJoin}" FontSize="30" Foreground="White"/>
+                <TextBlock Name="AppVersionText" FontSize="30" Foreground="White" Margin="8,0,0,0"/>
+            </StackPanel>
+        </Grid>
+        <Grid Name="LicenseGrid" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Margin="0" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0">
+                    <TextBlock Text="{lex:Loc Lingua}" Height="24" FontSize="16" VerticalAlignment="Bottom" Foreground="White" Width="Auto"/>
+                    <ComboBox Name="LanguageCombo" DisplayMemberPath="DisplayName" SelectionChanged="LanguageCombo_SelectionChanged"
+                                    Height="24" FontSize="14" VerticalAlignment="Bottom" Width="150" Margin="10,0,0,0"/>
+                </StackPanel>
+
+            </Grid>
+
+            <TextBlock Name="InsertLicenseText" Grid.Row="1" HorizontalAlignment="Left" Text="{lex:Loc InserireLicenza}" Height="20" Foreground="White" Margin="0,10,0,0"/>
+            <TextBox Name="LicenseCodeText" Grid.Row="2" HorizontalAlignment="Stretch" Text="" Height="60" TextWrapping="Wrap"/>
+            <Button Name="ValidateButton" Content="{lex:Loc AttivaLicenza}" Click="ValidateButton_Click"  Grid.Row="3" HorizontalAlignment="Left" Width="100"  Margin="0,5,0,0"/>
+            <TextBox Name="ValidationFailedText" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Text="" IsReadOnly="True" BorderThickness="0" Background="Transparent" Foreground="White"/>
+        </Grid>
+        <StackPanel  Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="ExitButton" Content="{lex:Loc Esci}" Grid.Column="0" Width="150" Click="ExitButton_Click"/>
+            <Button Name="StartButton" Grid.Column="1" Width="150" Height="50" Margin="10,0,0,0" Click="StartButton_Click">
+                <StackPanel>
+                    <TextBlock Name="GoText" Text="{lex:Loc Avvia}" HorizontalAlignment="Center"/>
+                    <TextBlock Name="TrialTextBox" Text="{lex:Loc versioneDimostrativa}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+    </Grid>
+</Window>

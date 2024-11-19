@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailModel.EntityAttributo">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAACAAACAAACAAAAAAAAAAAEAAAAAAAAAAAAAIAAABA=</HashCode>
+      <FileName>EntityAttributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Attributo" />
+      <Property Name="Entity" />
+      <Property Name="Valore" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.Attributo" Collapsed="true">
+    <Position X="5.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQQIAhhgUBCAQAAAAAECBQAABAAAIgAAAEoAAABE=</HashCode>
+      <FileName>Model\Attributo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MasterDetailModel.Entity" Collapsed="true">
+    <Position X="5.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAACAAAAAAACACAAAAAAEAAASAABACAAAAAAAIAAAAA=</HashCode>
+      <FileName>Model\Entity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="MasterDetailModel.Valore" Collapsed="true">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAEAAAAIACAgAAEAQBABAAAEAAAAAAAAAAgAFA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MasterDetailModel.ValoreSingle" Collapsed="true">
+    <Position X="5.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Valore.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

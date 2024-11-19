@@ -1,0 +1,139 @@
+﻿<UserControl x:Class="MasterDetailWpf.NumericFormatCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="300"
+             FontSize="15"
+             DataContext="{StaticResource NumericFormatViewKey}"
+             >
+    <UserControl.Resources>
+        <Style TargetType="Button" x:Key="menuButtonStyle1" BasedOn="{StaticResource menuButtonStyle}">
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="formatSetStyle">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
+            <ToggleButton IsChecked="{Binding IsAddFormatPanelOpen}" Style="{StaticResource smallToggleButtonStyle}" Margin="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe02d;"/>
+                    <TextBlock Text="{lex:Loc Aggiungi}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ToggleButton>
+            <Button Command="{Binding RemoveFormatCommand}" Style="{StaticResource menuButtonStyle1}" Margin="0"
+                    IsEnabled="{Binding IsAddFormatPanelOpen, Converter={StaticResource InverseConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource menuTextBlockStyle}" Text="&#xe03a;"/>
+                    <TextBlock Text="{lex:Loc Elimina}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <Border Name="AddFormatPanel" Grid.Row="1" Panel.ZIndex="1" BorderThickness="1,0,1,1" BorderBrush="{StaticResource SelectedColor}" 
+                Height="232"
+                VerticalAlignment="Top" Background="{StaticResource SelectedColor}"
+                Visibility="{Binding IsAddFormatPanelOpen, Converter={StaticResource VisibilityConverter}}" Padding="5"
+                >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <Grid Margin="0,1,0,1" Height="22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc Simbolo}" Grid.Column="0" Style="{StaticResource formatSetStyle}"/>
+                        <TextBox Text="{Binding SymbolText, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,1,0,1" Height="22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc SimboloAllInizio}" Grid.Column="0" FontSize="12" VerticalAlignment="Center"/>
+                        <CheckBox IsChecked="{Binding IsSymbolAtLeft}" VerticalAlignment="Center" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,1,0,1" Height="22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc SeparaSimbolo}" Grid.Column="0" FontSize="12" VerticalAlignment="Center"/>
+                        <CheckBox IsChecked="{Binding IsSymbolSeparated}" VerticalAlignment="Center" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,1,0,1" Height="22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc NCifreDecimali}" Grid.Column="0" Style="{StaticResource formatSetStyle}"/>
+                        <TextBox Text="{Binding DecimalDigitCount, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,1,0,1" Height="22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{lex:Loc NZeriIniziali}" Grid.Column="0" Style="{StaticResource formatSetStyle}"/>
+                        <TextBox Text="{Binding LeftZeroCount, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,1,0,1" Height="22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBlock Text="{lex:Loc UsaSeparatoreMigliaia}" Style="{StaticResource formatSetStyle}"/>
+                            <TextBlock Text="{Binding ThousandSeparator}"/>
+                        </StackPanel>
+                        <CheckBox IsChecked="{Binding UseThousandSeparator}" VerticalAlignment="Center" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+                <TextBox Name="FormatTextBox" Grid.Row="1" Text="{Binding CurrentFormatUser, Mode=OneWay}" Margin="0,5,0,5" IsEnabled="False"/>
+                <TextBlock Text="{Binding FormattedExample}" Grid.Row="2" Foreground="DimGray" FontSize="12" HorizontalAlignment="Left" Margin="0,1,0,1"/>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" FlowDirection="RightToLeft">
+                    <Button Content="{lex:Loc Ok}" Command="{Binding AddFormatCommand}" Height="20" Width="60" Margin="5" FontSize="12" Background="White"/>
+                    <Button Content="{lex:Loc Annulla}" Command="{Binding CancelAddFormatCommand}" Height="20" Width="60" Margin="5" FontSize="12" Background="White"/>
+                </StackPanel>
+            </Grid>    
+        </Border>
+
+        <ListView Name="NumberFormatsList"  Grid.Row="1" ItemsSource="{Binding FormatItemsView}" SelectedIndex="{Binding CurrentFormatIndex}"
+                  Panel.ZIndex="0" SelectionMode="{Binding SelectionMode}"
+                  SelectionChanged="ListView_SelectionChanged" 
+                  MouseDoubleClick="ListView_MouseDoubleClick">
+            <ListView.ContextMenu>
+                <ContextMenu >
+                    <MenuItem x:Name="Copy" Header="{lex:Loc Copia2}" Command="{Binding CopyClipboardCommand}"/>
+                    <MenuItem x:Name="Paste" Header="{lex:Loc Incolla}" Command="{Binding PasteClipboardCommand}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock Text="{Binding UserFormat}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
+
+    </Grid>
+</UserControl>

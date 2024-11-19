@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MasterDetailView.FilterView">
+    <Position X="5.75" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQQgACCAASACQiCUAOAMABkABgAABAAACA0BBCAAIA=</HashCode>
+      <FileName>ViewModel\FilterView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Data" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MasterDetailModel.FilterData" Collapsed="true">
+    <Position X="9.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier />
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MasterDetailModel.AttributoFilterData" Collapsed="true">
+    <Position X="12.75" Y="6.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MasterDetailView.AttributoFilterView" Collapsed="true">
+    <Position X="11.25" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>EAAAIQAABECCAACAAAgAQAARABpoABAAEAAAwAMAAAA=</HashCode>
+      <FileName>ViewModel\FilterView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Data" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MasterDetailView.AttributoFilterDetailView" Collapsed="true">
+    <Position X="14" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AgAAIQQBBECDkAmSAEgEUigBUVApABAAIBJGiAGgBYo=</HashCode>
+      <FileName>ViewModel\AttributoFilterDetailView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Data" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

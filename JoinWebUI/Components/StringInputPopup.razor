@@ -1,0 +1,96 @@
+﻿@using AutoMapper
+@using ModelData.Dto
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using System.Text.RegularExpressions
+@inject JoinWebApiClient _apiClient
+@inject IMapper _mapper
+
+<SfDialog IsModal="true" Width="350px" ShowCloseIcon="true" @bind-Visible="@IsVisible" CloseOnEscape="true">
+    <DialogTemplates>
+        <Header>
+            @PopupTitle
+        </Header>
+        <Content>
+            <span></span>
+            <SfTextBox Value=@(_value) Input="@ValidateValue" />
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton CssClass="e-btn-yellow" Content="OK" IsPrimary="true" OnClick="@OkClick" Disabled="@ValueIsNotValid" />
+        <DialogButton CssClass="e-btn-blue" Content="Annulla" OnClick="@CancelClick" />
+    </DialogButtons>
+    @*<DialogEvents OnOpen="@Open" />*@
+</SfDialog>
+
+@code {
+
+    [Parameter] public string PopupTitle { get; set; }
+
+    [Parameter] public ValidFormats ValidFormat { get; set; } = ValidFormats.None;
+
+    [Parameter] public EventCallback<string> OnSubmit { get; set; }
+
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    [Parameter] public bool IsVisible { get; set; } = false;
+
+    [Parameter] public string Value { get { return _value; } set { _value = value; } }
+    private string _value = string.Empty;
+
+    private async Task OkClick()
+    {
+        IsVisible = false;
+        if (OnSubmit.HasDelegate)
+            await OnSubmit.InvokeAsync(Value);
+    }
+
+    private async Task CancelClick()
+    {
+        IsVisible = false;
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync();
+    }
+
+    private bool ValueIsNotValid
+    {
+        get
+        {
+            bool res = false;
+
+            switch (ValidFormat)
+            {
+                case ValidFormats.Domain:
+                    Regex regex = new Regex(@"^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,6}$");
+                    res = !regex.IsMatch(Value);
+                    break;
+                default:
+                    break;
+            }
+
+            return res;
+        }
+    }
+
+    //protected void Open()
+    //{
+    //    _value = string.Empty;
+    //}
+
+    public enum ValidFormats
+    {
+        None,
+        Domain,
+        Email
+    }
+
+    private void ValidateValue(InputEventArgs e)
+    {
+        _value = e.Value;
+        StateHasChanged();
+    }
+
+
+
+}

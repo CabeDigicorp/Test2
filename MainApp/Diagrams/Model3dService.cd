@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MainApp.MainAppService">
+    <Position X="3.75" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAMAAAAAQAAQAAAAAACAAAAAAAAAEAAAEAAQYgAAAAA=</HashCode>
+      <FileName>MainAppService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="_3DModelExchange.I3DModelService">
+    <Position X="7.25" Y="1.5" Width="3" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

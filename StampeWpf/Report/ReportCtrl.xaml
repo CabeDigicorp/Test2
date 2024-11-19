@@ -1,0 +1,609 @@
+﻿<UserControl x:Class="StampeWpf.ReportCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commons="clr-namespace:Commons;assembly=DigiCorp.Commons"
+             xmlns:masterDetailView="clr-namespace:MasterDetailView;assembly=DigiCorp.MasterDetailView"
+             xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:commonResources="clr-namespace:CommonResources;assembly=DigiCorp.CommonResources" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             lex:LocalizeDictionary.OutputMissingKeys="True"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="DigiCorp.CommonResources"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             
+             >
+    <!--DataContext="{StaticResource ReportViewKey}"-->
+    <UserControl.Resources>
+        <commons:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
+        <commons:StaticResourceConverter x:Key="StaticResourceConverter"/>
+        <!--<masterDetailView:GroupForegroundColorConverter x:Key="GroupForegroundColorConverter" />-->
+        <Style TargetType="{x:Type Control}" x:Key="baseStyle">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <!--<Style TargetType="{x:Type Button}" BasedOn="{StaticResource baseStyle}"></Style>-->
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource baseStyle}"></Style>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+
+        <!--VALOREVIEW CONTROLS-->
+        <DataTemplate x:Key="templateTesto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" VerticalAlignment="Top" TextWrapping="Wrap" Grid.Column="0" KeyDown="TextBox_KeyDown" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1"/>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                            Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <!--<DataTemplate x:Key="templateTestoRtfOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <ContentControl x:Name="RichTextContent" Grid.Column="0" IsTabStop="False" VerticalAlignment="Top" MinHeight="20" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick">
+                    <ExtendedWPFToolkit:RichTextBox x:Name="ShortRichTextBox" Text="{Binding Testo, Mode=TwoWay}" Foreground="Black" ScrollViewer.VerticalScrollBarVisibility="Auto"  AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}" Background="{Binding Background}" BorderThickness="0,0,0,1" />
+                </ContentControl>
+                <Grid Grid.Column="1" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="EditRtfButton" Grid.Column="0" Command="{Binding EditRtfCommand}" Style="{StaticResource detailListViewItemButtonStyle}" Content="&#xe040;" IsTabStop="False" Height="20" Visibility="{Binding IsReadOnly, Converter={StaticResource InverseVisibilityHiddenConverter}}"/>
+                    <ToggleButton x:Name="PreviewButton" Grid.Column="1" Command="{Binding PreviewCommand}" IsTabStop="False" Visibility="{Binding IsPreviewable, Converter={StaticResource VisibilityConverter}}" ToolTip="{lex:Loc VisualizzaStruttura}"
+                                        Content="&#xe080;" Style="{StaticResource detailListViewItemToggleButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>-->
+        <DataTemplate x:Key="templateContabilita">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" InputScope="CurrencyAmount" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick"  BorderThickness="0,0,0,1"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <DataTemplate x:Key="templateReale">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Numero}" Foreground="{Binding ResultForeground}" VerticalAlignment="Top" Grid.Column="0" ToolTip="{Binding ResultDescription}"/>
+                <TextBox Text="{Binding Formula,Mode=TwoWay}" TextWrapping="Wrap" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" PreviewKeyDown="TextBox_PreviewKeyDown" IsReadOnly="{Binding IsReadOnly}" Grid.Column="1" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" BorderThickness="0,0,0,1"/>
+            </Grid>
+            <!--<TextBox Text="{Binding Numero, Mode=TwoWay}" Foreground="Black" TextWrapping="Wrap" InputScope="CurrencyAmount" Height="20" VerticalAlignment="Top" KeyDown="TextBox_KeyDown" Margin="0,0,20,0"/>-->
+        </DataTemplate>
+        <DataTemplate x:Key="templateDataOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <DatePicker SelectedDate="{Binding Data, Mode=TwoWay}" Grid.Column="0" Foreground="Black" Background="{Binding Background}" VerticalAlignment="Top" MouseDoubleClick="ValoreAttributo_HandleMouseDoubleClick" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseConverter}}" BorderThickness="0,0,0,1"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="templateGuidOld">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </DataTemplate>
+        <masterDetailView:ValoreAttributoTemplateSelector x:Key="ValoreAttributoTemplateSelector" />
+        <masterDetailView:RightSplitPaneTemplateSelector x:Key="RightSplitPaneTemplateSelector" />
+        <commons:DataGridGroupColumnDescriptionConverter x:Key="DataGridGroupColumnDescriptionConverter" />
+
+
+    </UserControl.Resources>
+
+    <Grid PreviewMouseWheel="Grid_PreviewMouseWheel" PreviewMouseDown="Grid_PreviewMouseDown">
+        <Grid.LayoutTransform>
+            <ScaleTransform x:Name="MasterDetailScale" CenterX="0" CenterY="0" ScaleX="1" ScaleY="1"/>
+        </Grid.LayoutTransform>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <!--<ColumnDefinition Width="5"/>-->
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Name="MainGrid" Grid.Row="0" Style="{StaticResource mainGridStyle}" Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="400" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <Grid Name="MasterGrid" Grid.Column="0">
+                <Grid.InputBindings>
+                    <KeyBinding Key="Escape" Command="{Binding ReportItemsView.EscapeCommand}"/>
+                </Grid.InputBindings>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Style="{StaticResource menuStackPanelStyle}">
+                        <Button x:Name="AddEntity" Command="{Binding ReportItemsView.AddEntityCommand}" ToolTipService.ToolTip="{Binding ReportItemsView.AddEntityToolTip}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe02d;"
+                                Visibility="{Binding ReportItemsView.IsAddEntityEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <Button x:Name="MoveEntities" Command="{Binding ReportItemsView.MoveEntitiesCommand}" Background="Transparent" ToolTipService.ToolTip="{lex:Loc Sposta}"
+                                Visibility="{Binding ReportItemsView.IsMoveEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                Style="{StaticResource menuButtonStyle}">
+                            <Grid>
+                                <TextBlock Text="&#xe032;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding ReportItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding ReportItemsView.IsMoveEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </Button>
+                        <!--<Popup Style="{StaticResource popupStyle}"
+										IsOpen="{Binding ItemsView.IsMoveEntitiesWaitingForTarget, Mode=OneWay}" 
+										PlacementTarget="{Binding ElementName=MoveEntities}"
+                                        Placement="Top" Width="Auto"
+                               >
+                            <Border Style="{StaticResource popupBorderStyle}">
+                                <TextBlock Text="{lex:Loc SelezionareDestinazione}"/>
+                            </Border>
+                        </Popup>-->
+                        <dxe:FlyoutControl IsOpen="{Binding ItemsView.IsMoveEntitiesWaitingForTarget, Mode=OneWay}" 
+				                           PlacementTarget="{Binding ElementName=MoveEntities}"
+				                           Style="{StaticResource flyoutControlStyle}">
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <TextBlock Text="{lex:Loc SelezionareDestinazione}"/>
+                        </dxe:FlyoutControl>
+                        <Button x:Name="CopyEntities" Command="{Binding ReportItemsView.CopyEntitiesCommand}" ToolTipService.ToolTip="{lex:Loc Copia2}" 
+                                Visibility="{Binding ReportItemsView.IsCopyEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                Style="{StaticResource menuButtonStyle}">
+                            <Grid>
+                                <TextBlock Text="&#xe03d;" Style="{StaticResource menuTextBlockStyle}"/>
+                                <commons:NotificationCtrl Text="{Binding ReportItemsView.ReadyToPasteEntitiesCount}" Visibility="{Binding ReportItemsView.IsCopyEntitiesNotificationEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                            </Grid>
+                        </Button>
+                        <Button x:Name="MoveEntitiesAfter" Command="{Binding ReportItemsView.PasteEntitiesCommand}" 
+                                Visibility="{Binding ReportItemsView.IsMoveEntitiesAfterEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                ToolTipService.ToolTip="{Binding ReportItemsView.PasteEntitiesToolTip, Mode=TwoWay}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe030;"/>
+                        <Button x:Name="Escape" Command="{Binding ReportItemsView.EscapeCommand}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe037;"
+                                ToolTipService.ToolTip="{lex:Loc Annulla}"
+                                Visibility="{Binding ReportItemsView.IsEscapeEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <Button x:Name="DeleteEntities" Command="{Binding ReportItemsView.DeleteCheckedCommand}" ToolTip="{lex:Loc Elimina}" 
+                                Visibility="{Binding ReportItemsView.IsDeleteEntitiesEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe03a;"/>
+                        <Button x:Name="ColumnChooser" Click="ColumnChooser_Click" ToolTip="{lex:Loc Imposta colonne}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe05d;"
+                                Visibility="{Binding ReportItemsView.IsColumnChooserEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <Button x:Name="ExpandCheckedEntities" Command="{Binding ReportItemsView.ExpandCheckedEntitiesCommand}" ToolTipService.ToolTip="{lex:Loc Espandi selezione}" 
+                                Visibility="{Binding ReportItemsView.IsExpandAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe051;"/>
+                        <Button x:Name="CollapseAll" Command="{Binding ReportItemsView.CollapseAllCommand}" ToolTipService.ToolTip="{lex:Loc Collassa tutto}" 
+                                Visibility="{Binding ReportItemsView.IsCollapseAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                Style="{StaticResource menuButtonStyle}" Content="&#xe052;"/>
+                        <Button x:Name="CheckAll" Command="{Binding ReportItemsView.CheckAllCommand}" ToolTipService.ToolTip="{lex:Loc Seleziona tutto}" 
+                                Style="{StaticResource menuButtonStyle}" Content="&#xE09A;"
+                                Visibility="{Binding ReportItemsView.IsCollapseAllEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"/>
+                        <!--<Button x:Name="ImportItems" Command="{Binding ReportItemsView.ImportItemsCommand}"
+                                    Style="{StaticResource menuButtonStyle}" Content="&#xE0BA;"
+                                    ToolTip="{lex:Loc ImportItemsReport}"
+                                    Visibility="{Binding ReportItemsView.IsImportItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                    />-->
+                        <commonResources:ButtonsBarDropDownButton x:Name="ImportItems" Content="&#xE0BA;" Style="{StaticResource dropDownButtonStyle}"
+                                                          ToolTip="{lex:Loc ImportaArticoli}" FontSize="20"
+                                                          DesideredVisibility="{Binding ItemsView.IsImportItemsEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                                          OtherText="{lex:Loc Importa}">
+                            <commonResources:ButtonsBarDropDownButton.DropDownContent>
+                                <StackPanel Orientation="Vertical" Width="40">
+                                    <commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaDaFileJoin}"
+                                                Command="{Binding ItemsView.ImportItemsCommand}"
+                                                Content="&#xE0C3;" Style="{StaticResource dropDownContentButtonStyle}"
+                                                OtherText="{lex:Loc ImportaDaFileJoin}"/>
+                                    <commonResources:ButtonsBarButton ToolTip="{lex:Loc ImportaDaFileXlsx}"
+                                                Command="{Binding ItemsView.ImportXlsxCommand}"
+                                                Content="&#xE134;" Style="{StaticResource dropDownContentButtonStyle}"
+                                                OtherText="{lex:Loc ImportaDaFileXlsx}" />
+                                </StackPanel>
+                            </commonResources:ButtonsBarDropDownButton.DropDownContent>
+                        </commonResources:ButtonsBarDropDownButton>
+                        <Button x:Name="EntityHighlighters" Command="{Binding ItemsView.EntityHighlightersCommand}" 
+                                             Style="{StaticResource menuButtonStyle}"
+                                             ToolTipService.ToolTip="{lex:Loc Evidenziatori}" Content="&#xe113;"
+                                             Visibility="{Binding ItemsView.IsEntityHighlightersEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Style="{StaticResource menuStackPanelStyle}">
+                        <TextBlock Text="{Binding ReportItemsView.CheckedEntitiesCount, Mode=OneWay}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                        <!--<TextBlock Text="!" Visibility="{Binding ItemsView.IsAlertVisible, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Center"
+                                   FontSize="40" FontWeight="Bold" Foreground="{StaticResource AlertColor}"
+                                   ToolTipService.ShowDuration="20000">
+                            <TextBlock.ToolTip>
+                                <ToolTip Placement="Top" Width="Auto" HorizontalOffset="-100"
+                                         Background="Transparent" BorderThickness="0" Height="Auto">
+                                    <Border Style="{StaticResource popupBorderStyle}">
+                                        <TextBlock Text="{Binding ItemsView.AlertText}"/>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>-->
+                        <Button Name="AlertButton" Content="!" Visibility="{Binding ReportItemsView.IsAlertVisible, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Center"
+                                   FontSize="40" FontWeight="Bold" Foreground="{StaticResource AlertColor}" Style="{StaticResource menuButtonStyle}"
+                                Command="{Binding ReportItemsView.ShowAlertCommand}" Width="20">
+                        </Button>
+                        <dxe:FlyoutControl IsOpen="{Binding ReportItemsView.IsAlertOpen}"
+										   PlacementTarget="{Binding ElementName=AlertButton}"
+                                           Style="{StaticResource flyoutControlStyle}" Background="{StaticResource AlertColor}"
+                                           >
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Closing" Command="{Binding ReportItemsView.AlertCloseCommand}" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxe:FlyoutControl.Settings>
+                                <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                </dxe:FlyoutSettings>
+                            </dxe:FlyoutControl.Settings>
+                            <ListView ItemsSource="{Binding ReportItemsView.AlertItems}" BorderThickness="0" Background="Transparent">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Focusable" Value="false"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Background="{StaticResource AlertColor}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="50"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding AlertText}"/>
+                                            <Button Grid.Column="1" Command="{Binding AlertSelectEntitiesCommand}" 
+                                                    Visibility="{Binding AnyEntities, Converter={StaticResource VisibilityConverter}}" 
+                                                    Margin="5,0,5,0" Padding="2"
+                                                    Style="{StaticResource smallButtonStyle}" Content="&#xe07f;"
+                                                    ToolTip="{lex:Loc SelezionaVoci}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </dxe:FlyoutControl>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <ToggleButton Content="{lex:Loc _Nessuno}"  IsChecked="{Binding ReportItemsView.IsNoSelectionChecked, Mode=TwoWay}" Visibility="{Binding ReportItemsView.AllowNoSelection, Converter={StaticResource VisibilityConverter}}" FontSize="12" Height="40" VerticalAlignment="Center" HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                            <ToggleButton.Style>
+                                <Style TargetType="{x:Type ToggleButton}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border x:Name="border" BorderThickness="0" Padding="20,0,0,0" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="true">
+                                                        <Setter Property="Background" TargetName="border" Value="LightGray"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </Grid>
+                    <syncfusion:SfDataGrid x:Name="MasterDataGrid"   Grid.Row="1" ItemsSource="{Binding ReportItemsView.VirtualEntities}"
+                    ShowGroupDropArea="False"  AllowFrozenGroupHeaders="True" AutoExpandGroups="False"  AllowGrouping="True" ShowColumnWhenGrouped="True"      
+                    AllowEditing="True" AllowTriStateSorting="False" AllowFiltering="False" AutoGenerateColumns="False" AddNewRowPosition="None" AllowDeleting="False" AllowSorting="True"
+                    SelectionMode="{Binding SelectionMode}"  
+                    AllowDraggingColumns="True" AllowResizingColumns="True" 
+                    ShowRowHeader="True" SelectionUnit="Row" NavigationMode="Cell"
+                    AllowDraggingRows="False" AllowDrop="False"
+                    CurrentItem="{Binding CurrentItem, Mode=OneWayToSource}"
+                    FrozenColumnCount="1"
+                    EnableDataVirtualization="False"
+                    RowHeight="40"
+                    ScrollViewer.IsDeferredScrollingEnabled="True"
+                    AlternatingRowStyle="{StaticResource alternatingRowStyle}" AlternationCount="2"
+                    GridCopyOption="CopyData,IncludeHeaders,IncludeHiddenColumn" 
+                    GridPasteOption="PasteData"
+                    Loaded="MasterDataGrid_Loaded"
+                    CaptionSummaryCellStyle="{StaticResource captionSummaryCellStyle}"
+                    TableSummaryCellStyle="{StaticResource tableSummaryCellStyle}"
+                    TableSummaryRowStyle="{StaticResource tableSummaryRowStyle}"
+                    CaptionSummaryRowStyle="{StaticResource captionSummaryRowStyle}"
+                    CanMaintainScrollPosition="True"
+                    Style="{StaticResource sfDataGridStyle}"
+                    >
+                        <syncfusion:SfDataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Command="{Binding ItemsView.CopyEntitiesCommand, Source={StaticResource ReportViewKey}}" Header="{lex:Loc Copia2}" IsEnabled="{Binding ItemsView.IsAnyChecked, Source={StaticResource ReportViewKey}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="&#xe03d;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="{Binding ItemsView.PasteEntitiesCommand, Source={StaticResource ReportViewKey}}" Header="{lex:Loc Incolla}" IsEnabled="{Binding ItemsView.IsAnyReadyToPaste, Source={StaticResource ReportViewKey}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="&#xe03f;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="{Binding ItemsView.CopyTextEntitiesCommand, Source={StaticResource ReportViewKey}}" Header="{lex:Loc CopiaNegliAppunti}" IsEnabled="{Binding ItemsView.IsAnyChecked, Source={StaticResource ReportViewKey}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="&#xe03e;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </syncfusion:SfDataGrid.ContextMenu>
+                        <!--SelectionUnit="{Binding SelectionUnit}"-->
+                        <!--NavigationMode="Cell"-->
+                        <syncfusion:SfDataGrid.Columns>
+                            <syncfusion:GridTemplateColumn MappingName="Data.Icons" HeaderText="Ico" Width="30" CellStyle="{StaticResource cellNotGroupedStyle}"
+                                                       AllowEditing="False" AllowGrouping="False" AllowSorting="False" AllowFiltering="False" AllowDragging="False" AllowFocus="False"
+                                                       >
+                                <syncfusion:GridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" Background="{Binding Data.HighlighterColor}">
+                                            <TextBlock Name="FindIcon" Style="{StaticResource smallTextBlockStyle}" Text="&#xe067;" Padding="3" Visibility="{Binding Data.IsSearched, Converter={StaticResource VisibilityConverter}}"/>
+                                            <TextBlock Name="MoveIcon" Style="{StaticResource smallTextBlockStyle}" Text="&#xe032;" Padding="3" Visibility="{Binding Data.IsReadyToMove, Converter={StaticResource VisibilityConverter}}"/>
+                                            <TextBlock Name="CopyIcon" Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" Padding="3" Visibility="{Binding Data.IsCopied, Converter={StaticResource VisibilityConverter}}"/>
+                                            <TextBlock Name="MultiModifyIcon" Style="{StaticResource smallTextBlockStyle}" Text="&#xe041;" Padding="3" Visibility="{Binding Data.IsReadyToMultiModify, Converter={StaticResource VisibilityConverter}}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </syncfusion:GridTemplateColumn.CellTemplate>
+                            </syncfusion:GridTemplateColumn>
+                        </syncfusion:SfDataGrid.Columns>
+
+                        <!--<syncfusion:SfDataGrid.TableSummaryRows>
+                        <syncfusion:GridTableSummaryRow ShowSummaryInRow="False" Position="Top">
+                        </syncfusion:GridTableSummaryRow>
+                    </syncfusion:SfDataGrid.TableSummaryRows>-->
+
+                        <syncfusion:SfDataGrid.CaptionSummaryRow>
+                            <syncfusion:GridSummaryRow ShowSummaryInRow="False">
+                                <!--Title=" Quantita: {QuantitaSum} - Importo: {ImportoSum} - {Key}"-->
+                            </syncfusion:GridSummaryRow>
+                        </syncfusion:SfDataGrid.CaptionSummaryRow>
+
+                        <syncfusion:SfDataGrid.RecordContextMenu>
+                            <ContextMenu>
+                                <!--<MenuItem x:Name="Copy" Click="Copy_Click" Header="{lex:Loc Copia2}" IsEnabled="{Binding ReportItemsView.IsAnyChecked, Source={StaticResource ReportViewKey}}" />
+                                <MenuItem x:Name="Incolla" Click="Paste_Click"  Header="{lex:Loc Incolla}" />-->
+                                <MenuItem Command="{Binding ItemsView.CopyEntitiesCommand, Source={StaticResource ReportViewKey}}" Header="{lex:Loc Copia2}" IsEnabled="{Binding ItemsView.IsAnyChecked, Source={StaticResource ReportViewKey}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="&#xe03d;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="{Binding ItemsView.PasteEntitiesCommand, Source={StaticResource ReportViewKey}}" Header="{lex:Loc Incolla}" IsEnabled="{Binding ItemsView.IsAnyReadyToPaste, Source={StaticResource ReportViewKey}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="&#xe03f;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="{Binding ItemsView.CopyTextEntitiesCommand, Source={StaticResource ReportViewKey}}" Header="{lex:Loc CopiaNegliAppunti}" IsEnabled="{Binding ItemsView.IsAnyChecked, Source={StaticResource ReportViewKey}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="&#xe03e;" Style="{StaticResource smallTextBlockStyle}" FontSize="16" Width="16"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>                           
+                            </ContextMenu>
+                        </syncfusion:SfDataGrid.RecordContextMenu>
+
+                    </syncfusion:SfDataGrid>
+                </Grid>
+            </Grid>
+
+
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" />
+            <Grid Name="DetailGrid" Grid.Column="2" HorizontalAlignment="Stretch" MinWidth="200" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Style="{StaticResource menuStackPanelStyle}">
+                    <Button Name="ScrollToCurrentEntity" ToolTip="{lex:Loc Vai a...}" Command="{Binding ReportItemsView.ScrollToCurrentEntityCommand}"
+                            Visibility="{Binding ReportItemsView.IsScrollToCurrentEntityEnabled, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                            Style="{StaticResource menuButtonStyle}" Content="&#xe06a;"/>
+                    <Button Name="StarWizard" ToolTip="{lex:Loc Edita report}" Click="StarWizard_Click"
+                            Style="{StaticResource menuButtonStyle}" Content="&#xe040;" IsEnabled="True"
+                            Visibility="{Binding ReportItemsView.IsStarWizardEnabled, Converter={StaticResource VisibilityConverter}}"/>
+                </StackPanel>
+                <ListView x:Name="DetailListView" ItemsSource="{Binding ReportItemsView.AttributiEntities.AttributiValoriComuniView}" Margin="10" RenderTransformOrigin="0.5,0.5" Grid.Row="1"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="0" KeyboardNavigation.TabNavigation="Cycle" PreviewMouseLeftButtonDown="DetailListView_PreviewMouseLeftButtonDown" PreviewMouseMove="DetailListView_PreviewMouseMove" DragEnter="DetailListView_DragEnter" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Name="DetailListViewItem" Background="Transparent">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxMenuItemHeader}"
+							                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CopyAttributoSyntaxCommand}">
+                                            <MenuItem.Icon>
+                                                <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe03d;" FontSize="13"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Name="DragRectangle" Text="{Binding Etichetta}" VerticalAlignment="Top" Grid.Column="0" HorizontalAlignment="Stretch"  Width="{Binding EtichettaWidth}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <!--IsHilighted-->
+                                                    <DataTrigger Binding="{Binding IsHilighted}" Value="true">
+                                                        <Setter Property="Background" Value="{StaticResource SelectedColor}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsAdvanced}" Value="true">
+                                                        <Setter Property="Background" Value="{StaticResource AdvancedModeColor}"/>
+                                                    </DataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding Path=IsAdvanced}" Value="false"/>
+                                                            <Condition Binding="{Binding Path=Transparent}" Value="false"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </MultiDataTrigger>
+                                                    <!--IsGuid-->
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="true">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSourceGuid}" Value="false">
+                                                        <Setter Property="FontWeight" Value="Normal"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+
+                                    </TextBlock>
+                                    <!--<Popup Style="{StaticResource popupStyle}"
+											IsOpen="{Binding IsHilighted}" 
+											PlacementTarget="{Binding ElementName=DragRectangle}">
+                                        <Border Style="{StaticResource popupBorderStyle}">
+                                            <TextBlock Text="{lex:Loc Attributi}"/>
+                                        </Border>
+                                    </Popup>-->
+                                    <!--<dxe:FlyoutControl IsOpen="{Binding IsHilighted, Mode=TwoWay}" 
+										   PlacementTarget="{Binding ElementName=DragRectangle}"
+                                           Style="{StaticResource flyoutControlStyle}">
+                                        <dxe:FlyoutControl.Settings>
+                                            <dxe:FlyoutSettings ShowIndicator="True" Placement="Top" IndicatorHorizontalAlignment="Center">
+                                            </dxe:FlyoutSettings>
+                                        </dxe:FlyoutControl.Settings>
+                                        --><!--<commonResources:GifMediaElement Source="Resources/DragDropAttributi.gif"
+                                                                        LoadedBehavior="Play" UnloadedBehavior="Manual" MaxWidth="200" MaxHeight="200"/>--><!--
+                                    </dxe:FlyoutControl>-->
+                                    <Button x:Name="ExpandButton" Command="{Binding ExpandCommand}" Visibility="{Binding IsExpandable, Converter={StaticResource VisibilityConverter}}" Grid.Column="1" Content="{Binding Path=IsExpanded, Mode=TwoWay, Converter={StaticResource expandCollapseVerticalGlyphConverter}}" IsTabStop="False" VerticalAlignment="Top" Style="{StaticResource smallButtonStyle}" Foreground="Gray"/>
+                                </Grid>
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}" Background="Transparent" DragCompleted="GridSplitter_DragCompleted" IsTabStop="False"/>
+                                <ContentControl Name="ValoreControl" Content="{Binding ValoreView, Mode=OneWay}" Grid.Column="2" ContentTemplateSelector="{StaticResource ValoreAttributoTemplateSelector}"  Visibility="{Binding IsValoreViewVisible, Mode=TwoWay, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" TabIndex="{Binding TabIndex}" IsTabStop="False" Height="{Binding Height}" Padding="0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <Expander IsExpanded="{Binding Items[0].IsGroupExpanded}" Style="{StaticResource expanderStyle}">
+                                                    <Expander.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="16" />
+                                                        </StackPanel>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter />
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </Grid>
+        </Grid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource gridSplitterStyle}"/>
+        <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1">
+            <Grid Name="RightSplitGrid" HorizontalAlignment="Stretch">
+                <Grid Style="{StaticResource rightSplitGridStyle}" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Name="RightSplitPaneControl" Content="{Binding RightPanesView.CurrentControlView, Mode=TwoWay}"
+                                    Visibility="{Binding RightPanesView.IsPaneOpen, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                    ContentTemplateSelector="{StaticResource RightSplitPaneTemplateSelector}"  Grid.Column="0"  AllowDrop="True"
+                                    Drop="RightSplitPaneControl_Drop"
+                                    PreviewMouseLeftButtonDown="RightSplitPaneControl_PreviewMouseLeftButtonDown"
+                                    PreviewMouseMove="RightSplitPaneControl_PreviewMouseMove"
+                                    Width="150" BorderThickness="0"/>
+                    <Grid Grid.Column="1" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ToggleButton x:Name="OpenPanel" IsChecked="{Binding RightPanesView.IsPaneOpen, Mode=TwoWay}" Width="50" VerticalAlignment="Stretch" ToolTipService.ToolTip="{lex:Loc EspandiCollassa}" AllowDrop="True" Grid.Row="0" Margin="0"
+                                  Style="{StaticResource menuToggleButtonStyle}" Content="{Binding Path=RightPanesView.IsPaneOpen, Mode=TwoWay, Converter={StaticResource expandCollapseHorizontalGlyphConverter}}"/>
+                        <Grid Grid.Row="1" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ToggleButton x:Name="FilterToggleButton" IsChecked="{Binding RightPanesView.IsFilterPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc TrovaFiltra}" AllowDrop="True" Grid.Row="0"
+                                          Margin="0" Style="{StaticResource filterToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="FilterToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe07f;" FontSize="20" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.FilterView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.FilterView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}"/>
+                                </StackPanel>
+                            </ToggleButton>
+                            <ToggleButton x:Name="SortToggleButton" IsChecked="{Binding RightPanesView.IsSortPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc Ordina}" Grid.Row="1" AllowDrop="True"
+                                          Margin="0" Style="{StaticResource sortToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="SortToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe066;" FontSize="20" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.SortView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.SortView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}"/>
+                                </StackPanel>
+                            </ToggleButton>
+                            <ToggleButton x:Name="GroupToggleButton" IsChecked="{Binding RightPanesView.IsGroupPaneOpen, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" ToolTipService.ToolTip="{lex:Loc Raggruppa}" Grid.Row="2" AllowDrop="True"
+                                          Margin="0" Style="{StaticResource groupToggleButtonStyle}" BorderThickness="0,1,0,0" BorderBrush="Gray"
+                                          Drop="GroupToggleButton_Drop">
+                                <StackPanel Orientation="Vertical" FlowDirection="LeftToRight">
+                                    <TextBlock Style="{StaticResource smallTextBlockStyle}" Text="&#xe068;" FontSize="20" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding RightPanesView.GroupView.ItemsCount}" FontSize="12" HorizontalAlignment="Center" Visibility="{Binding RightPanesView.GroupView.IsItemsCountVisible, Converter={StaticResource VisibilityConverter}}" />
+                                </StackPanel>
+                            </ToggleButton>
+                            <Rectangle HorizontalAlignment="Right" Width="50" VerticalAlignment="Stretch" Grid.Row="3"/>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>
+

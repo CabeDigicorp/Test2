@@ -1,0 +1,72 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Buttons
+@using JoinWebUI.Utilities
+
+<SfButton CssClass="e-btn-blue top-left" IconCss="e-icons icon-precedente" IconPosition=IconPosition.Right OnClick=@(() => Helper.GoBack()) Disabled=@((Helper?.SelectionHistory?.Count ?? 0) <= 1) />
+<SfButton CssClass="e-btn-blue top-left-2" IconCss="e-icons icon-evidenzia-su-modello-IFC" IconPosition=IconPosition.Right Disabled=@DisableHighlightButton OnClick=@ClickHighlight />
+<SfButton CssClass="e-btn-blue top-left-2" IconCss="e-icons icon-nascondi-vuoto" IconPosition=IconPosition.Right OnClick=@ClickToggleNull>
+    @* <ChildContent>
+    @if (ShowNullProperties)
+    {
+    <span>Nascondi valori null</span>
+    }
+    else
+    {
+    <span>Mostra valori null</span>
+    }
+    </ChildContent> *@
+</SfButton>
+
+<style>
+ .top-left {
+        position: relative;
+        top: 4px;
+        left: 4px;
+        z-index: 90 !important;
+    }
+
+    .top-left-2 {
+        position: relative;
+        top: 4px;
+        left: 4px;
+        z-index: 90 !important;
+    }
+
+    .top-right {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        z-index: 90 !important;
+    }
+
+</style>
+
+@code {
+    [Parameter] public FragmentsHelper Helper { get; set; }
+
+    [Parameter] public EventCallback OnHighlightCurrent { get; set; }
+    //[Parameter] public bool DisableHighlightButton { get; set; } = true;
+    [Parameter] public EventCallback OnToggleNullProperties { get; set; }
+
+    private bool DisableHighlightButton { get => Helper == null || !Helper.Highlightable; }
+
+    private async Task ClickHighlight()
+    {
+        if (OnHighlightCurrent.HasDelegate) await OnHighlightCurrent.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClickToggleNull()
+    {
+        if (OnToggleNullProperties.HasDelegate) await OnToggleNullProperties.InvokeAsync();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void ForceUpdate()
+    {
+        StateHasChanged();
+        // foreach (PropertiesTabGrid item in items)
+        //     item.ForceUpdate();
+    }
+
+}

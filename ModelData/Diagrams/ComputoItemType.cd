@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ModelData.Model.ComputoItemType">
+    <Position X="1.5" Y="5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Computo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.EntityType">
+    <Position X="1.5" Y="1.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAABADAAAAAAACAAQAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\EntityType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Attributi" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ModelData.Model.Attributo">
+    <Position X="6" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAIABhgQFCAAAAAACACBAAIBAQgAgACgAAAAAAE=</HashCode>
+      <FileName>Model\Attributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ValoreAttributo" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoElenco" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAIAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoElencoItem">
+    <Position X="13.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoColore" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoColoreItem">
+    <Position X="13.25" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>BAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoFormatoNumero" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Items" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoFormatoNumeroItem">
+    <Position X="13.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoRiferimentoGuidCollection" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="10.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoVariabili" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="12.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ModelData.Model.ValoreAttributoGuidCollection" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="9" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="ModelData.Model.ValoreAttributo" Collapsed="true">
+    <Position X="10.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ValoreAttributo.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

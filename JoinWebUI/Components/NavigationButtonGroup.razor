@@ -1,0 +1,126 @@
+﻿@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Buttons
+@using System.Collections.ObjectModel
+
+@inject IResizeListener _listener
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _navigation
+
+@implements IDisposable
+
+<div class="control-section row mx-0 d-flex justify-content-center" id="buttonGroup">
+    @foreach (var i in NavigationButtons)
+    {
+       <div class="col my-3" style="min-width:@(ButtonWidthString);max-width:@(ButtonWidthString);min-height:@(ButtonHeight);max-height:@(ButtonHeight)">
+            <SfButton CssClass="e-flat p-3 e-btn-grey e-custom" OnClick="@(e => Click(i))">
+                <ChildContent>
+                    @if (!string.IsNullOrWhiteSpace(i.Image))
+                    {
+                        <img src=@(i.Image) class="e-filter-primary" width="100" height="100">
+                    }
+                    <h4>@i.Title</h4>
+                    @if (!string.IsNullOrWhiteSpace(i.Description))
+                    {
+                        <h5>@i.Description</h5>
+                    }
+                </ChildContent>
+            </SfButton>
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter] public List<NavigationComponentInfo> NavigationButtons { get; set; } = new List<NavigationComponentInfo>();
+
+    [Parameter] public string? ButtonWidth { get; set; } = null;
+    [Parameter] public string? ButtonHeight { get; set; } = "auto";
+
+    private const int BUTTONMINWIDTH = 240;
+    private const int BUTTONMAXWIDTH = 640;
+    private string ButtonWidthString { get; set; } = BUTTONMINWIDTH.ToString() + "px";
+
+    private async Task ComputeButtonWidthAsync()
+    {
+        if (ButtonWidth != null) return;
+
+        try
+        {
+            BrowserWindowSize size = await _jsRuntime.InvokeAsync<BrowserWindowSize>("window.getElementDimensions", "buttonGroup");
+            ButtonWidthString = NavigationComponentInfo.ComputeWidthAsync(BUTTONMINWIDTH,
+                                                                        BUTTONMAXWIDTH,
+                                                                        size.Width,
+                                                                        NavigationButtons.Count);
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ComputeButtonWidthAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            _listener.OnResized += WindowResized;
+            ComputeButtonWidthAsync();
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        _listener.OnResized -= WindowResized;
+
+    }
+
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        await ComputeButtonWidthAsync();
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+
+    }
+
+    private void Click(NavigationComponentInfo i)
+    {
+        if (!string.IsNullOrWhiteSpace(i.LinkUrl))
+            _navigation.NavigateTo(i.LinkUrl);
+        else if (i.Callback.HasValue && i.Callback.Value.HasDelegate)
+            i.Callback.Value.InvokeAsync();
+    }
+
+}
+
+<style>
+    .e-custom {
+        border-radius: 8px !important;
+        height: 100% !important;
+        width: 100% !important;
+/*        background-color: var(--bs-join-grey-medium) !important;
+        color: var(--bs-primary) !important;*/
+    }
+
+        .e-custom:hover, .e-custom:focus, .e-custom:active {
+            border: none !important;
+        }
+
+    .img {
+        filter: invert(11%) sepia(74%) saturate(1470%) hue-rotate(176deg) brightness(96%) contrast(102%);
+    }
+
+</style>
